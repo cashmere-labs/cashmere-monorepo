@@ -25,28 +25,26 @@
     "test-unit": "nx run-many --target=test-unit --all --parallel=4"
   },
   "devDependencies": {
-    "@commitlint/cli": "^17.4.0",
-    "@commitlint/config-conventional": "^17.4.0",
     "@swarmion/nx-plugin": "^0.28.1",
-    "@typescript-eslint/eslint-plugin": "^5.51.0",
-    "@typescript-eslint/parser": "^5.51.0",
-    "aws-sdk": "^2.1289.0",
-    "dependency-cruiser": "^12.11.1",
-    "eslint": "^8.31.0",
-    "eslint-import-resolver-typescript": "^3.5.3",
-    "eslint-plugin-import": "^2.26.0",
+    "@typescript-eslint/eslint-plugin": "^5.59.1",
+    "@typescript-eslint/parser": "^5.59.1",
+    "aws-sdk": "^2.1368.0",
+    "dependency-cruiser": "^12.11.3",
+    "eslint": "^8.39.0",
+    "eslint-import-resolver-typescript": "^3.5.5",
+    "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-prefer-arrow": "^1.2.3",
     "husky": "^8.0.3",
-    "lint-staged": "^13.1.0",
+    "lint-staged": "^13.2.2",
     "lodash": "^4.17.21",
-    "npm-audit-resolver": "^3.0.0-7",
-    "nx": "^15.7.0",
-    "prettier": "^2.8.1",
-    "syncpack": "^9.0.0",
-    "typescript": "^5.0.0"
+    "npm-audit-resolver": "3.0.0-RC.0",
+    "nx": "^15.9.3",
+    "prettier": "^2.8.8",
+    "syncpack": "^9.8.6",
+    "typescript": "^5.0.4"
   },
   "engines": {
-    "node": "^16.17.0"
+    "node": "^18.16.0"
   },
   "packageManager": "pnpm@8.3.0"
 }

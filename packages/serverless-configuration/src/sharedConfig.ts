@@ -12,7 +12,7 @@ export const defaultEnvironment = 'dev';
 
 export const sharedProviderConfig: ServerlessProviderConfig = {
   name: 'aws',
-  runtime: 'nodejs16.x',
+  runtime: 'nodejs18.x',
   architecture: 'arm64',
   region,
   profile: '${param:profile}', // Used to point to the right AWS account
@@ -49,11 +49,11 @@ export const sharedParams = {
   },
   staging: {
     profile: '',
-    apiGatewayCorsAllowedOrigins: ['https://staging.my-domain.com'],
+    apiGatewayCorsAllowedOrigins: ['https://staging.cashmere.exchange'],
   },
   production: {
     profile: '',
-    apiGatewayCorsAllowedOrigins: ['https://www.my-domain.com'],
+    apiGatewayCorsAllowedOrigins: ['https://www.cashmere.exchange'],
   },
 };
 

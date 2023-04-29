@@ -1,6 +1,19 @@
-# Swarmion example
+# Cashmere Mono Repo
 
-This template is an example of a project generated with [Swarmion](https://github.com/swarmion/swarmion).
+This project was generated with [Swarmion](https://github.com/swarmion/swarmion).
+
+## Project structure
+
+- Frontend
+  - All Code related to the Next.JS Application (not migrated yet)
+- Packages
+  - Shared lib's across all modules
+- Contracts
+  - All the libraries for each services
+  - Can be used in the frontend part to get each services types
+  - Can be used in the services part to declare the service routes and types
+- Services
+  - All the AWS Services (handlers and stuff)
 
 ## Documentation
 
