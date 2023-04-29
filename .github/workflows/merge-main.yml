@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-      - main
+      - deploy
 
 name: 🚀 Deploy main
 concurrency: deploy_main
@@ -13,7 +13,7 @@ permissions:
 
 env:
   CI: true
-  AWS_REGION: eu-west-1
+  AWS_REGION: us-east-1
 
 defaults:
   run:
@@ -62,5 +62,7 @@ jobs:
         with:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: ${{ secrets.AWS_ROLE_ARN_PRODUCTION }}
-      - name: '🚀 Deploy main'
-        run: pnpm nx affected --target=deploy-production --parallel=2
+      - name: '🚀 Deploy dev'
+        run: pnpm nx affected --target=deploy --parallel=2
+      #- name: '🚀 Deploy main'
+      #  run: pnpm nx affected --target=deploy-production --parallel=2

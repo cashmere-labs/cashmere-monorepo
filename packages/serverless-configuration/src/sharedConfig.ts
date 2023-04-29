@@ -5,7 +5,7 @@ import {
 } from '@swarmion/serverless-helpers';
 
 export const projectName = 'cashmere-monorepo';
-export const region = 'eu-west-1';
+export const region = 'us-east-1';
 export const frameworkVersion = '>=3.0.0';
 
 export const defaultEnvironment = 'dev';
@@ -44,8 +44,10 @@ export const sharedProviderConfig: ServerlessProviderConfig = {
  */
 export const sharedParams = {
   dev: {
-    profile: 'cashmere-monorepo-developer',
-    apiGatewayCorsAllowedOrigins: ['http://localhost:3000'],
+    profile: 'monorepo-swarmion-dev',
+    apiGatewayCorsAllowedOrigins: [
+      'https://vwravqkail.execute-api.us-east-1.amazonaws.com',
+    ],
   },
   staging: {
     profile: '',
