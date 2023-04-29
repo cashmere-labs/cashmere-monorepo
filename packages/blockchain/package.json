@@ -29,6 +29,7 @@
     "watch": "pnpm clean dist && concurrently 'pnpm:package-* --watch'"
   },
   "dependencies": {
+    "async-mutex": "^0.4.0",
     "viem": "^0.3.13"
   },
   "devDependencies": {
@@ -43,6 +44,6 @@
     "tsc-alias": "^1.8.6",
     "tsup": "^6.7.0",
     "typescript": "^5.0.4",
-    "vite-tsconfig-paths": "^4.2.0"
+    "vitest": "0.30.1"
   }
 }

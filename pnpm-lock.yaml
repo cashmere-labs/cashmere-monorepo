@@ -234,6 +234,9 @@ importers:
 
   packages/blockchain:
     dependencies:
+      async-mutex:
+        specifier: ^0.4.0
+        version: 0.4.0
       viem:
         specifier: ^0.3.13
         version: 0.3.13(typescript@5.0.4)
@@ -271,9 +274,9 @@ importers:
       typescript:
         specifier: ^5.0.4
         version: 5.0.4
-      vite-tsconfig-paths:
-        specifier: ^4.2.0
-        version: 4.2.0(typescript@5.0.4)
+      vitest:
+        specifier: 0.30.1
+        version: 0.30.1
 
   packages/serverless-configuration:
     dependencies:
@@ -4854,6 +4857,12 @@ packages:
   /astral-regex@2.0.0:
     resolution: {integrity: sha512-Z7tMw1ytTXt5jqMcOP+OQteU1VuNK9Y02uuJtKQ1Sv69jXQKKg5cibLwGJow8yzZP+eAc18EmLGPal0bp36rvQ==}
     engines: {node: '>=8'}
+
+  /async-mutex@0.4.0:
+    resolution: {integrity: sha512-eJFZ1YhRR8UN8eBLoNzcDPcy/jqjsg6I1AP+KvWQX80BqOSW1oJPJXDylPUEeMr2ZQvHgnQ//Lp6f3RQ1zI7HA==}
+    dependencies:
+      tslib: 2.5.0
+    dev: false
 
   /async@3.2.4:
     resolution: {integrity: sha512-iAB+JbDEGXhyIUavoDl9WP/Jj106Kz9DEn1DPgYw5ruDn0e3Wgi3sKFm55sASdGBNOQB8F59d9qQ7deqrHA8wQ==}

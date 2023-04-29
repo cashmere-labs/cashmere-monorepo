@@ -95,7 +95,9 @@ export class BlockchainConfig {
  * All the different config per chains
  * Check out here for max block limitation : https://support.chainstack.com/hc/en-us/articles/6955614349209-Node-and-connection-limitations#:~:text=The%20limitations%20are%20as%20follows,Harmony%20%E2%80%94%201%2C024%20blocks.
  */
-export const networkConfigs = {
+export const networkConfigs: {
+  [chainId: string]: BlockchainConfig;
+} = {
   [MUMBAI_CHAIN_ID]: new BlockchainConfig(
     polygonMumbai,
     'https://nd-205-910-430.p2pify.com/5e4fbcfe1a1af2bb2c6f5b0e9e538551',

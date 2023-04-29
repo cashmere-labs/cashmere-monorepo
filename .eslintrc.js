@@ -9,6 +9,7 @@ module.exports = {
     '**/coverage/',
     '**/build/',
     '**/public/',
+    '**/abis/',
   ],
   rules: {
     'import/extensions': 0,
@@ -16,7 +17,7 @@ module.exports = {
     'import/prefer-default-export': 0,
     'import/no-duplicates': 'error',
     complexity: ['error', 8],
-    'max-lines': ['error', 200],
+    'max-lines': ['error', 400],
     'max-depth': ['error', 3],
     'max-params': ['error', 4],
     eqeqeq: ['error', 'smart'],
@@ -104,7 +105,7 @@ module.exports = {
         ],
       },
     ],
-    curly: ['error', 'all'],
+    curly: ['error', 'multi-line'],
   },
   root: true,
   env: {
@@ -129,25 +130,11 @@ module.exports = {
         project: 'tsconfig.json',
       },
       rules: {
+        '@typescript-eslint/no-non-null-assertion': 'off',
         '@typescript-eslint/prefer-optional-chain': 'error',
         'no-shadow': 'off',
         '@typescript-eslint/no-shadow': 'error',
         '@typescript-eslint/prefer-nullish-coalescing': 'error',
-        '@typescript-eslint/strict-boolean-expressions': [
-          'error',
-          {
-            allowString: false,
-            allowNumber: false,
-            allowNullableObject: true,
-          },
-        ],
-        '@typescript-eslint/ban-ts-comment': [
-          'error',
-          {
-            'ts-ignore': 'allow-with-description',
-            minimumDescriptionLength: 10,
-          },
-        ],
         '@typescript-eslint/explicit-function-return-type': 0,
         '@typescript-eslint/explicit-member-accessibility': 0,
         '@typescript-eslint/camelcase': 0,
@@ -178,13 +165,6 @@ module.exports = {
         '@typescript-eslint/no-unnecessary-type-arguments': 'error',
         '@typescript-eslint/prefer-string-starts-ends-with': 'error',
         '@typescript-eslint/switch-exhaustiveness-check': 'error',
-        '@typescript-eslint/restrict-template-expressions': [
-          'error',
-          {
-            allowNumber: true,
-            allowBoolean: true,
-          },
-        ],
       },
     },
     {
