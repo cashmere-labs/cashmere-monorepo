@@ -63,7 +63,7 @@ importers:
         version: link:../../packages/serverless-configuration
       '@swarmion/serverless-contracts':
         specifier: ^0.28.1
-        version: 0.28.1(@serverless/typescript@3.29.0)(aws-cdk-lib@2.77.0)
+        version: 0.28.1(@serverless/typescript@3.29.0)(ajv@8.12.0)(aws-cdk-lib@2.77.0)
     devDependencies:
       '@types/node':
         specifier: ^18.16.3
@@ -97,6 +97,55 @@ importers:
         version: 5.0.4
       vitest:
         specifier: 0.30.1
+        version: 0.30.1
+
+  contracts/swap-params-contracts:
+    dependencies:
+      '@swarmion/serverless-contracts':
+        specifier: ^0.28.1
+        version: 0.28.1(@serverless/typescript@3.29.0)(ajv@8.12.0)(aws-cdk-lib@2.77.0)
+    devDependencies:
+      '@types/node':
+        specifier: ^18.16.3
+        version: 18.16.3
+      '@vitest/coverage-c8':
+        specifier: ^0.30.1
+        version: 0.30.1(vitest@0.30.1)
+      concurrently:
+        specifier: ^8.0.1
+        version: 8.0.1
+      dependency-cruiser:
+        specifier: ^12.11.3
+        version: 12.11.3
+      eslint:
+        specifier: ^8.39.0
+        version: 8.39.0
+      json-schema-to-ts:
+        specifier: ^2.8.0
+        version: 2.8.0
+      prettier:
+        specifier: ^2.8.8
+        version: 2.8.8
+      rimraf:
+        specifier: ^5.0.0
+        version: 5.0.0
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.1(@types/node@18.16.3)(typescript@5.0.4)
+      tsc-alias:
+        specifier: ^1.8.6
+        version: 1.8.6
+      tsup:
+        specifier: ^6.7.0
+        version: 6.7.0(ts-node@10.9.1)(typescript@5.0.4)
+      typescript:
+        specifier: ^5.0.4
+        version: 5.0.4
+      vite-tsconfig-paths:
+        specifier: ^4.2.0
+        version: 4.2.0(typescript@5.0.4)
+      vitest:
+        specifier: ^0.30.1
         version: 0.30.1
 
   frontend/next-app:
@@ -365,6 +414,67 @@ importers:
         version: 4.2.0(typescript@5.0.4)
       vitest:
         specifier: 0.30.1
+        version: 0.30.1
+
+  services/swap-params:
+    dependencies:
+      '@cashmere-monorepo/serverless-configuration':
+        specifier: workspace:^
+        version: link:../../packages/serverless-configuration
+      '@cashmere-monorepo/swap-params-contracts':
+        specifier: workspace:^
+        version: link:../../contracts/swap-params-contracts
+      '@swarmion/serverless-contracts':
+        specifier: ^0.28.1
+        version: 0.28.1(@serverless/typescript@3.29.0)(ajv@8.12.0)(aws-cdk-lib@2.77.0)
+      '@swarmion/serverless-helpers':
+        specifier: ^0.28.1
+        version: 0.28.1(@serverless/typescript@3.29.0)(aws-cdk-lib@2.77.0)
+      ajv:
+        specifier: ^8.12.0
+        version: 8.12.0
+    devDependencies:
+      '@serverless/typescript':
+        specifier: ^3.29.0
+        version: 3.29.0
+      '@types/node':
+        specifier: ^18.16.3
+        version: 18.16.3
+      '@vitest/coverage-c8':
+        specifier: ^0.30.1
+        version: 0.30.1(vitest@0.30.1)
+      dependency-cruiser:
+        specifier: ^12.11.3
+        version: 12.11.3
+      esbuild:
+        specifier: ^0.17.18
+        version: 0.17.18
+      eslint:
+        specifier: ^8.39.0
+        version: 8.39.0
+      serverless:
+        specifier: ^3.30.1
+        version: 3.30.1
+      serverless-custom-iam-roles-per-function:
+        specifier: ^1.0.1
+        version: 1.0.1
+      serverless-esbuild:
+        specifier: ^1.43.1
+        version: 1.43.1(esbuild@0.17.18)
+      serverless-iam-roles-per-function:
+        specifier: ^3.2.0
+        version: 3.2.0
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.1(@types/node@18.16.3)(typescript@5.0.4)
+      typescript:
+        specifier: ^5.0.4
+        version: 5.0.4
+      vite-tsconfig-paths:
+        specifier: ^4.2.0
+        version: 4.2.0(typescript@5.0.4)
+      vitest:
+        specifier: ^0.30.1
         version: 0.30.1
 
 packages:
@@ -3989,7 +4099,7 @@ packages:
       - supports-color
     dev: true
 
-  /@swarmion/serverless-contracts@0.28.1(@serverless/typescript@3.29.0)(aws-cdk-lib@2.77.0):
+  /@swarmion/serverless-contracts@0.28.1(@serverless/typescript@3.29.0)(ajv@8.12.0)(aws-cdk-lib@2.77.0):
     resolution: {integrity: sha512-e7hVPsWyPQ39sG90/TKI84XnWFgdEGzR0F9ukGkp8s63GjM7NmBnHaSuRK1Z+8kbSyE25b8a2i1LAp1uIE3W9w==}
     peerDependencies:
       '@serverless/typescript': '>=3'
@@ -4008,6 +4118,7 @@ packages:
       '@swarmion/serverless-helpers': 0.28.1(@serverless/typescript@3.29.0)(aws-cdk-lib@2.77.0)
       '@types/aws-lambda': 8.10.114
       '@types/http-errors': 2.0.1
+      ajv: 8.12.0
       http-errors: 2.0.0
       json-schema-faker: 0.5.0-rcv.46
       json-schema-to-ts: 2.6.2
@@ -7303,7 +7414,7 @@ packages:
       fs.realpath: 1.0.0
       inflight: 1.0.6
       inherits: 2.0.4
-      minimatch: 3.1.2
+      minimatch: 3.0.5
       once: 1.4.0
       path-is-absolute: 1.0.1
     dev: true
@@ -10709,6 +10820,12 @@ packages:
     dependencies:
       lru-cache: 6.0.0
 
+  /serverless-custom-iam-roles-per-function@1.0.1:
+    resolution: {integrity: sha512-u5IN8ZNT/bTOeRAFiINjTvWd9Vp9YYYXc1/TC8b04h0OELnBnuluNN8fNpdpwjiBMqUZW6K5N0pRRBH3kOCz/g==}
+    dependencies:
+      '@babel/runtime': 7.21.5
+    dev: true
+
   /serverless-esbuild@1.43.1(esbuild@0.17.18):
     resolution: {integrity: sha512-iF5FWVnNT00OSsXjXRaJ/Jbn8n40Dr0XspKO4h/bEZLFqyZmHmrRrJHHZDuh+tJafjSlaDzUmqnhdMr9dBh7kQ==}
     engines: {node: '>=14.18.0'}
@@ -10733,6 +10850,13 @@ packages:
       p-map: 4.0.0
       ramda: 0.28.0
       semver: 7.5.0
+    dev: true
+
+  /serverless-iam-roles-per-function@3.2.0:
+    resolution: {integrity: sha512-AXmxACHEUsDcFDcv8QNwDgn2L0brRJ7pz/phD3lFB/wQ3TtPJkorC+J7PxgFQbaWIQk15EIlU83BtKXeQoPTAg==}
+    engines: {node: '>=10'}
+    dependencies:
+      lodash: 4.17.21
     dev: true
 
   /serverless@3.30.1:

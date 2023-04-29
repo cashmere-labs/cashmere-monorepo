@@ -16,6 +16,12 @@
     },
     {
       "path": "./packages/blockchain/tsconfig.build.json"
+    },
+    {
+      "path": "./services/swap-params/tsconfig.json"
+    },
+    {
+      "path": "./contracts/swap-params-contracts/tsconfig.build.json"
     }
   ]
 }

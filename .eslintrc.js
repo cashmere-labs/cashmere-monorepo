@@ -50,7 +50,6 @@ module.exports = {
           order: 'asc',
           caseInsensitive: false,
         },
-        'newlines-between': 'always',
         pathGroupsExcludedImportTypes: ['builtin'],
       },
     ],

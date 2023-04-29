@@ -93,6 +93,14 @@
     {
       "path": "packages/blockchain",
       "name": "blockchain [library]"
+    },
+    {
+      "path": "services/swap-params",
+      "name": "swap params [service]"
+    },
+    {
+      "path": "contracts/swap-params-contracts",
+      "name": "swap params contracts [library]"
     }
   ]
 }
