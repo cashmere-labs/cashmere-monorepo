@@ -418,6 +418,9 @@ importers:
 
   services/swap-params:
     dependencies:
+      '@cashmere-monorepo/blockchain':
+        specifier: workspace:^
+        version: link:../../packages/blockchain
       '@cashmere-monorepo/serverless-configuration':
         specifier: workspace:^
         version: link:../../packages/serverless-configuration

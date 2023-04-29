@@ -22,6 +22,7 @@
     "test-unit": "vitest run --coverage --passWithNoTests"
   },
   "dependencies": {
+    "@cashmere-monorepo/blockchain": "workspace:^",
     "@cashmere-monorepo/serverless-configuration": "workspace:^",
     "@cashmere-monorepo/swap-params-contracts": "workspace:^",
     "@swarmion/serverless-contracts": "^0.28.1",

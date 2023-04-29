@@ -1,3 +1,3 @@
-import health from './health/config';
+import estimate from './estimate/config';
 
-export const functions = { health };
+export const functions = { estimate };

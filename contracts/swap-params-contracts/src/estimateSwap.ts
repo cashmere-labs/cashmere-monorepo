@@ -29,6 +29,11 @@ const estimateResponseSchema = {
   additionalProperties: false,
 } as const;
 
+const errorResponseSchema = {
+  type: 'string',
+  additionalProperties: false,
+} as const;
+
 const estimateSwapContract = new ApiGatewayContract({
   id: 'swap-params-estimate',
   path: '/estimate',
@@ -37,6 +42,7 @@ const estimateSwapContract = new ApiGatewayContract({
   queryStringParametersSchema: queryStringParametersSchema,
   outputSchemas: {
     [HttpStatusCodes.OK]: estimateResponseSchema,
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: errorResponseSchema,
   },
 });
 
