@@ -47,8 +47,13 @@
     },
     "typescript.tsdk": "node_modules/typescript/lib",
     "vitest.commandLine": "pnpm vitest",
-    "vitest.disabledWorkspaceFolders": ["cashmere-monorepo root"],
-    "cSpell.words": ["esbuild", "swarmion"]
+    "vitest.disabledWorkspaceFolders": [
+      "cashmere-monorepo root"
+    ],
+    "cSpell.words": [
+      "esbuild",
+      "swarmion"
+    ]
   },
   "extensions": {
     "recommendations": [
@@ -84,6 +89,10 @@
     {
       "path": "frontend/next-app",
       "name": "frontend next [app]"
+    },
+    {
+      "path": "packages/blockchain",
+      "name": "blockchain [library]"
     }
   ]
 }
