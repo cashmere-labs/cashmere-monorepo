@@ -1,4 +1,11 @@
-import { Address, Chain, getAddress } from 'viem';
+import {
+  Address,
+  Chain,
+  createPublicClient,
+  getAddress,
+  http,
+  PublicClient,
+} from 'viem';
 import {
   arbitrumGoerli,
   avalancheFuji,
@@ -192,6 +199,34 @@ export const networkConfigs: {
   //   '112',
   //   { maxScanBlock: 100 }
   // ),
+};
+
+// Get a network config by chain id
+export const getNetworkConfig = (chainId: number): BlockchainConfig => {
+  // Find the config
+  if (!networkConfigs[chainId.toString()]) {
+    throw new Error(`Config for chain id ${chainId} not found`);
+  }
+
+  return networkConfigs[chainId.toString()]!;
+};
+
+// Get a network config by chain id
+export const getNetworkConfigAndClient = (
+  chainId: number,
+): { config: BlockchainConfig; client: PublicClient } => {
+  // Find the config
+  const config = getNetworkConfig(chainId);
+  const client = createPublicClient({
+    chain: config.chain,
+    transport: http(config.rpcUrl, {
+      retryCount: 5,
+      retryDelay: 2_000,
+      timeout: 30_000,
+    }),
+  });
+
+  return { config, client };
 };
 
 // Match L0 chain id to destination chain id

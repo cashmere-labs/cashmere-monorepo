@@ -32,7 +32,8 @@ const serverlessConfiguration: AWS = {
     esbuild: sharedEsbuildConfig,
   },
   resources: {
-    Description: 'SwapParams service: fill this description',
+    Description:
+      'SwapParams service: Service to estimate a swap and get the swap params',
   },
 };
 

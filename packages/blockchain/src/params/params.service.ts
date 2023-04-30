@@ -26,11 +26,13 @@ export const getAllSwapParamsDatas = async (
   const srcContracts = srcNetwork.contracts;
   const dstContracts = dstNetwork.contracts;
 
-  if (isPlaceholderToken(srcToken))
-    {srcToken = srcNetwork.config.getContractAddress('nativeToken');}
+  if (isPlaceholderToken(srcToken)) {
+    srcToken = srcNetwork.config.getContractAddress('nativeToken');
+  }
 
-  if (isPlaceholderToken(dstToken))
-    {dstToken = dstNetwork.config.getContractAddress('nativeToken');}
+  if (isPlaceholderToken(dstToken)) {
+    dstToken = dstNetwork.config.getContractAddress('nativeToken');
+  }
 
   const lwsAssetId = '1';
   const hgsAssetId = '1';

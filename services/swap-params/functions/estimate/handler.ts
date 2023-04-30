@@ -5,20 +5,18 @@ import {
   formatUnits,
   getAddress,
   getAllSwapParamsDatas,
+  getAssetRouterRepository,
+  getUniswapRepository,
   ONE_INCH_SLIPPAGE,
-  pad,
 } from '@cashmere-monorepo/blockchain';
+import { logger } from '@cashmere-monorepo/serverless-configuration';
 import { getEstimateSwapContract } from '@cashmere-monorepo/swap-params-contracts';
 
 // Used to ensure schema correctness
 const ajv = new Ajv();
 
-export const handler = getHandler(getEstimateSwapContract, { ajv })(
+export const main = getHandler(getEstimateSwapContract, { ajv })(
   async event => {
-    const args = event.queryStringParameters.amount;
-    console.log(args);
-    await Promise.resolve();
-
     // Extract and format our param's
     const [srcChainId, srcTokenOriginal, amount, dstChainId, dstTokenOriginal] =
       [
@@ -30,6 +28,7 @@ export const handler = getHandler(getEstimateSwapContract, { ajv })(
       ];
 
     try {
+      // Get all the swap params
       let lwsAmount: bigint,
         dstAmount: bigint,
         minReceivedLws: bigint,
@@ -51,123 +50,74 @@ export const handler = getHandler(getEstimateSwapContract, { ajv })(
         dstChainId,
         dstTokenOriginal,
       );
+
+      // If we need a src swap
       if (needSrcSwap) {
-        lwsAmount = (
+        // Get the LWS Amount post routing
+        const tmpLwsAmount = (
           await srcNetwork.contracts.uniswapRouterGetAmoutOut(
             amount,
             srcToken,
             lwsToken,
           )
-        )[1]!;
+        )[1];
+        if (tmpLwsAmount === undefined) {
+          throw new Error('Unable to determine LWS amount');
+        }
+        lwsAmount = tmpLwsAmount;
         minReceivedLws = (lwsAmount * BigInt(100 - ONE_INCH_SLIPPAGE)) / 100n;
       } else {
+        // Otherwise, the swap is just the amount
         minReceivedLws = lwsAmount = amount;
       }
 
-      const quotationsCallResults =
-        await srcNetwork.contracts.assetRouterQuoteSwapMulticall([
-          // With LWS Amount
-          {
-            srcPoolId: parseInt(lwsAssetId),
-            dstPoolId: parseInt(hgsAssetId),
-            dstChainId: parseInt(dstNetwork.config.l0ChainId),
-            amount: lwsAmount,
-            minAmount: 0n,
-            refundAddress: pad('0x00', { size: 20 }),
-            to: pad('0x00', { size: 20 }),
-            payload: '0x00',
-          },
-          // With Min LWS Amount
-          {
-            srcPoolId: parseInt(lwsAssetId),
-            dstPoolId: parseInt(hgsAssetId),
-            dstChainId: parseInt(dstNetwork.config.l0ChainId),
-            amount: minReceivedLws,
-            minAmount: 0n,
-            refundAddress: pad('0x00', { size: 20 }),
-            to: pad('0x00', { size: 20 }),
-            payload: '0x00',
-          },
-        ]);
-      // Ensure no error occurred
-      quotationsCallResults.map(callResult => {
-        if (callResult.status !== 'success') {
-          /*this.logger.warn(
-            `Asset router quotation failed with status : ${callResult.status}`,
-            callResult
-          );*/
-          throw new Error('Unable to call asset router quotation');
-        }
-      });
-
-      // Extract the data
-      const potentialOutcome = quotationsCallResults[0]?.result?.[0];
-      const haircut = quotationsCallResults[0]?.result?.[1];
-      const minPotentialOutcome = quotationsCallResults[1]?.result?.[0];
-
-      // Ensure we have the data
-      if (!potentialOutcome || !haircut || !minPotentialOutcome) {
-        throw new Error('Unable to get quotations');
-      }
+      // Perform swap quotation
+      const { potentialOutcome, haircut, minPotentialOutcome } =
+        await getAssetRouterRepository(srcChainId).quoteSwaps({
+          lwsAssetId: parseInt(lwsAssetId),
+          hgsAssetId: parseInt(hgsAssetId),
+          dstChainId: parseInt(dstNetwork.config.l0ChainId),
+          amount: lwsAmount,
+          minAmount: minReceivedLws,
+        });
 
       // Get the amount's
       const hgsAmount: bigint = potentialOutcome;
       const minReceivedHgs: bigint = minPotentialOutcome;
       if (needDstSwap) {
-        const callResults =
-          await dstNetwork.contracts.uniswapRouterGetAmoutOutMulticall([
-            // Hgs dst amount
-            {
-              fromAmount: BigInt(hgsAmount),
-              fromToken: hgsToken,
-              toToken: dstToken,
-            },
-            // Hgs min received dst amount
-            {
-              fromAmount: BigInt(minReceivedHgs),
-              fromToken: hgsToken,
-              toToken: dstToken,
-            },
-          ]);
-
-        // Ensure no error occurred
-        callResults.map(callResult => {
-          if (callResult.status !== 'success') {
-            /*this.logger.warn(
-              `Uniswap router get amount failed with status : ${callResult.status}`,
-              callResult
-            );*/
-            throw new Error('Unable to call uniswap router get amount');
-          }
+        // Get the dst amount and min received dst amount from uniswap
+        const amountOutResult = await getUniswapRepository(
+          dstChainId,
+        ).getAmountOut({
+          amount: hgsAmount,
+          minAmount: minReceivedHgs,
+          fromToken: hgsToken,
+          toToken: dstToken,
         });
-
         // Get the dst amount from the first call
-        dstAmount = callResults[0]?.result?.[1] ?? 0n;
-        //this.logger.log(`DST Amount ${dstAmount}`);
-
-        // Get the min received dst amount for the second call
-        const tmpDstAmount = callResults[1]?.result?.[1] ?? 0n;
-        //this.logger.log(`Temp DST Amount for min ${tmpDstAmount}`);
-        minReceivedDst =
-          (tmpDstAmount * BigInt(100 - ONE_INCH_SLIPPAGE)) / 100n;
+        dstAmount = amountOutResult.dstAmount;
+        minReceivedDst = amountOutResult.minDstAmount;
       } else {
         dstAmount = hgsAmount;
         minReceivedDst = BigInt(minReceivedHgs);
       }
 
-      /*this.logger.log('Swap estimate result :', {
-        needSrcSwap,
-        needDstSwap,
-        lwsAmount: lwsAmount.toString(),
-        minReceivedLws,
-        hgsAmount: hgsAmount.toString(),
-        minReceivedHgs: minReceivedHgs.toString(),
-        dstAmount: dstAmount.toString(),
-        minReceivedDst,
-        lwsToken,
-        hgsToken,
-        potentialOutcome: potentialOutcome.toString(),
-      });*/
+      logger.debug(
+        {
+          needSrcSwap,
+          needDstSwap,
+          lwsAmount: lwsAmount.toString(),
+          minReceivedLws,
+          hgsAmount: hgsAmount.toString(),
+          minReceivedHgs: minReceivedHgs.toString(),
+          dstAmount: dstAmount.toString(),
+          minReceivedDst,
+          lwsToken,
+          hgsToken,
+          potentialOutcome: potentialOutcome.toString(),
+        },
+        'Swap estimate result',
+      );
       const priceImpact = '0';
 
       //this.logger.log(`haircut ${haircut}`);
@@ -195,12 +145,8 @@ export const handler = getHandler(getEstimateSwapContract, { ajv })(
         },
       };
     } catch (e) {
-      //this.logger.error('Estimate call error', e);
-
-      return {
-        statusCode: 500,
-        body: `Internal server error: ${JSON.stringify(e)}`,
-      };
+      logger.error(e);
+      throw new Error('Unable to estimate swap');
     }
   },
 );

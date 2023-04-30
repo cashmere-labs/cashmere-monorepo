@@ -29,7 +29,9 @@
     "watch": "pnpm clean && concurrently 'pnpm:package-* --watch'"
   },
   "dependencies": {
-    "@swarmion/serverless-helpers": "^0.28.1"
+    "@swarmion/serverless-helpers": "^0.28.1",
+    "pino": "^8.11.0",
+    "pino-lambda": "^4.1.0"
   },
   "devDependencies": {
     "@types/node": "^18.16.3",
