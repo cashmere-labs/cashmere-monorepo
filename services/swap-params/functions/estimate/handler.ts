@@ -4,19 +4,28 @@ import {
   formatEther,
   formatUnits,
   getAddress,
-  getAllSwapParamsDatas,
+  getAssetRepository,
   getAssetRouterRepository,
+  getBridgeRepository,
+  getL0ChainFromChainId,
+  getNetworkConfig,
   getUniswapRepository,
   ONE_INCH_SLIPPAGE,
 } from '@cashmere-monorepo/blockchain';
 import { logger } from '@cashmere-monorepo/serverless-configuration';
 import { getEstimateSwapContract } from '@cashmere-monorepo/swap-params-contracts';
+import { getAllSwapParamsDatas } from '../../helpers/paramsUtils';
 
 // Used to ensure schema correctness
 const ajv = new Ajv();
 
 export const main = getHandler(getEstimateSwapContract, { ajv })(
   async event => {
+    const initialTime = new Date().getTime();
+    logger.debug(
+      { elapsed: initialTime - new Date().getTime() },
+      'Enter estimate',
+    );
     // Extract and format our param's
     const [srcChainId, srcTokenOriginal, amount, dstChainId, dstTokenOriginal] =
       [
@@ -26,6 +35,10 @@ export const main = getHandler(getEstimateSwapContract, { ajv })(
         parseInt(event.queryStringParameters.dstChainId),
         getAddress(event.queryStringParameters.dstToken),
       ];
+    logger.debug(
+      { elapsed: initialTime - new Date().getTime() },
+      'Params parsed',
+    );
 
     try {
       // Get all the swap params
@@ -34,9 +47,7 @@ export const main = getHandler(getEstimateSwapContract, { ajv })(
         minReceivedLws: bigint,
         minReceivedDst: bigint;
       const {
-        srcNetwork,
         srcToken,
-        dstNetwork,
         dstToken,
         lwsToken,
         hgsToken,
@@ -50,36 +61,47 @@ export const main = getHandler(getEstimateSwapContract, { ajv })(
         dstChainId,
         dstTokenOriginal,
       );
+      logger.debug(
+        { elapsed: initialTime - new Date().getTime() },
+        "All swap data's fetched",
+      );
 
       // If we need a src swap
       if (needSrcSwap) {
         // Get the LWS Amount post routing
-        const tmpLwsAmount = (
-          await srcNetwork.contracts.uniswapRouterGetAmoutOut(
-            amount,
-            srcToken,
-            lwsToken,
-          )
-        )[1];
-        if (tmpLwsAmount === undefined) {
-          throw new Error('Unable to determine LWS amount');
-        }
+        const { dstAmount: tmpLwsAmount } = await getUniswapRepository(
+          srcChainId,
+        ).getAmountOut({
+          amount,
+          fromToken: srcToken,
+          toToken: lwsToken,
+        });
         lwsAmount = tmpLwsAmount;
         minReceivedLws = (lwsAmount * BigInt(100 - ONE_INCH_SLIPPAGE)) / 100n;
       } else {
         // Otherwise, the swap is just the amount
         minReceivedLws = lwsAmount = amount;
       }
+      // Time consuming : 400ms
+      logger.debug(
+        { elapsed: initialTime - new Date().getTime() },
+        'Mint and lws amount computed',
+      );
 
       // Perform swap quotation
       const { potentialOutcome, haircut, minPotentialOutcome } =
         await getAssetRouterRepository(srcChainId).quoteSwaps({
           lwsAssetId: parseInt(lwsAssetId),
           hgsAssetId: parseInt(hgsAssetId),
-          dstChainId: parseInt(dstNetwork.config.l0ChainId),
+          dstChainId: getL0ChainFromChainId(dstChainId),
           amount: lwsAmount,
           minAmount: minReceivedLws,
         });
+      // Time consuming : 1500ms
+      logger.debug(
+        { elapsed: initialTime - new Date().getTime() },
+        'Potential outcome computed',
+      );
 
       // Get the amount's
       const hgsAmount: bigint = potentialOutcome;
@@ -101,6 +123,11 @@ export const main = getHandler(getEstimateSwapContract, { ajv })(
         dstAmount = hgsAmount;
         minReceivedDst = BigInt(minReceivedHgs);
       }
+      // Less time consuming : 200ms
+      logger.debug(
+        { elapsed: initialTime - new Date().getTime() },
+        'Hgs amount computed',
+      );
 
       logger.debug(
         {
@@ -119,17 +146,41 @@ export const main = getHandler(getEstimateSwapContract, { ajv })(
         'Swap estimate result',
       );
       const priceImpact = '0';
+      logger.debug(
+        { elapsed: initialTime - new Date().getTime() },
+        'Logging performed',
+      );
 
-      //this.logger.log(`haircut ${haircut}`);
+      logger.debug(`haircut ${haircut}`);
+
       // Get the HGS token info
-      const hgsSymbol = await dstNetwork.contracts.tokenSymbol(hgsToken);
-      const hgsDecimals = await dstNetwork.contracts.tokenDecimal(hgsToken);
+      const dstAssetRepository = getAssetRepository(dstChainId);
+      const hgsSymbol = await dstAssetRepository.tokenSymbol(hgsToken);
+      const hgsDecimals = await dstAssetRepository.tokenDecimal(hgsToken);
       const haircutDisp = parseFloat(formatUnits(haircut, hgsDecimals)).toFixed(
         4,
       );
+      logger.debug(
+        { elapsed: initialTime - new Date().getTime() },
+        "Dst token info's fetched",
+      );
 
-      const nativeFee = await srcNetwork.contracts.swapFeeL0(
-        dstNetwork.config.l0ChainId,
+      // Get the native fee's
+      const nativeFee = await getBridgeRepository(srcChainId).getSwapFeeL0(
+        getL0ChainFromChainId(dstChainId),
+      );
+      logger.debug(
+        { elapsed: initialTime - new Date().getTime() },
+        "Native fee's fetched",
+      );
+
+      // Build some return param's
+      const srcNativeSymbol =
+        getNetworkConfig(srcChainId).chain.nativeCurrency.symbol;
+      const feeAmount = parseFloat(formatEther(nativeFee)).toFixed(4);
+      logger.debug(
+        { elapsed: initialTime - new Date().getTime() },
+        "Src token info's fetched",
       );
 
       return {
@@ -137,9 +188,7 @@ export const main = getHandler(getEstimateSwapContract, { ajv })(
         body: {
           dstAmount: dstAmount.toString(),
           minReceivedDst: minReceivedDst.toString(),
-          fee: `${parseFloat(formatEther(nativeFee)).toFixed(4)} ${
-            srcNetwork.config.chain.nativeCurrency.symbol
-          } + ${haircutDisp} ${hgsSymbol}`,
+          fee: `${feeAmount} ${srcNativeSymbol} + ${haircutDisp} ${hgsSymbol}`,
           priceImpact,
           nativeFee: nativeFee.toString(),
         },

@@ -1,5 +1,5 @@
 import { Address, getAddress, isAddressEqual } from 'viem';
-
+export const ONE_INCH_SLIPPAGE = 10;
 export const NATIVE_PLACEHOLDER: Address = getAddress(
   '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
 );

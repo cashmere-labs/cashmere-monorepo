@@ -1,5 +1,5 @@
 {
-  "name": "@cashmere-monorepo/blockchain",
+  "name": "@cashmere-monorepo/cache",
   "private": true,
   "version": "1.0.0",
   "license": "UNLICENSED",
@@ -28,9 +28,7 @@
     "watch": "pnpm clean dist && concurrently 'pnpm:package-* --watch'"
   },
   "dependencies": {
-    "@cashmere-monorepo/cache": "workspace:^",
-    "async-mutex": "^0.4.0",
-    "viem": "^0.3.13"
+    "async-mutex": "^0.4.0"
   },
   "devDependencies": {
     "@types/node": "^18.16.3",
@@ -39,7 +37,6 @@
     "eslint": "^8.39.0",
     "json-schema-to-ts": "^2.8.0",
     "prettier": "^2.8.8",
-    "prettier-plugin-organize-imports": "^3.2.2",
     "rimraf": "^5.0.0",
     "ts-node": "^10.9.1",
     "tsc-alias": "^1.8.6",

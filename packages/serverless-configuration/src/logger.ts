@@ -3,7 +3,7 @@ import { pinoLambdaDestination } from 'pino-lambda';
 
 // Config for our logger
 const loggerConfig = {
-  level: process.env.API_ENV === 'dev' ? 'debug' : 'warn',
+  level: process.env.API_ENV === 'production' ? 'info' : 'debug',
 };
 
 // Setup our global pino logger

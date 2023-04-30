@@ -95,6 +95,10 @@
       "name": "blockchain [library]"
     },
     {
+      "path": "packages/cache",
+      "name": "cache [library]"
+    },
+    {
       "path": "services/swap-params",
       "name": "swap params [service]"
     },

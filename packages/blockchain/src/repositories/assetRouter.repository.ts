@@ -1,6 +1,7 @@
-import { Hex, pad } from 'viem';
-import { assetRouterABI } from '../abis/wagmiGenerated';
+import { Address, getAddress, Hex, pad } from 'viem';
+import { assetRouterABI, iAssetV2ABI } from '../abis/wagmiGenerated';
 import { getNetworkConfigAndClient } from '../config/blockchain.config';
+import { getOrSetFromCache } from '@cashmere-monorepo/cache';
 
 // Generic types for our asset router repository
 export type AssetRouterRepository = {
@@ -15,6 +16,7 @@ export type AssetRouterRepository = {
     minPotentialOutcome: bigint;
     haircut: bigint;
   }>;
+  getPoolTokenAsset: (poolId: number) => Promise<Address>;
 };
 
 // Get the asset router repository for the given chain
@@ -23,6 +25,30 @@ export const getAssetRouterRepository = (
 ): AssetRouterRepository => {
   // Get the config and client
   const { config, client } = getNetworkConfigAndClient(chainId);
+
+  // Initial for our cache entries
+  const cacheParams = (method: string, params: unknown) => ({
+    chainId: config.chain.id,
+    repository: 'assetRouterRepository',
+    method,
+    params,
+  });
+
+  // Generic function to get a pool
+  const getPool = (poolId: number) =>
+    getOrSetFromCache(
+      {
+        key: cacheParams('getPool', poolId),
+        neverExpire: true,
+      },
+      () =>
+        client.readContract({
+          address: config.getContractAddress('assetRouter'),
+          abi: assetRouterABI,
+          functionName: 'getPool',
+          args: [poolId],
+        }),
+    );
 
   return {
     // Quote the swaps via our asset router
@@ -100,6 +126,23 @@ export const getAssetRouterRepository = (
         minPotentialOutcome: minPotentialOutcome,
         haircut: haircut,
       };
+    },
+    // Get the pool assets
+    getPoolTokenAsset: async (poolId: number): Promise<Address> => {
+      const pool = await getPool(poolId);
+
+      // Then get the asset contract token from the pool
+      return getOrSetFromCache(
+        {
+          key: cacheParams('getPoolAssets', pool.poolAddress),
+        },
+        async () =>
+          client.readContract({
+            address: getAddress(pool.poolAddress),
+            abi: iAssetV2ABI,
+            functionName: 'token',
+          }),
+      );
     },
   };
 };
