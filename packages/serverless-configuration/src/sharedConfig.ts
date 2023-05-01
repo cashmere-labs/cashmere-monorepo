@@ -19,7 +19,7 @@ export const sharedProviderConfig: ServerlessProviderConfig = {
   stage: "${opt:stage, 'dev'}", // Doc: https://www.serverless.com/framework/docs/providers/aws/guide/credentials/
   environment: {
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
-    NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
+    NODE_OPTIONS: '--stack-trace-limit=1000',
   },
   deploymentMethod: 'direct',
   httpApi: {
@@ -59,5 +59,7 @@ export const sharedParams = {
   },
 };
 
-export const sharedEsbuildConfig = swarmionEsbuildConfig;
+export const sharedEsbuildConfig = Object.assign(swarmionEsbuildConfig, {
+  sourcemap: false,
+});
 export const sharedCdkEsbuildConfig = swarmionCdkEsbuildConfig;

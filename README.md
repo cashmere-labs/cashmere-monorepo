@@ -15,6 +15,14 @@ This project was generated with [Swarmion](https://github.com/swarmion/swarmion)
 - Services
   - All the AWS Services (handlers and stuff)
 
+## Branches
+
+- `main`: the main branch, the one that is deployed on production
+- `staging`: the beta branch, the one that is deployed on staging
+- `develop`: the develop branch, the one we use to develop the project
+
+All the other branches should be actively worked on, or otherwise archived.
+
 ## Documentation
 
 Find the Swarmion documentation on [swarmion.dev](https://www.swarmion.dev)
