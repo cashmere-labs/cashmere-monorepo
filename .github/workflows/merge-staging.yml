@@ -1,10 +1,10 @@
 on:
   push:
     branches:
-      - main
+      - staging
 
-name: 🚀 Deploy main
-concurrency: deploy_main
+name: 🚀 Deploy staging
+concurrency: deploy_staging
 
 permissions:
   id-token: write # this is required for AWS https://github.com/aws-actions/configure-aws-credentials#usage
@@ -62,5 +62,5 @@ jobs:
         with:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: ${{ secrets.AWS_ROLE_ARN_PRODUCTION }}
-      - name: '🚀 Deploy main'
-        run: pnpm nx affected --target=deploy-production --parallel=2
+      - name: '🚀 Deploy staging'
+        run: pnpm nx affected --target=deploy-staging --parallel=2
