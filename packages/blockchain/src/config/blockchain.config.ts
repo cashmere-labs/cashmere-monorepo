@@ -4,7 +4,10 @@ import {
   createPublicClient,
   getAddress,
   http,
+  HttpTransport,
   PublicClient,
+  webSocket,
+  WebSocketTransport,
 } from 'viem';
 import {
   arbitrumGoerli,
@@ -217,13 +220,27 @@ export const getNetworkConfigAndClient = (
 ): { config: BlockchainConfig; client: PublicClient } => {
   // Find the config
   const config = getNetworkConfig(chainId);
-  const client = createPublicClient({
-    chain: config.chain,
-    transport: http(config.rpcUrl, {
+  // Build the transport for our client
+  let transport: HttpTransport | WebSocketTransport;
+  if (config.rpcUrl.startsWith('ws')) {
+    transport = webSocket(config.rpcUrl, {
+      retryCount: 5,
+      retryDelay: 2_000,
+    });
+  } else {
+    transport = http(config.rpcUrl, {
       retryCount: 5,
       retryDelay: 2_000,
       timeout: 30_000,
-    }),
+      fetchOptions: {
+        priority: 'high',
+      },
+    });
+  }
+
+  const client = createPublicClient({
+    chain: config.chain,
+    transport,
   });
 
   return { config, client };
