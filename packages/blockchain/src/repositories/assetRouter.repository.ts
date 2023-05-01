@@ -1,7 +1,7 @@
 import { Address, getAddress, Hex, pad } from 'viem';
+import { getOrSetFromCache } from '@cashmere-monorepo/cache';
 import { assetRouterABI, iAssetV2ABI } from '../abis/wagmiGenerated';
 import { getNetworkConfigAndClient } from '../config/blockchain.config';
-import { getOrSetFromCache } from '@cashmere-monorepo/cache';
 
 // Generic types for our asset router repository
 export type AssetRouterRepository = {
@@ -104,12 +104,13 @@ export const getAssetRouterRepository = (
           functionName: 'quoteSwap',
           args: [param],
         })),
+        allowFailure: false,
       });
 
       // Extract the data's
-      const potentialOutcome = multiCallResult[0]?.result?.[0];
-      const haircut = multiCallResult[0]?.result?.[1];
-      const minPotentialOutcome = multiCallResult[1]?.result?.[0];
+      const potentialOutcome = multiCallResult[0]?.[0];
+      const haircut = multiCallResult[0]?.[1];
+      const minPotentialOutcome = multiCallResult[1]?.[0];
 
       // Ensure we have the data
       if (

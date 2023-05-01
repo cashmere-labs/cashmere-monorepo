@@ -46,8 +46,8 @@ export const getUniswapRepository = (chainId: number): UniswapRepository => {
 
         // Format the output
         return {
-          dstAmount: dstAmount!,
-          minDstAmount: (dstAmount! * BigInt(100 - ONE_INCH_SLIPPAGE)) / 100n,
+          dstAmount: dstAmount,
+          minDstAmount: (dstAmount * BigInt(100 - ONE_INCH_SLIPPAGE)) / 100n,
         };
       }
 
@@ -55,7 +55,7 @@ export const getUniswapRepository = (chainId: number): UniswapRepository => {
       const getAmountsOutMulticallParams = [
         { amount: params.amount, tokens: [params.fromToken, params.toToken] },
         {
-          amount: params.minAmount!,
+          amount: params.minAmount,
           tokens: [params.fromToken, params.toToken],
         },
       ];
@@ -66,11 +66,12 @@ export const getUniswapRepository = (chainId: number): UniswapRepository => {
           functionName: 'getAmountsOut',
           args: [param.amount, param.tokens],
         })),
+        allowFailure: false,
       });
 
       // Extract our params
-      const dstAmount = getAmountsOutMulticallResult[0]?.result?.[1];
-      const tmpDstAmount = getAmountsOutMulticallResult[1]?.result?.[1];
+      const dstAmount = getAmountsOutMulticallResult[0]?.[1];
+      const tmpDstAmount = getAmountsOutMulticallResult[1]?.[1];
 
       // Ensure we have the data
       if (dstAmount === undefined || tmpDstAmount === undefined) {
@@ -79,8 +80,8 @@ export const getUniswapRepository = (chainId: number): UniswapRepository => {
 
       // Format the output
       return {
-        dstAmount: dstAmount!,
-        minDstAmount: (tmpDstAmount! * BigInt(100 - ONE_INCH_SLIPPAGE)) / 100n,
+        dstAmount: dstAmount,
+        minDstAmount: (tmpDstAmount * BigInt(100 - ONE_INCH_SLIPPAGE)) / 100n,
       };
     },
   };
