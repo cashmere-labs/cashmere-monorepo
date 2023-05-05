@@ -2,13 +2,15 @@
   "name": "@cashmere-monorepo-v2/core",
   "version": "0.0.0",
   "type": "module",
+  "private": true,
   "scripts": {
     "test": "sst bind vitest",
     "typecheck": "tsc -noEmit"
   },
   "devDependencies": {
-    "vitest": "^0.31.0",
     "@types/node": "^18.16.3",
-    "sst": "^2.8.4"
+    "rimraf": "^5.0.0",
+    "sst": "^2.8.4",
+    "vitest": "^0.31.0"
   }
 }
