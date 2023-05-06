@@ -1,0 +1,12 @@
+{
+  "extends": "@tsconfig/node18/tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "incremental": true,
+    "module": "esnext",
+    "baseUrl": ".",
+    "paths": {
+      "@cashmere-monorepo-v2/core/*": ["../../core/src/*"]
+    }
+  }
+}

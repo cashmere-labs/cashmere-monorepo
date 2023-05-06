@@ -4,6 +4,6 @@ import { Time } from "@cashmere-monorepo-v2/core";
 export const handler = ApiHandler(async (_evt) => {
   return {
     statusCode: 200,
-    body: `Hello world. The time is ${Time.now()}, and it's now updated two times`,
+    body: `Hello world from swap estimate. The time is ${Time.now()}, and it's now updated two times`,
   };
 });

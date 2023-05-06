@@ -4,18 +4,18 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "sst dev --profile=monorepo-swarmion-dev",
-    "build": "sst build --profile=monorepo-swarmion-dev",
-    "deploy": "sst deploy --profile=production",
-    "remove": "sst remove --profile=monorepo-swarmion-dev",
-    "console": "sst console",
+    "dev": "nx run-many --target=dev --all",
+    "build": "nx run-many --target=build --all --parallel=4",
+    "deploy": "nx run-many --target=deploy --all --parallel=4",
+    "remove": "nx run infra:remove",
+    "console": "nx run infra:console",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@tsconfig/node18": "^2.0.0",
     "aws-cdk-lib": "2.72.1",
     "constructs": "10.1.156",
-    "sst": "^2.8.5",
+    "nx": "16.1.1",
     "typescript": "^5.0.4"
   },
   "engines": {
@@ -23,6 +23,7 @@
   },
   "packageManager": "pnpm@8.3.0",
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "infra/"
   ]
 }

@@ -1,5 +1,5 @@
 {
-  "name": "@cashmere-monorepo-v2/functions",
+  "name": "@cashmere-monorepo/swap-params-api",
   "version": "0.0.0",
   "private": true,
   "scripts": {

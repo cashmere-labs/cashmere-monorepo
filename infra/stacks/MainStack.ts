@@ -1,6 +1,6 @@
-import {StackContext, Api, Cron} from "sst/constructs";
+import {StackContext, Api} from "sst/constructs";
 
-export function API({ stack }: StackContext) {
+export function MainStack({ stack }: StackContext) {
   // Build our whole API
   const api = new Api(stack, "api", {
     defaults: {
@@ -12,11 +12,13 @@ export function API({ stack }: StackContext) {
       },
     },
     routes: {
-      "GET /test": "packages/functions/src/lambda.handler",
+      "GET /test": "../packages/functions/src/lambda.handler"
     },
   });
   // Add the api url to our stack output
   stack.addOutputs({
     ApiEndpoint: api.url,
   });
+  // Return our build api
+  return { api }
 }

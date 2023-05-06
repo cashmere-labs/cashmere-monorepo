@@ -1,0 +1,9 @@
+{
+  "extends": "@tsconfig/node18/tsconfig.json",
+  "compilerOptions": {
+    "module": "esnext",
+    "paths": {
+      "@cashmere-monorepo-v2/functions/*": ["../packages/functions/*"]
+    }
+  }
+}
