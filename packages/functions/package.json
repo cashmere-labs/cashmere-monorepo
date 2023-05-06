@@ -1,5 +1,5 @@
 {
-  "name": "@cashmere-monorepo-v2/functions",
+  "name": "@cashmere-monorepo/functions",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -7,7 +7,7 @@
     "typecheck": "tsc -noEmit"
   },
   "dependencies": {
-    "@cashmere-monorepo-v2/core": "workspace:^"
+    "@cashmere-monorepo/core": "workspace:^"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.115",

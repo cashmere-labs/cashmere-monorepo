@@ -46,7 +46,7 @@ importers:
 
   packages/api/swap-params:
     dependencies:
-      '@cashmere-monorepo-v2/core':
+      '@cashmere-monorepo/core':
         specifier: workspace:^
         version: link:../../core
     devDependencies:
@@ -89,7 +89,7 @@ importers:
 
   packages/functions:
     dependencies:
-      '@cashmere-monorepo-v2/core':
+      '@cashmere-monorepo/core':
         specifier: workspace:^
         version: link:../core
     devDependencies:

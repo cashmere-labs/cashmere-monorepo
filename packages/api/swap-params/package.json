@@ -7,7 +7,7 @@
     "typecheck": "tsc -noEmit"
   },
   "dependencies": {
-    "@cashmere-monorepo-v2/core": "workspace:^"
+    "@cashmere-monorepo/core": "workspace:^"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.115",

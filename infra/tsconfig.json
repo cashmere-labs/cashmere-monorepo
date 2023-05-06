@@ -3,7 +3,7 @@
   "compilerOptions": {
     "module": "esnext",
     "paths": {
-      "@cashmere-monorepo-v2/functions/*": ["../packages/functions/*"]
+      "@cashmere-monorepo/functions/*": ["../packages/functions/*"]
     }
   }
 }

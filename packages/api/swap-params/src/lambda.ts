@@ -1,5 +1,5 @@
 import { ApiHandler } from "sst/node/api";
-import { Time } from "@cashmere-monorepo-v2/core";
+import { Time } from "@cashmere-monorepo/core";
 
 export const handler = ApiHandler(async (_evt) => {
   return {

@@ -6,7 +6,7 @@ export default {
   config(_input) {
     return {
       profile: "monorepo-swarmion-dev",
-      name: "cashmere-monorepo-v2",
+      name: "cashmere-monorepo",
       region: "us-east-1",
     };
   },
