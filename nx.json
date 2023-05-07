@@ -13,7 +13,6 @@
   "targetDefaults": {
     "build": {
       "dependsOn": [
-        "^package",
         "^build"
       ],
       "outputs": [

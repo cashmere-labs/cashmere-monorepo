@@ -7,10 +7,12 @@
     "baseUrl": ".",
     "rootDir": ".",
     "paths": {
-      "@cashmere-monorepo/backend-core/*": ["../../core/src/*"]
+      "@cashmere-monorepo/backend-core/*": ["../core/src/*"],
+      "@cashmere-monorepo/shared-blockchain/*": ["../../shared/blockchain/src/*"]
     }
   },
   "references": [
-    { "path": "../../core/tsconfig.json" }
+    { "path": "../core/tsconfig.json" },
+    { "path": "../../shared/blockchain/tsconfig.json" }
   ]
 }

@@ -4,9 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "nx run-many --target=build --all --parallel=4 && sst dev",
-    "build": "nx run-many --target=build --all --parallel=4 && sst build",
-    "deploy": "nx run-many --target=deploy --all --parallel=4 && sst deploy",
+    "clean": "nx run-many --target=clean",
+    "package": "nx run-many --target=package --all --parallel=4",
+    "dev": "pnpm package && sst dev",
+    "build": "pnpm package && nx run-many --target=build --all --parallel=4 && sst build",
+    "deploy": "pnpm package && pnpm build && sst deploy",
     "remove": "sst remove",
     "console": "sst console",
     "typecheck": "tsc --noEmit"

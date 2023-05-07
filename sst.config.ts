@@ -1,5 +1,5 @@
 import { SSTConfig } from "sst";
-import {ApiStack} from "./backend/core/src/stacks/ApiStack";
+import {ApiStack} from "./backend/core/stacks/ApiStack";
 import {SwapParamsStack} from "./backend/functions/swap-params/src/SwapParamsStack";
 
 export default {
