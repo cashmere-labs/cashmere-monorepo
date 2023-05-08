@@ -1,4 +1,4 @@
 // Utils export
-export * from "./helpers/paramsUtils"
+export * from './helpers/paramsUtils';
 // Params export
-export * from "./params"
+export * from './params';

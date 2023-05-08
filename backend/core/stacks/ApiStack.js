@@ -1,16 +1,16 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+'use strict';
+Object.defineProperty(exports, '__esModule', { value: true });
 exports.ApiStack = void 0;
-const constructs_1 = require("sst/constructs");
+const constructs_1 = require('sst/constructs');
 function ApiStack({ stack }) {
     // Build our whole API
-    const api = new constructs_1.Api(stack, "api", {
+    const api = new constructs_1.Api(stack, 'api', {
         defaults: {
             function: {
                 // Default timeout to 30seconds
-                timeout: "30 seconds",
+                timeout: '30 seconds',
                 // Default memory to 512MB
-                memorySize: "512 MB",
+                memorySize: '512 MB',
             },
         },
     });

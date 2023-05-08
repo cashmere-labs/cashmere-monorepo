@@ -1,18 +1,20 @@
 {
-  "extends": "@tsconfig/node18/tsconfig.json",
-  "compilerOptions": {
-    "composite": true,
-    "incremental": true,
-    "module": "esnext",
-    "baseUrl": ".",
-    "rootDir": ".",
-    "paths": {
-      "@cashmere-monorepo/backend-core/*": ["../core/src/*"],
-      "@cashmere-monorepo/shared-blockchain/*": ["../../shared/blockchain/src/*"]
-    }
-  },
-  "references": [
-    { "path": "../core/tsconfig.json" },
-    { "path": "../../shared/blockchain/tsconfig.json" }
-  ]
+    "extends": "@tsconfig/node18/tsconfig.json",
+    "compilerOptions": {
+        "composite": true,
+        "incremental": true,
+        "module": "esnext",
+        "baseUrl": ".",
+        "rootDir": ".",
+        "paths": {
+            "@cashmere-monorepo/backend-core/*": ["../core/src/*"],
+            "@cashmere-monorepo/shared-blockchain/*": [
+                "../../shared/blockchain/src/*"
+            ]
+        }
+    },
+    "references": [
+        { "path": "../core/tsconfig.json" },
+        { "path": "../../shared/blockchain/tsconfig.json" }
+    ]
 }

@@ -1,6 +1,6 @@
-import {logger} from "nx/src/utils/logger";
-import {formatEther, formatUnits, getAddress} from "viem";
-import {getAllSwapParamsDatas} from "../helpers/paramsUtils";
+import { logger } from 'nx/src/utils/logger';
+import { formatEther, formatUnits, getAddress } from 'viem';
+import { getAllSwapParamsDatas } from '../helpers/paramsUtils';
 import {
     getAssetRepository,
     getAssetRouterRepository,
@@ -8,8 +8,8 @@ import {
     getL0ChainFromChainId,
     getNetworkConfig,
     getUniswapRepository,
-    ONE_INCH_SLIPPAGE
-} from "@cashmere-monorepo/backend-blockchain";
+    ONE_INCH_SLIPPAGE,
+} from '@cashmere-monorepo/backend-blockchain';
 
 // The object required for the swap estimation
 type EstimationParams = {
@@ -18,12 +18,18 @@ type EstimationParams = {
     amount: bigint;
     dstChainId: number;
     dstToken: string;
-}
+};
 
 // Perform a swap estimation
 export const swapEstimation = async (params: EstimationParams) => {
     // Extract and format our param's
-    const {srcChainId, srcToken: srcTokenOriginal, amount, dstChainId, dstToken: dstTokenOriginal} = params;
+    const {
+        srcChainId,
+        srcToken: srcTokenOriginal,
+        amount,
+        dstChainId,
+        dstToken: dstTokenOriginal,
+    } = params;
 
     try {
         // Get all the swap params
@@ -44,28 +50,29 @@ export const swapEstimation = async (params: EstimationParams) => {
             srcChainId,
             getAddress(srcTokenOriginal),
             dstChainId,
-            getAddress(dstTokenOriginal),
+            getAddress(dstTokenOriginal)
         );
 
         // If we need a src swap
         if (needSrcSwap) {
             // Get the LWS Amount post routing
-            const {dstAmount: tmpLwsAmount} = await getUniswapRepository(
-                srcChainId,
+            const { dstAmount: tmpLwsAmount } = await getUniswapRepository(
+                srcChainId
             ).getAmountOut({
                 amount,
                 fromToken: srcToken,
                 toToken: lwsToken,
             });
             lwsAmount = tmpLwsAmount;
-            minReceivedLws = (lwsAmount * BigInt(100 - ONE_INCH_SLIPPAGE)) / 100n;
+            minReceivedLws =
+                (lwsAmount * BigInt(100 - ONE_INCH_SLIPPAGE)) / 100n;
         } else {
             // Otherwise, the swap is just the amount
             minReceivedLws = lwsAmount = amount;
         }
 
         // Perform swap quotation
-        const {potentialOutcome, haircut, minPotentialOutcome} =
+        const { potentialOutcome, haircut, minPotentialOutcome } =
             await getAssetRouterRepository(srcChainId).quoteSwaps({
                 lwsAssetId: parseInt(lwsAssetId),
                 hgsAssetId: parseInt(hgsAssetId),
@@ -80,7 +87,7 @@ export const swapEstimation = async (params: EstimationParams) => {
         if (needDstSwap) {
             // Get the dst amount and min received dst amount from uniswap
             const amountOutResult = await getUniswapRepository(
-                dstChainId,
+                dstChainId
             ).getAmountOut({
                 amount: hgsAmount,
                 minAmount: minReceivedHgs,
@@ -109,7 +116,7 @@ export const swapEstimation = async (params: EstimationParams) => {
                 hgsToken,
                 potentialOutcome: potentialOutcome.toString(),
             },
-            'Swap estimate result',
+            'Swap estimate result'
         );
         const priceImpact = '0';
 
@@ -119,13 +126,13 @@ export const swapEstimation = async (params: EstimationParams) => {
         const dstAssetRepository = getAssetRepository(dstChainId);
         const hgsSymbol = await dstAssetRepository.tokenSymbol(hgsToken);
         const hgsDecimals = await dstAssetRepository.tokenDecimal(hgsToken);
-        const haircutDisp = parseFloat(formatUnits(haircut, hgsDecimals)).toFixed(
-            4,
-        );
+        const haircutDisp = parseFloat(
+            formatUnits(haircut, hgsDecimals)
+        ).toFixed(4);
 
         // Get the native fee's
         const nativeFee = await getBridgeRepository(srcChainId).getSwapFeeL0(
-            getL0ChainFromChainId(dstChainId),
+            getL0ChainFromChainId(dstChainId)
         );
 
         // Build some return param's
@@ -144,4 +151,4 @@ export const swapEstimation = async (params: EstimationParams) => {
         logger.error(e);
         throw new Error('Unable to estimate swap');
     }
-}
+};

@@ -1,34 +1,34 @@
 {
-  "name": "@cashmere-monorepo/backend-service-swap",
-  "version": "0.0.0",
-  "private": true,
-  "files": [
-    "dist"
-  ],
-  "main": "dist/index.cjs",
-  "module": "dist/index.js",
-  "types": "dist/types/index.d.ts",
-  "scripts": {
-    "clean": "rimraf dist *.tsbuildinfo",
-    "test": "sst bind vitest",
-    "typecheck": "tsc -noEmit",
-    "package": "pnpm clean && pnpm package:transpile && pnpm package:types && pnpm package:types-aliases",
-    "package:transpile": "tsup",
-    "package:types": "tsc -p tsconfig.build.json",
-    "package:types-aliases": "tsc-alias -p tsconfig.build.json"
-  },
-  "dependencies": {
-    "@cashmere-monorepo/backend-blockchain": "workspace:^",
-    "@cashmere-monorepo/backend-core": "workspace:^",
-    "viem": "^0.3.17"
-  },
-  "devDependencies": {
-    "@types/aws-lambda": "^8.10.115",
-    "@types/node": "^18.16.5",
-    "rimraf": "^5.0.0",
-    "sst": "^2.8.5",
-    "tsc-alias": "^1.8.6",
-    "tsup": "^6.7.0",
-    "vitest": "^0.31.0"
-  }
+    "name": "@cashmere-monorepo/backend-service-swap",
+    "version": "0.0.0",
+    "private": true,
+    "files": [
+        "dist"
+    ],
+    "main": "dist/index.cjs",
+    "module": "dist/index.js",
+    "types": "dist/types/index.d.ts",
+    "scripts": {
+        "clean": "rimraf dist *.tsbuildinfo",
+        "test": "sst bind vitest",
+        "typecheck": "tsc -noEmit",
+        "package": "pnpm clean && pnpm package:transpile && pnpm package:types && pnpm package:types-aliases",
+        "package:transpile": "tsup",
+        "package:types": "tsc -p tsconfig.build.json",
+        "package:types-aliases": "tsc-alias -p tsconfig.build.json"
+    },
+    "dependencies": {
+        "@cashmere-monorepo/backend-blockchain": "workspace:^",
+        "@cashmere-monorepo/backend-core": "workspace:^",
+        "viem": "^0.3.17"
+    },
+    "devDependencies": {
+        "@types/aws-lambda": "^8.10.115",
+        "@types/node": "^18.16.5",
+        "rimraf": "^5.0.0",
+        "sst": "^2.8.5",
+        "tsc-alias": "^1.8.6",
+        "tsup": "^6.7.0",
+        "vitest": "^0.31.0"
+    }
 }

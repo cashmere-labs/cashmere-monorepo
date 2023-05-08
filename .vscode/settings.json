@@ -1,5 +1,5 @@
 {
-  "search.exclude": {
-    "**/.sst": true
-  }
+    "search.exclude": {
+        "**/.sst": true
+    }
 }

@@ -1,19 +1,19 @@
 {
-  "name": "@cashmere-monorepo/backend-function-swap-params",
-  "version": "0.0.0",
-  "scripts": {
-    "test": "sst bind vitest",
-    "typecheck": "tsc -noEmit"
-  },
-  "dependencies": {
-    "@cashmere-monorepo/backend-core": "workspace:^",
-    "@cashmere-monorepo/backend-service-swap": "workspace:^"
-  },
-  "devDependencies": {
-    "@types/aws-lambda": "^8.10.115",
-    "@types/node": "^18.16.5",
-    "rimraf": "^5.0.0",
-    "sst": "^2.8.5",
-    "vitest": "^0.31.0"
-  }
+    "name": "@cashmere-monorepo/backend-function-swap-params",
+    "version": "0.0.0",
+    "scripts": {
+        "test": "sst bind vitest",
+        "typecheck": "tsc -noEmit"
+    },
+    "dependencies": {
+        "@cashmere-monorepo/backend-core": "workspace:^",
+        "@cashmere-monorepo/backend-service-swap": "workspace:^"
+    },
+    "devDependencies": {
+        "@types/aws-lambda": "^8.10.115",
+        "@types/node": "^18.16.5",
+        "rimraf": "^5.0.0",
+        "sst": "^2.8.5",
+        "vitest": "^0.31.0"
+    }
 }

@@ -1,49 +1,49 @@
 {
-  "name": "cashmere-monorepo",
-  "version": "0.0.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "clean": "nx run-many --target=clean",
-    "package": "nx run-many --target=package --all --parallel=4",
-    "dev": "pnpm package && sst dev",
-    "build": "pnpm package && nx run-many --target=build --all --parallel=4 && sst build",
-    "deploy": "pnpm package && pnpm build && sst deploy",
-    "remove": "sst remove",
-    "console": "sst console",
-    "lint": "eslint --ext=js,ts --fix",
-    "lint:check": "eslint --ext=js,ts",
-    "format": "prettier --write --ignore-path .gitignore .",
-    "format:check": "prettier --check --ignore-path .gitignore .",
-    "typecheck": "tsc --noEmit"
-  },
-  "devDependencies": {
-    "lint-staged": "^13.2.1",
-    "@typescript-eslint/eslint-plugin": "^5.0.0",
-    "@typescript-eslint/parser": "^5.0.0",
-    "eslint": "^8.0.1",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-prettier": "^4.0.0",
-    "prettier": "^2.8.7",
-    "prettier-plugin-organize-imports": "^3.2.2",
-    "@tsconfig/node18": "^2.0.0",
-    "aws-cdk-lib": "2.72.1",
-    "constructs": "10.1.156",
-    "nx": "16.1.1",
-    "typescript": "^5.0.4",
-    "sst": "^2.8.5"
-  },
-  "lint-staged": {
-    "*.{js,ts,json,md}": [
-      "prettier --write"
+    "name": "cashmere-monorepo",
+    "version": "0.0.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "clean": "nx run-many --target=clean",
+        "package": "nx run-many --target=package --all --parallel=4",
+        "dev": "pnpm package && sst dev",
+        "build": "pnpm package && nx run-many --target=build --all --parallel=4 && sst build",
+        "deploy": "pnpm package && pnpm build && sst deploy",
+        "remove": "sst remove",
+        "console": "sst console",
+        "lint": "eslint --ext=js,ts --fix",
+        "lint:check": "eslint --ext=js,ts",
+        "format": "prettier --write --ignore-path .gitignore .",
+        "format:check": "prettier --check --ignore-path .gitignore .",
+        "typecheck": "tsc --noEmit"
+    },
+    "devDependencies": {
+        "lint-staged": "^13.2.1",
+        "@typescript-eslint/eslint-plugin": "^5.0.0",
+        "@typescript-eslint/parser": "^5.0.0",
+        "eslint": "^8.0.1",
+        "eslint-config-prettier": "^8.3.0",
+        "eslint-plugin-prettier": "^4.0.0",
+        "prettier": "^2.8.7",
+        "prettier-plugin-organize-imports": "^3.2.2",
+        "@tsconfig/node18": "^2.0.0",
+        "aws-cdk-lib": "2.72.1",
+        "constructs": "10.1.156",
+        "nx": "16.1.1",
+        "typescript": "^5.0.4",
+        "sst": "^2.8.5"
+    },
+    "lint-staged": {
+        "*.{js,ts,json,md}": [
+            "prettier --write"
+        ]
+    },
+    "engines": {
+        "node": "^18.16.0"
+    },
+    "packageManager": "pnpm@8.3.0",
+    "workspaces": [
+        "shared/*",
+        "backend/*"
     ]
-  },
-  "engines": {
-    "node": "^18.16.0"
-  },
-  "packageManager": "pnpm@8.3.0",
-  "workspaces": [
-    "shared/*",
-    "backend/*"
-  ]
 }

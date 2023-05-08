@@ -14,9 +14,9 @@ const defaultTtl = 10 * 60 * 1000;
 interface CacheType {
     [key: string]:
         | {
-        value: unknown;
-        creation?: Date;
-    }
+              value: unknown;
+              creation?: Date;
+          }
         | undefined;
 }
 
@@ -26,7 +26,7 @@ let memoryCache: CacheType = {};
 // Get or set a value from memoryCache
 export const getOrSetFromCache = async <T>(
     params: GetOrSetFromCacheParams,
-    valueAccessor: () => Promise<T>,
+    valueAccessor: () => Promise<T>
 ) => {
     // Build our key hash
     let keyHash: string;
@@ -53,7 +53,7 @@ export const getOrSetFromCache = async <T>(
         if (
             currentCacheEntry.creation &&
             currentCacheEntry.creation.getTime() + (params.ttl || defaultTtl) <
-            now.getTime()
+                now.getTime()
         ) {
             return currentCacheEntry.value as T;
         }
