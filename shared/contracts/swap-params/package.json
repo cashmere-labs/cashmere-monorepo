@@ -1,5 +1,5 @@
 {
-    "name": "@cashmere-monorepo/backend-core",
+    "name": "@cashmere-monorepo/shared-contract-swap-params",
     "version": "0.0.0",
     "private": true,
     "files": [
@@ -17,16 +17,11 @@
         "package:types-aliases": "tsc-alias -p tsconfig.build.json"
     },
     "devDependencies": {
-        "@types/aws-lambda": "^8.10.115",
         "@types/node": "^18.16.6",
         "rimraf": "^5.0.0",
         "sst": "^2.8.11",
         "tsc-alias": "^1.8.6",
         "tsup": "^6.7.0",
         "vitest": "^0.31.0"
-    },
-    "dependencies": {
-        "pino": "^8.14.1",
-        "pino-lambda": "^4.2.1"
     }
 }

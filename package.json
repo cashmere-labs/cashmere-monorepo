@@ -28,13 +28,13 @@
         "eslint": "^8.40.0",
         "eslint-config-prettier": "^8.8.0",
         "eslint-plugin-prettier": "^4.2.1",
+        "husky": "^8.0.3",
         "lint-staged": "^13.2.2",
         "nx": "16.1.1",
         "prettier": "^2.8.8",
         "prettier-plugin-organize-imports": "^3.2.2",
-        "sst": "^2.8.10",
-        "typescript": "^5.0.4",
-        "husky": "^8.0.0"
+        "sst": "^2.8.11",
+        "typescript": "^5.0.4"
     },
     "lint-staged": {
         "*.{js,ts,json,md}": [
