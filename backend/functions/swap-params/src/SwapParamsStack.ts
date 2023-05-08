@@ -1,10 +1,10 @@
 import {Api, StackContext} from "sst/constructs";
 
-const path = "./backend/functions/swap-params/src"
+const path = "./backend/functions/swap/src"
 
 export function SwapParamsStack({ stack }: StackContext) {
   // Build our swap param's API
-  const api = new Api(stack, "swap-params-api", {
+  const api = new Api(stack, "swap-api", {
     // Default prop's for every routes
     defaults: {
       function: {
