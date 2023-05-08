@@ -10,7 +10,6 @@
     "types": "dist/types/index.d.ts",
     "scripts": {
         "clean": "rimraf dist *.tsbuildinfo",
-        "test": "sst bind vitest",
         "typecheck": "tsc -noEmit",
         "package": "pnpm clean && pnpm package:transpile && pnpm package:types && pnpm package:types-aliases",
         "package:transpile": "tsup",

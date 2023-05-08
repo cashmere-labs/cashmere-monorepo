@@ -11,6 +11,7 @@
         "deploy": "pnpm package && pnpm build && sst deploy",
         "remove": "sst remove",
         "console": "sst console",
+        "test": "pnpm run lint:check && pnpm run format:check && nx run-many --target=test --all --parallel=4",
         "lint": "eslint --ext=js,ts --fix",
         "lint:check": "eslint --ext=js,ts",
         "format": "prettier --write --ignore-path .gitignore .",

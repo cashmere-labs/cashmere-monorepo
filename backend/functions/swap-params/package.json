@@ -2,7 +2,6 @@
     "name": "@cashmere-monorepo/backend-function-swap-params",
     "version": "0.0.0",
     "scripts": {
-        "test": "sst bind vitest",
         "typecheck": "tsc -noEmit"
     },
     "dependencies": {
