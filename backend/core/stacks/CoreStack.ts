@@ -1,6 +1,6 @@
 import {StackContext, Api} from "sst/constructs";
 
-export function ApiStack({ stack }: StackContext) {
+export function CoreStack({ stack }: StackContext) {
   // Build our whole API
   const api = new Api(stack, "api", {
     defaults: {

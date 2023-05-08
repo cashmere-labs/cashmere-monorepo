@@ -1,5 +1,4 @@
 import { SSTConfig } from "sst";
-import {ApiStack} from "./backend/core/stacks/ApiStack";
 import {SwapParamsStack} from "./backend/functions/swap-params/src/SwapParamsStack";
 
 export default {
@@ -11,6 +10,9 @@ export default {
     };
   },
   stacks(app) {
-    app.stack(ApiStack).stack(SwapParamsStack);
+    // TODO : Should have the core stack (db, redis etc)
+
+    // Every API Stack's
+    app.stack(SwapParamsStack);
   }
 } satisfies SSTConfig;
