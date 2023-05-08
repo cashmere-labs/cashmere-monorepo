@@ -20,13 +20,13 @@
     "dependencies": {
         "@cashmere-monorepo/backend-core": "workspace:^",
         "@cashmere-monorepo/shared-blockchain": "workspace:^",
-        "viem": "^0.3.17"
+        "viem": "^0.3.18"
     },
     "devDependencies": {
         "@types/aws-lambda": "^8.10.115",
-        "@types/node": "^18.16.5",
+        "@types/node": "^18.16.6",
         "rimraf": "^5.0.0",
-        "sst": "^2.8.5",
+        "sst": "^2.8.10",
         "tsc-alias": "^1.8.6",
         "tsup": "^6.7.0",
         "vitest": "^0.31.0"
