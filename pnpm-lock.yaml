@@ -123,13 +123,22 @@ importers:
       '@cashmere-monorepo/backend-service-swap':
         specifier: workspace:^
         version: link:../../services/swap
+      '@cashmere-monorepo/shared-contract-swap-params':
+        specifier: workspace:^
+        version: link:../../../shared/contracts/swap-params
       '@middy/core':
         specifier: ^4.4.0
         version: 4.4.0
       '@middy/http-error-handler':
         specifier: ^4.4.0
         version: 4.4.0
+      '@middy/http-event-normalizer':
+        specifier: ^4.4.0
+        version: 4.4.0
       '@middy/http-json-body-parser':
+        specifier: ^4.4.0
+        version: 4.4.0
+      '@middy/http-response-serializer':
         specifier: ^4.4.0
         version: 4.4.0
       '@middy/validator':
@@ -2595,6 +2604,23 @@ packages:
       tslib: 2.5.0
     dev: true
 
+  /@hapi/accept@6.0.1:
+    resolution: {integrity: sha512-aLkYj7zzgC3CSlEVOs84eBOEE3i9xZK2tdQEP+TOj2OFzMWCi9zjkRet82V3GGjecE//zFrCLKIykuaE0uM4bg==}
+    dependencies:
+      '@hapi/boom': 10.0.1
+      '@hapi/hoek': 11.0.2
+    dev: false
+
+  /@hapi/boom@10.0.1:
+    resolution: {integrity: sha512-ERcCZaEjdH3OgSJlyjVk8pHIFeus91CjKP3v+MpgBNp5IvGzP2l/bRiD78nqYcKPaZdbKkK5vDBVPd2ohHBlsA==}
+    dependencies:
+      '@hapi/hoek': 11.0.2
+    dev: false
+
+  /@hapi/hoek@11.0.2:
+    resolution: {integrity: sha512-aKmlCO57XFZ26wso4rJsW4oTUnrgTFw2jh3io7CAtO9w4UltBNwRXvXIVzzyfkaaLRo3nluP/19msA8vDUUuKw==}
+    dev: false
+
   /@httptoolkit/websocket-stream@6.0.1:
     resolution: {integrity: sha512-A0NOZI+Glp3Xgcz6Na7i7o09+/+xm2m0UCU8gdtM2nIv6/cjLmhMZMqehSpTlgbx9omtLmV8LVqOskPEyWnmZQ==}
     dependencies:
@@ -2693,10 +2719,23 @@ packages:
       '@middy/util': 4.4.0
     dev: false
 
+  /@middy/http-event-normalizer@4.4.0:
+    resolution: {integrity: sha512-9hhV5LnWi9yqaEIRoPeo0LHGhaVkSGMx9kUDu76l4HnpNTsR3e7fqkuIdh9otNc2A3qNE4s/jSE7kklQZN0Mfw==}
+    engines: {node: '>=16'}
+    dev: false
+
   /@middy/http-json-body-parser@4.4.0:
     resolution: {integrity: sha512-UOuMpUBR5H3j6brCbVgADh3FeRltNaDNkyTUokLw/7VIwQQQMOvK4CVllaVJBNbBP9jgtKrR48Z+P3d1+V8CTw==}
     engines: {node: '>=16'}
     dependencies:
+      '@middy/util': 4.4.0
+    dev: false
+
+  /@middy/http-response-serializer@4.4.0:
+    resolution: {integrity: sha512-05G9zK0OIdVx/ISHTM3IkBvP6GPsaX5CFT+lGTaW9o8ljoDj+ZKnF1ewZtfXKDV/fewlk9tQtwf95FNA6IHT5A==}
+    engines: {node: '>=16'}
+    dependencies:
+      '@hapi/accept': 6.0.1
       '@middy/util': 4.4.0
     dev: false
 

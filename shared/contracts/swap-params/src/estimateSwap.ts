@@ -1,17 +1,30 @@
-const estimateQueryStringParametersSchema = {
+export const estimateQueryStringParametersSchema = {
     type: 'object',
     properties: {
-        srcChainId: { type: 'string' },
-        dstChainId: { type: 'string' },
-        amount: { type: 'string' },
-        srcToken: { type: 'string' },
-        dstToken: { type: 'string' },
+        queryStringParameters: {
+            type: 'object',
+            properties: {
+                srcChainId: { type: 'string' },
+                dstChainId: { type: 'string' },
+                amount: { type: 'string' },
+                srcToken: { type: 'string' },
+                dstToken: { type: 'string' },
+            },
+            required: [
+                'srcChainId',
+                'dstChainId',
+                'amount',
+                'srcToken',
+                'dstToken',
+            ],
+            additionalProperties: false,
+        },
     },
-    required: ['srcChainId', 'dstChainId', 'amount', 'srcToken', 'dstToken'],
+    required: ['queryStringParameters'],
     additionalProperties: false,
 } as const;
 
-const estimateResponseSchema = {
+export const estimateResponseSchema = {
     type: 'object',
     properties: {
         dstAmount: { type: 'string' },
@@ -30,7 +43,7 @@ const estimateResponseSchema = {
     additionalProperties: false,
 } as const;
 
-const routePath = {
+export const estimateSwapRoute = {
     path: '/estimate',
     method: 'GET',
 };
