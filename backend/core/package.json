@@ -13,6 +13,7 @@
     },
     "dependencies": {
         "@middy/core": "^4.4.0",
+        "@sinclair/typebox": "^0.28.9",
         "pino": "^8.14.1",
         "pino-lambda": "^4.2.1"
     }

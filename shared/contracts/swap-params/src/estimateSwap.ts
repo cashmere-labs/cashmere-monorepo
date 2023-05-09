@@ -1,60 +1,48 @@
-import { FromSchema } from 'json-schema-to-ts';
+import { Static, Type } from '@sinclair/typebox';
 
-export const estimateSwapEvent = {
-    type: 'object',
-    properties: {
-        queryStringParameters: {
-            type: 'object',
-            properties: {
-                srcChainId: { type: 'string' },
-                dstChainId: { type: 'string' },
-                amount: { type: 'string' },
-                srcToken: { type: 'string' },
-                dstToken: { type: 'string' },
-            },
-            required: [
-                'srcChainId',
-                'dstChainId',
-                'amount',
-                'srcToken',
-                'dstToken',
-            ],
-            additionalProperties: false,
-        },
+// TODO: Should create generic type for chain id's, amount, token addresses, etc.
+
+// The schema for the request query parameters
+export const estimateSwapQueryParamsType = Type.Object(
+    {
+        srcChainId: Type.String({ required: true }),
+        dstChainId: Type.String({ required: true }),
+        amount: Type.String({ required: true }),
+        srcToken: Type.String({ required: true }),
+        dstToken: Type.String({ required: true }),
     },
-    required: ['queryStringParameters'],
-} as const;
+    { required: true }
+);
+export type EstimateSwapQueryParams = Static<
+    typeof estimateSwapQueryParamsType
+>;
 
-export type EstimateSwapEvent = FromSchema<typeof estimateSwapEvent>;
+// The schema for the request event
+export const estimateSwapEventType = Type.Object({
+    queryStringParameters: estimateSwapQueryParamsType,
+});
+export type EstimateSwapEvent = Static<typeof estimateSwapEventType>;
 
-export const estimateResponseSchema = {
-    type: 'object',
-    properties: {
-        body: {
-            type: 'object',
-            properties: {
-                dstAmount: { type: 'string' },
-                minReceivedDst: { type: 'string' },
-                fee: { type: 'string' },
-                priceImpact: { type: 'string' },
-                nativeFee: { type: 'string' },
-            },
-            required: [
-                'dstAmount',
-                'minReceivedDst',
-                'fee',
-                'priceImpact',
-                'nativeFee',
-            ],
-            additionalProperties: false,
-        },
+// Typebox schema for the response body
+export const estimateSwapResponseBodyType = Type.Object(
+    {
+        dstAmount: Type.String({ required: true }),
+        minReceivedDst: Type.String({ required: true }),
+        fee: Type.String({ required: true }),
+        priceImpact: Type.String({ required: true }),
+        nativeFee: Type.String({ required: true }),
     },
-    required: ['body'],
-} as const;
+    { required: true }
+);
+export type EstimateSwapResponseBody = Static<
+    typeof estimateSwapResponseBodyType
+>;
 
-export type EstimateSwapResponse = FromSchema<typeof estimateResponseSchema>;
-
-export const estimateSwapRoute = {
-    path: '/estimate',
-    method: 'GET',
-};
+// The schema for the response
+export const estimateSwapResponse = Type.Object(
+    {
+        body: estimateSwapResponseBodyType,
+    },
+    { required: true }
+);
+export type EstimateSwapResponse = Static<typeof estimateSwapResponse>;
