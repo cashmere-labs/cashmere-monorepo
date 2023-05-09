@@ -5,6 +5,8 @@ import {
 } from '@cashmere-monorepo/backend-blockchain';
 import { Address, isAddressEqual } from 'viem';
 
+export const test = 'Blabla';
+
 // Get the formatted swap params data's
 export const getAllSwapParamsDatas = async (
     srcChainId: number,

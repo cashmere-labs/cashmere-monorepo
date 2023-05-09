@@ -1,4 +1,4 @@
-import { StackContext, Api } from 'sst/constructs';
+import { Api, StackContext } from 'sst/constructs';
 
 export function CoreStack({ stack }: StackContext) {
     // Build our whole API

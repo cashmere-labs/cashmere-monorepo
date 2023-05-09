@@ -1,6 +1,6 @@
 import { Api, StackContext } from 'sst/constructs';
 
-const path = './backend/functions/swap/src';
+const path = './backend/functions/swap-params/src';
 
 export function SwapParamsStack({ stack }: StackContext) {
     // Build our swap param's API
@@ -23,6 +23,7 @@ export function SwapParamsStack({ stack }: StackContext) {
         // Add the routes
         routes: {
             'GET /test-lambda': `${path}/handlers/lambda.handler`,
+            'GET /test-lambda-middy': `${path}/handlers/lambda.middy.handler`,
         },
     });
 

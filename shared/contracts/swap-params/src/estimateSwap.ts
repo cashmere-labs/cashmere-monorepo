@@ -1,4 +1,6 @@
-export const estimateQueryStringParametersSchema = {
+import { FromSchema } from 'json-schema-to-ts';
+
+export const estimateSwapEvent = {
     type: 'object',
     properties: {
         queryStringParameters: {
@@ -24,6 +26,8 @@ export const estimateQueryStringParametersSchema = {
     additionalProperties: false,
 } as const;
 
+export type EstimateSwapEvent = FromSchema<typeof estimateSwapEvent>;
+
 export const estimateResponseSchema = {
     type: 'object',
     properties: {
@@ -42,6 +46,8 @@ export const estimateResponseSchema = {
     ],
     additionalProperties: false,
 } as const;
+
+export type EstimateSwapResponse = FromSchema<typeof estimateResponseSchema>;
 
 export const estimateSwapRoute = {
     path: '/estimate',
