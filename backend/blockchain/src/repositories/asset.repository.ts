@@ -1,10 +1,10 @@
-import { isPlaceholderToken } from '../utils';
-import { getAddress } from 'viem';
 import { getOrSetFromCache } from '@cashmere-monorepo/backend-core';
 import {
     erc20ABI,
     getNetworkConfigAndClient,
 } from '@cashmere-monorepo/shared-blockchain';
+import { getAddress } from 'viem';
+import { isPlaceholderToken } from '../utils';
 
 export type AssetRepository = {
     tokenSymbol: (address: string) => Promise<string>;

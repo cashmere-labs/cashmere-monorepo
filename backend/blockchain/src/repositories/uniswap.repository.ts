@@ -1,9 +1,9 @@
-import { Address } from 'viem';
-import { ONE_INCH_SLIPPAGE } from '../utils';
 import {
     getNetworkConfigAndClient,
     iUniswapV2Router02ABI,
 } from '@cashmere-monorepo/shared-blockchain';
+import { Address } from 'viem';
+import { ONE_INCH_SLIPPAGE } from '../utils';
 
 // Generic interface for our uniswap repository
 export type UniswapRepository = {

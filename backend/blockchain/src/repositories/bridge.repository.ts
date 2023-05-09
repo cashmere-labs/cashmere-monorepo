@@ -1,9 +1,9 @@
-import { encodeAbiParameters } from 'viem';
 import { getOrSetFromCache } from '@cashmere-monorepo/backend-core';
 import {
     bridgeABI,
     getNetworkConfigAndClient,
 } from '@cashmere-monorepo/shared-blockchain';
+import { encodeAbiParameters } from 'viem';
 
 export type BridgeRepository = {
     getSwapFeeL0: (toChainId: number) => Promise<bigint>;

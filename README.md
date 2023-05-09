@@ -8,6 +8,7 @@ This repository contains a monorepo project for the Cashmere platform, which use
 -   [Getting Started](#getting-started)
 -   [Libraries](#libraries)
 -   [Folder Structure](#folder-structure)
+-   [Shared](#shared)
 -   [Backend](#backend)
 -   [Frontend](#frontend)
 -   [Global Considerations](#global-considerations)
@@ -49,6 +50,7 @@ To get started with the project, make sure you have the AWS CLI configured on yo
 The project is organized into the following folder structure:
 
 -   `shared`: Shared components between front and back.
+    -   `contracts`: Contains type definitions for every HTTP handler, ensuring valid requests and responses and helping with typing for both backend and frontend.
 -   `backend`: Backend related components.
 -   `frontend`: Frontend related components.
 
@@ -58,6 +60,7 @@ Contains shared components between front and back, such as:
 
 -   Blockchain ABIs and addresses
 -   API routes types and responses
+-   **`contracts`: Type definitions for every HTTP handler, helping the backend to type Lambda input and ensure valid requests and responses, as well as assisting the frontend with typing.**
 
 ### Backend
 
@@ -72,10 +75,25 @@ Contains backend related components, organized as follows:
 
 ### Frontend
 
-Contains frontend related components, organized as follows:
+The frontend folder contains all components and resources related to the Cashmere platform's user interface. The frontend is organized into subfolders for better modularity and maintainability.
 
--   `web/exchange`: Initial project for migration.
--   Future structure: `frontend/core`, `frontend/components`, etc.
+The current frontend folder structure is as follows:
+
+-   `web/exchange`: The initial project for migration. It contains all the existing frontend components and resources for the Cashmere exchange platform.
+
+In the future, the frontend folder structure will be organized into a more modular structure, similar to the backend folder structure:
+
+-   `core`: This folder will contain core libraries, utilities, and configurations specific to the frontend.
+
+-   `components`: This folder will house reusable UI components, such as buttons, form elements, and layout components, which can be shared across different parts of the frontend or even across different Cashmere projects.
+
+-   `features`: This folder will be used to organize the frontend code based on different features or sections of the application, such as account management, trading, or analytics.
+
+-   `styles`: This folder will include global styles, themes, and other styling resources for the frontend.
+
+-   `assets`: This folder will contain static assets like images, fonts, and other media files used in the frontend.
+
+By organizing the frontend folder in this manner, it will be easier to navigate, understand, and maintain the frontend codebase, as well as promote code reusability and modularity.
 
 ### Global Considerations
 

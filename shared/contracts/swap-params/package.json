@@ -1,19 +1,15 @@
 {
-    "name": "@cashmere-monorepo/shared-blockchain",
+    "name": "@cashmere-monorepo/shared-contract-swap-params",
     "version": "0.0.0",
     "private": true,
     "type": "module",
     "scripts": {
-        "test": "sst bind vitest run",
-        "test:watch": "sst bind vitest run",
         "typecheck": "tsc -noEmit"
     },
     "devDependencies": {
         "@types/node": "^18.16.6",
+        "json-schema-to-ts": "^2.8.0",
         "sst": "^2.8.11",
         "vitest": "^0.31.0"
-    },
-    "dependencies": {
-        "viem": "^0.3.18"
     }
 }

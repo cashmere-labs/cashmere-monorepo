@@ -22,7 +22,6 @@ import {
     polygonZkEvmTestnet,
 } from 'viem/chains';
 
-import { chainIdsToNames, contractAddresses } from './blockchain.constants';
 import { lineaZk } from '../chain/chain';
 import {
     ARBITRUM_GOERLI_CHAIN_ID,
@@ -37,6 +36,7 @@ import {
     OPTIMISM_GOERLI_CHAIN_ID,
     POLYGON_ZK_TESTNET_CHAIN_ID,
 } from '../chain/chain.constants';
+import { chainIdsToNames, contractAddresses } from './blockchain.constants';
 
 /**
  * Represent a network configuration

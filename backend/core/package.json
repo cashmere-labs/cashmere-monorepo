@@ -1,31 +1,18 @@
 {
     "name": "@cashmere-monorepo/backend-core",
     "version": "0.0.0",
-    "private": true,
-    "files": [
-        "dist"
-    ],
-    "main": "dist/index.cjs",
-    "module": "dist/index.js",
-    "types": "dist/types/index.d.ts",
+    "type": "module",
     "scripts": {
-        "clean": "rimraf dist *.tsbuildinfo",
-        "typecheck": "tsc -noEmit",
-        "package": "pnpm clean && pnpm package:transpile && pnpm package:types && pnpm package:types-aliases",
-        "package:transpile": "tsup",
-        "package:types": "tsc -p tsconfig.build.json",
-        "package:types-aliases": "tsc-alias -p tsconfig.build.json"
+        "typecheck": "tsc -noEmit"
     },
     "devDependencies": {
         "@types/aws-lambda": "^8.10.115",
         "@types/node": "^18.16.6",
-        "rimraf": "^5.0.0",
-        "sst": "^2.8.10",
-        "tsc-alias": "^1.8.6",
-        "tsup": "^6.7.0",
+        "sst": "^2.8.11",
         "vitest": "^0.31.0"
     },
     "dependencies": {
+        "@middy/core": "^4.4.0",
         "pino": "^8.14.1",
         "pino-lambda": "^4.2.1"
     }
