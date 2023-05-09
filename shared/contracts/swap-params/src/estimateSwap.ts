@@ -23,7 +23,6 @@ export const estimateSwapEvent = {
         },
     },
     required: ['queryStringParameters'],
-    additionalProperties: false,
 } as const;
 
 export type EstimateSwapEvent = FromSchema<typeof estimateSwapEvent>;
@@ -31,20 +30,26 @@ export type EstimateSwapEvent = FromSchema<typeof estimateSwapEvent>;
 export const estimateResponseSchema = {
     type: 'object',
     properties: {
-        dstAmount: { type: 'string' },
-        minReceivedDst: { type: 'string' },
-        fee: { type: 'string' },
-        priceImpact: { type: 'string' },
-        nativeFee: { type: 'string' },
+        body: {
+            type: 'object',
+            properties: {
+                dstAmount: { type: 'string' },
+                minReceivedDst: { type: 'string' },
+                fee: { type: 'string' },
+                priceImpact: { type: 'string' },
+                nativeFee: { type: 'string' },
+            },
+            required: [
+                'dstAmount',
+                'minReceivedDst',
+                'fee',
+                'priceImpact',
+                'nativeFee',
+            ],
+            additionalProperties: false,
+        },
     },
-    required: [
-        'dstAmount',
-        'minReceivedDst',
-        'fee',
-        'priceImpact',
-        'nativeFee',
-    ],
-    additionalProperties: false,
+    required: ['body'],
 } as const;
 
 export type EstimateSwapResponse = FromSchema<typeof estimateResponseSchema>;
