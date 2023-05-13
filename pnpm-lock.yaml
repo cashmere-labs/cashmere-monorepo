@@ -79,6 +79,9 @@ importers:
             '@middy/core':
                 specifier: ^4.4.0
                 version: 4.4.0
+            '@sinclair/typebox':
+                specifier: ^0.28.9
+                version: 0.28.9
             pino:
                 specifier: ^8.14.1
                 version: 8.14.1
@@ -128,6 +131,15 @@ importers:
             '@middy/validator':
                 specifier: ^4.4.0
                 version: 4.4.0
+            '@sinclair/typebox':
+                specifier: ^0.28.9
+                version: 0.28.9
+            '@trpc/server':
+                specifier: ^10.25.1
+                version: 10.25.1
+            aws-lambda:
+                specifier: ^1.0.7
+                version: 1.0.7
         devDependencies:
             '@types/aws-lambda':
                 specifier: ^8.10.115
@@ -3661,6 +3673,20 @@ packages:
             '@scure/base': 1.1.1
         dev: false
 
+    /@sinclair/typebox@0.28.9:
+        resolution:
+            {
+                integrity: sha512-m98m37J9CBZ8XinStjpss2ZOW50KG45XB4cAva2NGoQHiGPxhfNL2BzUXYCs6ahXdK7/F1NIjOGh+MPP5dK8Rw==,
+            }
+        dev: false
+
+    /@trpc/server@10.25.1:
+        resolution:
+            {
+                integrity: sha512-zi08QKVvWPK0EEGpEy7i5PlOK9CBlQb3LqiIdmaIpe27DzFNz6+yZ4qXwsLXTwDcDphELl/BNw+RzzQ2+Ou2vw==,
+            }
+        dev: false
+
     /@trpc/server@9.16.0:
         resolution:
             {
@@ -4396,7 +4422,6 @@ packages:
             }
         dependencies:
             sprintf-js: 1.0.3
-        dev: true
 
     /argparse@2.0.1:
         resolution:
@@ -4524,7 +4549,6 @@ packages:
                 integrity: sha512-DMD0KiN46eipeziST1LPP/STfDU0sufISXmjSgvVsoU2tqxctQeASejWcfNtxYKqETM1UxQ8sp2OrSBWpHY6sw==,
             }
         engines: { node: '>= 0.4' }
-        dev: true
 
     /aws-cdk-lib@2.72.1(constructs@10.1.156):
         resolution:
@@ -4602,6 +4626,19 @@ packages:
             - utf-8-validate
         dev: true
 
+    /aws-lambda@1.0.7:
+        resolution:
+            {
+                integrity: sha512-9GNFMRrEMG5y3Jvv+V4azWvc+qNWdWLTjDdhf/zgMlz8haaaLWv0xeAIWxz9PuWUBawsVxy0zZotjCdR3Xq+2w==,
+            }
+        hasBin: true
+        dependencies:
+            aws-sdk: 2.1374.0
+            commander: 3.0.2
+            js-yaml: 3.14.1
+            watchpack: 2.4.0
+        dev: false
+
     /aws-sdk@2.1374.0:
         resolution:
             {
@@ -4619,7 +4656,6 @@ packages:
             util: 0.12.5
             uuid: 8.0.0
             xml2js: 0.5.0
-        dev: true
 
     /axios@0.21.4(debug@4.3.4):
         resolution:
@@ -4854,9 +4890,8 @@ packages:
             }
         dependencies:
             base64-js: 1.5.1
-            ieee754: 1.1.13
+            ieee754: 1.2.1
             isarray: 1.0.0
-        dev: true
 
     /buffer@5.7.1:
         resolution:
@@ -4927,7 +4962,6 @@ packages:
         dependencies:
             function-bind: 1.1.1
             get-intrinsic: 1.2.0
-        dev: true
 
     /callsites@3.1.0:
         resolution:
@@ -5361,6 +5395,13 @@ packages:
         resolution:
             {
                 integrity: sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==,
+            }
+        dev: false
+
+    /commander@3.0.2:
+        resolution:
+            {
+                integrity: sha512-Gar0ASD4BDyKC4hl4DwHqDrmvjoxWKZigVnAbn5H1owvm4CxCPdb0HQDehwNYMJpla5+M2tPmPARzhtYuwpHow==,
             }
         dev: false
 
@@ -6189,7 +6230,6 @@ packages:
             }
         engines: { node: '>=4' }
         hasBin: true
-        dev: true
 
     /esquery@1.5.0:
         resolution:
@@ -6257,7 +6297,6 @@ packages:
                 integrity: sha512-kEcvvCBByWXGnZy6JUlgAp2gBIUjfCAV6P6TgT1/aaQKcmuAEC4OZTV1I4EWQLz2gxZw76atuVyvHhTxvi0Flw==,
             }
         engines: { node: '>=0.4.x' }
-        dev: true
 
     /events@3.3.0:
         resolution:
@@ -6589,7 +6628,6 @@ packages:
             }
         dependencies:
             is-callable: 1.2.7
-        dev: true
 
     /form-data@4.0.0:
         resolution:
@@ -6717,7 +6755,6 @@ packages:
             {
                 integrity: sha512-yIovAzMX49sF8Yl58fSCWJ5svSLuaibPxXQJFLmBObTuCr0Mf1KiPopGM9NiFjiYBCbfaa2Fh6breQ6ANVTI0A==,
             }
-        dev: true
 
     /gauge@1.2.7:
         resolution:
@@ -6764,7 +6801,6 @@ packages:
             function-bind: 1.1.1
             has: 1.0.3
             has-symbols: 1.0.3
-        dev: true
 
     /get-port@6.1.2:
         resolution:
@@ -6801,6 +6837,13 @@ packages:
         dependencies:
             is-glob: 4.0.3
         dev: true
+
+    /glob-to-regexp@0.4.1:
+        resolution:
+            {
+                integrity: sha512-lkX1HJXwyMcprw/5YUZc2s7DrpAiHB21/V+E1rHUrVNokkvB6bqMzT0VfV6/86ZNabt1k14YOIaT7nDvOX3Iiw==,
+            }
+        dev: false
 
     /glob@7.1.4:
         resolution:
@@ -6884,14 +6927,12 @@ packages:
             }
         dependencies:
             get-intrinsic: 1.2.0
-        dev: true
 
     /graceful-fs@4.2.11:
         resolution:
             {
                 integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==,
             }
-        dev: true
 
     /grapheme-splitter@1.0.4:
         resolution:
@@ -6953,7 +6994,6 @@ packages:
                 integrity: sha512-l3LCuF6MgDNwTDKkdYGEihYjt5pRPbEg46rtlmnSPlUbgmB8LOIrKJbYYFBSbnPaJexMKtiPO8hmeRjRz2Td+A==,
             }
         engines: { node: '>= 0.4' }
-        dev: true
 
     /has-tostringtag@1.0.0:
         resolution:
@@ -6963,7 +7003,6 @@ packages:
         engines: { node: '>= 0.4' }
         dependencies:
             has-symbols: 1.0.3
-        dev: true
 
     /has-unicode@2.0.1:
         resolution:
@@ -6980,7 +7019,6 @@ packages:
         engines: { node: '>= 0.4.0' }
         dependencies:
             function-bind: 1.1.1
-        dev: true
 
     /hash-it@6.0.0:
         resolution:
@@ -7055,7 +7093,6 @@ packages:
             {
                 integrity: sha512-4vf7I2LYV/HaWerSo3XmlMkp5eZ83i+/CDluXi/IGTs/O1sejBNhTtnxzmRZfvOUqj7lZjqHkeTvpgSFDlWZTg==,
             }
-        dev: true
 
     /ieee754@1.2.1:
         resolution:
@@ -7128,7 +7165,6 @@ packages:
             {
                 integrity: sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==,
             }
-        dev: true
 
     /ini@1.3.8:
         resolution:
@@ -7224,7 +7260,6 @@ packages:
         dependencies:
             call-bind: 1.0.2
             has-tostringtag: 1.0.0
-        dev: true
 
     /is-binary-path@2.1.0:
         resolution:
@@ -7249,7 +7284,6 @@ packages:
                 integrity: sha512-1BC0BVFhS/p0qtw6enp8e+8OD0UrK0oFLztSjNzhcKA3WDuJxxAPXzPuPtKkjEY9UUoEWlX/8fgKeu2S8i9JTA==,
             }
         engines: { node: '>= 0.4' }
-        dev: true
 
     /is-ci@3.0.1:
         resolution:
@@ -7312,7 +7346,6 @@ packages:
         engines: { node: '>= 0.4' }
         dependencies:
             has-tostringtag: 1.0.0
-        dev: true
 
     /is-glob@4.0.3:
         resolution:
@@ -7392,7 +7425,6 @@ packages:
             for-each: 0.3.3
             gopd: 1.0.1
             has-tostringtag: 1.0.0
-        dev: true
 
     /is-unicode-supported@1.3.0:
         resolution:
@@ -7433,7 +7465,6 @@ packages:
             {
                 integrity: sha512-VLghIWNM6ELQzo7zwmcg0NmTVyWKYjvIeM83yjp0wRDTmUnrM678fQbcKBo6n2CJEF0szoG//ytg+TKla89ALQ==,
             }
-        dev: true
 
     /isexe@2.0.0:
         resolution:
@@ -7470,7 +7501,6 @@ packages:
                 integrity: sha512-9FzQjJ7MATs1tSpnco1K6ayiYE3figslrXA72G2HQ/n76RzvYlofyi5QM+iX4YRs/pu3yzxlVQSST23+dMDknw==,
             }
         engines: { node: '>= 0.6.0' }
-        dev: true
 
     /jose@4.14.4:
         resolution:
@@ -7517,7 +7547,6 @@ packages:
         dependencies:
             argparse: 1.0.10
             esprima: 4.0.1
-        dev: true
 
     /js-yaml@4.1.0:
         resolution:
@@ -9156,7 +9185,6 @@ packages:
             {
                 integrity: sha512-RofWgt/7fL5wP1Y7fxE7/EmTLzQVnB0ycyibJ0OOHIlJqTNzglYFxVwETOcIoJqJmpDXJ9xImDv+Fq34F/d4Dw==,
             }
-        dev: true
 
     /punycode@1.4.1:
         resolution:
@@ -9214,7 +9242,6 @@ packages:
             }
         engines: { node: '>=0.4.x' }
         deprecated: The querystring API is considered Legacy. new code should use the URLSearchParams API instead.
-        dev: true
 
     /queue-microtask@1.2.3:
         resolution:
@@ -9589,7 +9616,6 @@ packages:
             {
                 integrity: sha512-8I2a3LovHTOpm7NV5yOyO8IHqgVsfK4+UuySrXU8YXkSRX7k6hCV9b3HrkKCr3nMpgj+0bmocaJJWpvp1oc7ZA==,
             }
-        dev: true
 
     /scheduler@0.23.0:
         resolution:
@@ -9874,7 +9900,6 @@ packages:
             {
                 integrity: sha512-D9cPgkvLlV3t3IzL0D0YLvGA9Ahk4PcvVwUbN0dSGr1aP0Nrt4AEnTUbuGvquEC0mA64Gqt1fzirlRs5ibXx8g==,
             }
-        dev: true
 
     /sst-aws-cdk@2.62.2-3:
         resolution:
@@ -10626,7 +10651,6 @@ packages:
         dependencies:
             punycode: 1.3.2
             querystring: 0.2.0
-        dev: true
 
     /urlpattern-polyfill@8.0.2:
         resolution:
@@ -10653,7 +10677,6 @@ packages:
             is-generator-function: 1.0.10
             is-typed-array: 1.1.10
             which-typed-array: 1.1.9
-        dev: true
 
     /utils-merge@1.0.1:
         resolution:
@@ -10669,7 +10692,6 @@ packages:
                 integrity: sha512-jOXGuXZAWdsTH7eZLtyXMqUb9EcWMGZNbL9YcGBJl4MH4nrxHmZJhEHvyLFrkxo+28uLb/NYRcStH48fnD0Vzw==,
             }
         hasBin: true
-        dev: true
 
     /uuid@8.3.2:
         resolution:
@@ -10860,6 +10882,17 @@ packages:
             - terser
         dev: true
 
+    /watchpack@2.4.0:
+        resolution:
+            {
+                integrity: sha512-Lcvm7MGST/4fup+ifyKi2hjyIAwcdI4HRgtvTpIUxBRhB+RFtUh8XtDOxUfctVCnhVi+QQj49i91OyvzkJl6cg==,
+            }
+        engines: { node: '>=10.13.0' }
+        dependencies:
+            glob-to-regexp: 0.4.1
+            graceful-fs: 4.2.11
+        dev: false
+
     /wcwidth@1.0.1:
         resolution:
             {
@@ -10928,7 +10961,6 @@ packages:
             gopd: 1.0.1
             has-tostringtag: 1.0.0
             is-typed-array: 1.1.10
-        dev: true
 
     /which@1.3.1:
         resolution:
@@ -11120,7 +11152,6 @@ packages:
         dependencies:
             sax: 1.2.1
             xmlbuilder: 11.0.1
-        dev: true
 
     /xmlbuilder@11.0.1:
         resolution:
@@ -11128,7 +11159,6 @@ packages:
                 integrity: sha512-fDlsI/kFEx7gLvbecc0/ohLG50fugQp8ryHzMTuW9vSa1GJ0XYWKnhsUx7oie3G98+r56aTQIUB4kht42R3JvA==,
             }
         engines: { node: '>=4.0' }
-        dev: true
 
     /xtend@4.0.2:
         resolution:
