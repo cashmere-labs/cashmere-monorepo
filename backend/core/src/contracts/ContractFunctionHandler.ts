@@ -3,7 +3,6 @@ import { GenericApiGatewayContract } from '@cashmere-monorepo/shared-contract-co
 import { Static, TSchema } from '@sinclair/typebox';
 import { TypeCheck, TypeCompiler } from '@sinclair/typebox/compiler';
 import { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
-import { lambdaRequestTracker } from 'pino-lambda';
 import { ApiHandler } from 'sst/node/api';
 
 // Build an SST Api Gateway function handler
@@ -28,8 +27,6 @@ export const ContractFunctionHandler = <
     // Build our api handler
     return (handler: FunctionHandlerType<Contract>) =>
         ApiHandler(async (_event, _context) => {
-            // Bind pino to the given context
-            lambdaRequestTracker()(_event, _context);
             // Parse the event body and update the event if needed (TODO: Also handle base64 body, like useBody() hooks from SST)
             if (_event.body && typeof _event.body === 'string') {
                 // Update the event with the parsed body
@@ -75,6 +72,11 @@ function validateTypeOrThrow<SchemaType extends TSchema, EventType>(
     // Throw an error
     // TODO: Custom error with status code: 422
     throw new Error(
-        `Invalid request: ${errors.map((error) => error.message).join(', ')}`
+        `Invalid request: ${errors
+            .map(
+                (error) =>
+                    `path: ${error.path}, value: ${error.value}, msg${error.message}`
+            )
+            .join('; ')}`
     );
 }

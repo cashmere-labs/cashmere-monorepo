@@ -34,18 +34,14 @@ export const buildSstApiGatewayContract = <
 
         // Function used to get the output schema for the contract
         getInputSchema: () =>
-            Type.Object(
-                {
-                    queryStringParameters:
-                        props.queryStringParamsSchema ?? Type.Void(),
-                    pathParameters: props.pathParamsSchema ?? Type.Void(),
-                    body: props.bodySchema ?? Type.Void(),
-                    headers: props.headersSchema ?? Type.Unknown(),
-                    requestContext:
-                        props.requestContextSchema ?? Type.Unknown(),
-                },
-                { required: true }
-            ),
+            Type.Object({
+                queryStringParameters:
+                    props.queryStringParamsSchema ?? Type.Void(),
+                pathParameters: props.pathParamsSchema ?? Type.Void(),
+                body: props.bodySchema ?? Type.Void(),
+                headers: props.headersSchema ?? Type.Unknown(),
+                requestContext: props.requestContextSchema ?? Type.Unknown(),
+            }),
 
         // Function used to get the output schema for the contract
         getOutputSchema: () =>
