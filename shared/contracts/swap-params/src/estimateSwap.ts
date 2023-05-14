@@ -1,28 +1,19 @@
 import { buildSstApiGatewayContract } from '@cashmere-monorepo/shared-contract-core/src';
-import { Static, Type } from '@sinclair/typebox';
+import { Type } from '@sinclair/typebox';
 
-// TODO: Should create generic type for chain id's, amount, token addresses, etc.
+// TODO: Should create generic type for chain id's, amount, token addresses, etc. (with specific type validation rules, like number etc)
 
 // The schema for the request query parameters
 export const estimateSwapQueryParamsType = Type.Object(
     {
-        srcChainId: Type.String({ required: true }),
-        dstChainId: Type.String({ required: true }),
-        amount: Type.String({ required: true }),
+        srcChainId: Type.Number({ required: true }),
+        dstChainId: Type.Number({ required: true }),
+        amount: Type.BigInt({ required: true }),
         srcToken: Type.String({ required: true }),
         dstToken: Type.String({ required: true }),
     },
     { required: true }
 );
-export type EstimateSwapQueryParams = Static<
-    typeof estimateSwapQueryParamsType
->;
-
-// The schema for the request event
-export const estimateSwapEventType = Type.Object({
-    queryStringParameters: estimateSwapQueryParamsType,
-});
-export type EstimateSwapEvent = Static<typeof estimateSwapEventType>;
 
 // Typebox schema for the response body
 export const estimateSwapResponseBodyType = Type.Object(
@@ -35,18 +26,6 @@ export const estimateSwapResponseBodyType = Type.Object(
     },
     { required: true }
 );
-export type EstimateSwapResponseBody = Static<
-    typeof estimateSwapResponseBodyType
->;
-
-// The schema for the response
-export const estimateSwapResponse = Type.Object(
-    {
-        body: estimateSwapResponseBodyType,
-    },
-    { required: true }
-);
-export type EstimateSwapResponse = Static<typeof estimateSwapResponse>;
 
 export const estimateSwapContract = buildSstApiGatewayContract({
     id: 'swap-params-estimate',
