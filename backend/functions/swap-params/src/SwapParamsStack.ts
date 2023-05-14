@@ -32,12 +32,12 @@ export function SwapParamsStack({ stack }: StackContext) {
         routes: {
             'GET /test-lambda': `${path}/handlers/lambda.handler`,
             'GET /test-lambda-middy': `${path}/handlers/lambda.middy.handler`,
-            estimateSwapRoute,
+            ...estimateSwapRoute,
         },
     });
 
     // Add the outputs to our stack
     stack.addOutputs({
-        ApiEndpoint: api.url,
+        SwapParamsEndpoint: api.url,
     });
 }

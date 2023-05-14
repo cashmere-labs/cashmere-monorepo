@@ -5,7 +5,7 @@ import { TypeCheck, TypeCompiler } from '@sinclair/typebox/compiler';
 import { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
 import { ApiRouteProps } from 'sst/constructs/Api';
 import { FunctionProps } from 'sst/constructs/Function';
-import { ApiHandler, useJsonBody } from 'sst/node/api';
+import { ApiHandler } from 'sst/node/api';
 
 // Build an SST Api Gateway route function
 export const buildSstApiGatewayRouteFunction = <AuthorizerKeys>(
@@ -44,9 +44,11 @@ export const buildFunctionHandler = <
     return (handler: FunctionHandlerType<Contract>) =>
         ApiHandler(async (_event, _ctw) => {
             // TODO: Use a logger hook
-            // Parse the event body and update the event
-            const parsedBody = useJsonBody();
-            Object.assign(_event, { body: parsedBody });
+            // Parse the event body and update the event if needed (TODO: Also handle base64 body, like useBody() hooks from SST)
+            if (_event.body && typeof _event.body === 'string') {
+                // Update the event with the parsed body
+                Object.assign(_event, { body: JSON.parse(_event.body) });
+            }
             // Validate the input
             const input = validateTypeOrThrow(eventTypeCompiler, _event);
 
