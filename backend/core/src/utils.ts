@@ -1,10 +1,8 @@
 // Build an sst function from an API Gateway contract
-import {
-    ApiGatewayContract,
-    GenericApiGatewayContract,
-} from '@cashmere-monorepo/shared-contract-core';
+import { GenericApiGatewayContract } from '@cashmere-monorepo/shared-contract-core';
 import { Static, TSchema } from '@sinclair/typebox';
 import { TypeCheck, TypeCompiler } from '@sinclair/typebox/compiler';
+import { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
 import { ApiRouteProps } from 'sst/constructs/Api';
 import { FunctionProps } from 'sst/constructs/Function';
 import { ApiHandler, useJsonBody } from 'sst/node/api';
@@ -25,25 +23,15 @@ export const buildSstApiGatewayRouteFunction = <AuthorizerKeys>(
 
 // Build an SST Api Gateway function handler
 export const buildFunctionHandler = <
-    // Type for the handler's
-    QueryStringInputProperties extends TSchema,
-    PathInputProperties extends TSchema,
-    BodyInputProperties extends TSchema,
-    HeadersSchemaProperties extends TSchema,
-    RequestContextProperties extends TSchema,
-    ResponseSchema extends TSchema,
-    // Contract type itself
-    Contract extends ApiGatewayContract<
-        QueryStringInputProperties,
-        PathInputProperties,
-        BodyInputProperties,
-        HeadersSchemaProperties,
-        RequestContextProperties,
-        ResponseSchema
-    >
+    Contract extends GenericApiGatewayContract
 >(
     schema: Contract
-) => {
+): ((
+    handler: FunctionHandlerType<Contract>
+) => (
+    event: import('aws-lambda').APIGatewayProxyEventV2,
+    context: import('aws-lambda').Context
+) => Promise<APIGatewayProxyStructuredResultV2>) => {
     // Get the input and output schema
     const inputSchema = schema.getInputSchema();
     const outputSchema = schema.getOutputSchema();
@@ -52,30 +40,40 @@ export const buildFunctionHandler = <
     const eventTypeCompiler = TypeCompiler.Compile(inputSchema);
     const responseTypeCompiler = TypeCompiler.Compile(outputSchema);
 
-    // Extract the types
-    type TEvent = Static<typeof inputSchema>;
-    type TResponse = Static<typeof outputSchema>;
-
     // Build our api handler
-    return async (handler: (event: TEvent) => Promise<TResponse>) => {
+    return (handler: FunctionHandlerType<Contract>) =>
         ApiHandler(async (_event, _ctw) => {
+            // TODO: Use a logger hook
             // Parse the event body and update the event
             const parsedBody = useJsonBody();
             Object.assign(_event, { body: parsedBody });
             // Validate the input
-            const input: TEvent = validateTypeOrThrow(
-                eventTypeCompiler,
-                _event
-            );
+            const input = validateTypeOrThrow(eventTypeCompiler, _event);
 
             // Run the handler
-            const response = await handler(input as TEvent);
+            const response = await handler(input);
 
-            // Validate the output and return it
-            return validateTypeOrThrow(responseTypeCompiler, response);
+            // Validate the output
+            const validatedResponse = validateTypeOrThrow(
+                responseTypeCompiler,
+                response
+            );
+
+            // Return the response with a string version of the body (if body present)
+            if (validatedResponse.body) {
+                return Object.assign(validatedResponse, {
+                    body: JSON.stringify(validatedResponse.body),
+                });
+            }
+            // Otherwise, return a response with no body
+            return Object.assign(validatedResponse, { body: undefined });
         });
-    };
 };
+
+// Type for our function handler's
+export type FunctionHandlerType<Contract extends GenericApiGatewayContract> = (
+    event: Static<ReturnType<Contract['getInputSchema']>>
+) => Promise<Static<ReturnType<Contract['getOutputSchema']>>>;
 
 // Validate a type from a type compiler or throw an error
 function validateTypeOrThrow<SchemaType extends TSchema, EventType>(

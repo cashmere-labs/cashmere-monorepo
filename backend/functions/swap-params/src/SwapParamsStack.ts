@@ -1,6 +1,6 @@
+import { buildSstApiGatewayRouteFunction } from '@cashmere-monorepo/backend-core/utils';
 import { estimateSwapContract } from '@cashmere-monorepo/shared-contract-swap-params';
 import { Api, StackContext } from 'sst/constructs';
-import { buildSstApiGatewayRouteFunction } from './utils';
 
 const path = './backend/functions/swap-params/src';
 

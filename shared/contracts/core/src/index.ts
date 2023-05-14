@@ -83,16 +83,11 @@ export type ApiGatewayContract<
     }>;
 };
 
-export type GenericApiGatewayContract = {
-    id: string;
-    method: 'GET' | 'POST' | 'PUT' | 'DELETE';
-    path: string;
-    getInputSchema: () => TObject<{
-        queryStringParameters: TSchema;
-        pathParameters: TSchema;
-        body: TSchema;
-        headers: TSchema;
-        requestContext: TSchema;
-    }>;
-    getOutputSchema: () => TObject<{ body: TSchema; statusCode: TNumber }>;
-};
+export type GenericApiGatewayContract = ApiGatewayContract<
+    TSchema,
+    TSchema,
+    TSchema,
+    TSchema,
+    TSchema,
+    TSchema
+>;
