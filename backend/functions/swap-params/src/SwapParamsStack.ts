@@ -1,8 +1,16 @@
+import { estimateSwapContract } from '@cashmere-monorepo/shared-contract-swap-params';
 import { Api, StackContext } from 'sst/constructs';
+import { buildSstApiGatewayRouteFunction } from './utils';
 
 const path = './backend/functions/swap-params/src';
 
 export function SwapParamsStack({ stack }: StackContext) {
+    // Build our routes
+    const estimateSwapRoute = buildSstApiGatewayRouteFunction(
+        `${path}/handlers/lambda.hook.handler`,
+        estimateSwapContract
+    );
+
     // Build our swap param's API
     const api = new Api(stack, 'swap-api', {
         // Default prop's for every routes
@@ -24,6 +32,7 @@ export function SwapParamsStack({ stack }: StackContext) {
         routes: {
             'GET /test-lambda': `${path}/handlers/lambda.handler`,
             'GET /test-lambda-middy': `${path}/handlers/lambda.middy.handler`,
+            estimateSwapRoute,
         },
     });
 

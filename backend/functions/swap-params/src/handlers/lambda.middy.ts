@@ -21,7 +21,8 @@ const baseHandler = async (event: EstimateSwapEvent) => {
     };
 };
 
-export const handler = middyWithLog(baseHandler)
+// @ts-ignore
+const handler = middyWithLog(baseHandler)
     .use(httpEventNormalizer())
     .use(
         httpResponseSerializer({

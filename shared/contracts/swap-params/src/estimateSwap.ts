@@ -1,3 +1,4 @@
+import { buildSstApiGatewayContract } from '@cashmere-monorepo/shared-contract-core/src';
 import { Static, Type } from '@sinclair/typebox';
 
 // TODO: Should create generic type for chain id's, amount, token addresses, etc.
@@ -46,3 +47,11 @@ export const estimateSwapResponse = Type.Object(
     { required: true }
 );
 export type EstimateSwapResponse = Static<typeof estimateSwapResponse>;
+
+export const estimateSwapContract = buildSstApiGatewayContract({
+    id: 'swap-params-estimate',
+    path: '/estimate',
+    method: 'GET',
+    queryStringParamsSchema: estimateSwapQueryParamsType,
+    responseSchema: estimateSwapResponseBodyType,
+});

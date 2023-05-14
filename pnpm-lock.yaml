@@ -77,6 +77,9 @@ importers:
 
   backend/core:
     dependencies:
+      '@cashmere-monorepo/shared-contract-core':
+        specifier: workspace:^
+        version: link:../../shared/contracts/core
       '@middy/core':
         specifier: ^4.4.0
         version: 4.4.0
@@ -187,8 +190,30 @@ importers:
         specifier: ^0.31.0
         version: 0.31.0
 
+  shared/contracts/core:
+    dependencies:
+      '@sinclair/typebox':
+        specifier: ^0.28.9
+        version: 0.28.9
+    devDependencies:
+      '@types/node':
+        specifier: ^18.16.6
+        version: 18.16.6
+      json-schema-to-ts:
+        specifier: ^2.8.0
+        version: 2.8.0
+      sst:
+        specifier: ^2.8.11
+        version: 2.8.11(typescript@5.0.4)
+      vitest:
+        specifier: ^0.31.0
+        version: 0.31.0
+
   shared/contracts/swap-params:
     dependencies:
+      '@cashmere-monorepo/shared-contract-core':
+        specifier: workspace:^
+        version: link:../core
       '@sinclair/typebox':
         specifier: ^0.28.9
         version: 0.28.9
