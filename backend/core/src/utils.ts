@@ -3,7 +3,7 @@ import {
     ApiGatewayContract,
     GenericApiGatewayContract,
 } from '@cashmere-monorepo/shared-contract-core';
-import { Static, TObject, TProperties, TSchema } from '@sinclair/typebox';
+import { Static, TSchema } from '@sinclair/typebox';
 import { TypeCheck, TypeCompiler } from '@sinclair/typebox/compiler';
 import { ApiRouteProps } from 'sst/constructs/Api';
 import { FunctionProps } from 'sst/constructs/Function';
@@ -27,7 +27,7 @@ export const buildSstApiGatewayRouteFunction = <AuthorizerKeys>(
 export const buildFunctionHandler = <
     // Type for the handler's
     QueryStringInputProperties extends TSchema,
-    PathInputProperties extends TObject<TProperties>,
+    PathInputProperties extends TSchema,
     BodyInputProperties extends TSchema,
     HeadersSchemaProperties extends TSchema,
     RequestContextProperties extends TSchema,
@@ -40,38 +40,36 @@ export const buildFunctionHandler = <
         HeadersSchemaProperties,
         RequestContextProperties,
         ResponseSchema
-    >,
-    // Parsed types
-    Event = Static<ReturnType<Contract['getInputSchema']>>,
-    Response = Static<ReturnType<Contract['getOutputSchema']>>
+    >
 >(
     schema: Contract
 ) => {
-    // Some initial data computation, for hooks etc
-    const inputSchema: TObject<{
-        pathParameters: PathInputProperties;
-        headers: HeadersSchemaProperties;
-        queryStringParameters: QueryStringInputProperties;
-        body: BodyInputProperties;
-        requestContext: RequestContextProperties;
-    }> = schema.getInputSchema();
+    // Get the input and output schema
+    const inputSchema = schema.getInputSchema();
     const outputSchema = schema.getOutputSchema();
 
     // Build our type compiler (this avoids too much type generation and save runtime perf on multiple lambda call's)
     const eventTypeCompiler = TypeCompiler.Compile(inputSchema);
     const responseTypeCompiler = TypeCompiler.Compile(outputSchema);
 
+    // Extract the types
+    type TEvent = Static<typeof inputSchema>;
+    type TResponse = Static<typeof outputSchema>;
+
     // Build our api handler
-    return async (handler: (event: Event) => Promise<Response>) => {
+    return async (handler: (event: TEvent) => Promise<TResponse>) => {
         ApiHandler(async (_event, _ctw) => {
             // Parse the event body and update the event
             const parsedBody = useJsonBody();
             Object.assign(_event, { body: parsedBody });
             // Validate the input
-            const input = validateTypeOrThrow(eventTypeCompiler, _event);
+            const input: TEvent = validateTypeOrThrow(
+                eventTypeCompiler,
+                _event
+            );
 
             // Run the handler
-            const response = await handler(input as Event);
+            const response = await handler(input as TEvent);
 
             // Validate the output and return it
             return validateTypeOrThrow(responseTypeCompiler, response);

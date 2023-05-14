@@ -1,29 +1,23 @@
 // Build an api gateway contract
-import {
-    TNumber,
-    TObject,
-    TProperties,
-    TSchema,
-    Type,
-} from '@sinclair/typebox';
+import { TNumber, TObject, TSchema, Type } from '@sinclair/typebox';
 
 export const buildSstApiGatewayContract = <
-    QueryStringInputProperties extends TProperties,
-    PathInputProperties extends TProperties,
-    BodyInputProperties extends TProperties,
-    HeadersSchemaProperties extends TProperties,
-    RequestContextProperties extends TProperties,
-    ResponseSchema extends TProperties
+    QueryStringInputProperties extends TSchema,
+    PathInputProperties extends TSchema,
+    BodyInputProperties extends TSchema,
+    HeadersSchemaProperties extends TSchema,
+    RequestContextProperties extends TSchema,
+    ResponseSchema extends TSchema
 >(props: {
     id: string;
     path: string;
     method: 'GET' | 'POST' | 'PUT' | 'DELETE';
-    queryStringParamsSchema?: TObject<QueryStringInputProperties>;
-    pathParamsSchema?: TObject<PathInputProperties>;
-    bodySchema?: TObject<BodyInputProperties>;
-    headersSchema?: TObject<HeadersSchemaProperties>;
-    requestContextSchema?: TObject<RequestContextProperties>;
-    responseSchema?: TObject<ResponseSchema>;
+    queryStringParamsSchema?: QueryStringInputProperties;
+    pathParamsSchema?: PathInputProperties;
+    bodySchema?: BodyInputProperties;
+    headersSchema?: HeadersSchemaProperties;
+    requestContextSchema?: RequestContextProperties;
+    responseSchema?: ResponseSchema;
 }): ApiGatewayContract<
     QueryStringInputProperties,
     PathInputProperties,
@@ -77,10 +71,10 @@ export type ApiGatewayContract<
     method: 'GET' | 'POST' | 'PUT' | 'DELETE';
     path: string;
     getInputSchema: () => TObject<{
-        pathParameters: PathInputProperties;
-        headers: HeadersSchemaProperties;
         queryStringParameters: QueryStringInputProperties;
+        pathParameters: PathInputProperties;
         body: BodyInputProperties;
+        headers: HeadersSchemaProperties;
         requestContext: RequestContextProperties;
     }>;
     getOutputSchema: () => TObject<{
@@ -94,10 +88,10 @@ export type GenericApiGatewayContract = {
     method: 'GET' | 'POST' | 'PUT' | 'DELETE';
     path: string;
     getInputSchema: () => TObject<{
-        pathParameters: TSchema;
-        headers: TSchema;
         queryStringParameters: TSchema;
+        pathParameters: TSchema;
         body: TSchema;
+        headers: TSchema;
         requestContext: TSchema;
     }>;
     getOutputSchema: () => TObject<{ body: TSchema; statusCode: TNumber }>;
