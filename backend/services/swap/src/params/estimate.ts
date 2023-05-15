@@ -7,7 +7,7 @@ import {
     getNetworkConfig,
     getUniswapRepository,
 } from '@cashmere-monorepo/backend-blockchain';
-import { logger } from 'nx/src/utils/logger';
+import { logger } from '@cashmere-monorepo/backend-core';
 import { formatEther, formatUnits, getAddress } from 'viem';
 import { getAllSwapParamsDatas } from '../helpers/paramsUtils';
 
@@ -22,6 +22,7 @@ type EstimationParams = {
 
 // Perform a swap estimation
 export const swapEstimation = async (params: EstimationParams) => {
+    logger.debug({ params }, 'Estimating swaps');
     // Extract and format our param's
     const {
         srcChainId,

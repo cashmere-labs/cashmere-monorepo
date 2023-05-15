@@ -3,14 +3,7 @@ import { Api, StackContext } from 'sst/constructs';
 export function CoreStack({ stack }: StackContext) {
     // Build our whole API
     const api = new Api(stack, 'api', {
-        defaults: {
-            function: {
-                // Default timeout to 30seconds
-                timeout: '30 seconds',
-                // Default memory to 512MB
-                memorySize: '512 MB',
-            },
-        },
+        // TODO : This will be used to declare the root custom domain, via CDK, that will be later used by all the child API Gateway
     });
     // Add the api url to our stack output
     stack.addOutputs({

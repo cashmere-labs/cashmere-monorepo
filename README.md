@@ -1,6 +1,6 @@
 # Cashmere Monorepo
 
-This repository contains a monorepo project for the Cashmere platform, which uses SST for AWS stack management, Pnpm for dependency management, NX for task management, and other tools like Pino, Middy, Prettier, and Vitest.
+This repository contains a monorepo project for the Cashmere platform, which uses SST for AWS stack management, Pnpm for dependency management, NX for task management, and other tools like Pino, TypeBox, Prettier, and Vitest.
 
 ## Table of Contents
 
@@ -41,7 +41,7 @@ To get started with the project, make sure you have the AWS CLI configured on yo
 -   [Pnpm](https://pnpm.io/): For fast monorepo dependency management
 -   [NX](https://nx.dev/): For powerful task management
 -   [Pino](https://github.com/pinojs/pino): For logging
--   [Middy](https://github.com/middyjs/middy): For API middleware
+-   [TypeBox](https://github.com/sinclairzx81/typebox): For type checking
 -   [Prettier](https://prettier.io/): For code formatting
 -   [Vitest](https://github.com/vitest-dev/vitest): For unit testing
 

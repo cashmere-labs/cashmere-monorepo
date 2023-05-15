@@ -1,60 +1,30 @@
-import { FromSchema } from 'json-schema-to-ts';
+import { buildSstApiGatewayContract } from '@cashmere-monorepo/shared-contract-core/src';
+import { Type } from '@sinclair/typebox';
 
-export const estimateSwapEvent = {
-    type: 'object',
-    properties: {
-        queryStringParameters: {
-            type: 'object',
-            properties: {
-                srcChainId: { type: 'string' },
-                dstChainId: { type: 'string' },
-                amount: { type: 'string' },
-                srcToken: { type: 'string' },
-                dstToken: { type: 'string' },
-            },
-            required: [
-                'srcChainId',
-                'dstChainId',
-                'amount',
-                'srcToken',
-                'dstToken',
-            ],
-            additionalProperties: false,
-        },
-    },
-    required: ['queryStringParameters'],
-} as const;
+// TODO: Should create generic type for chain id's, amount, token addresses, etc. (with specific type validation rules, like number etc)
 
-export type EstimateSwapEvent = FromSchema<typeof estimateSwapEvent>;
+// The schema for the request query parameters
+export const estimateSwapQueryParamsType = Type.Object({
+    srcChainId: Type.String(),
+    dstChainId: Type.String(),
+    amount: Type.String(),
+    srcToken: Type.String(),
+    dstToken: Type.String(),
+});
 
-export const estimateResponseSchema = {
-    type: 'object',
-    properties: {
-        body: {
-            type: 'object',
-            properties: {
-                dstAmount: { type: 'string' },
-                minReceivedDst: { type: 'string' },
-                fee: { type: 'string' },
-                priceImpact: { type: 'string' },
-                nativeFee: { type: 'string' },
-            },
-            required: [
-                'dstAmount',
-                'minReceivedDst',
-                'fee',
-                'priceImpact',
-                'nativeFee',
-            ],
-            additionalProperties: false,
-        },
-    },
-    required: ['body'],
-} as const;
+// Typebox schema for the response body
+export const estimateSwapResponseBodyType = Type.Object({
+    dstAmount: Type.String(),
+    minReceivedDst: Type.String(),
+    fee: Type.String(),
+    priceImpact: Type.String(),
+    nativeFee: Type.String(),
+});
 
-export type EstimateSwapResponse = FromSchema<typeof estimateResponseSchema>;
-
-export const estimateSwapRoute = {
+export const estimateSwapContract = buildSstApiGatewayContract({
+    id: 'swap-params-estimate',
     path: '/estimate',
     method: 'GET',
-};
+    queryStringParamsSchema: estimateSwapQueryParamsType,
+    responseSchema: estimateSwapResponseBodyType,
+});
