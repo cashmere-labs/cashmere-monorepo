@@ -6,7 +6,7 @@ const path = './backend/functions/swap-params/src';
 
 export function SwapParamsStack({ stack }: StackContext) {
     // Build our swap param's API
-    const api = new Api(stack, 'swap-api', {
+    const api = new Api(stack, 'SwapApi', {
         // Default prop's for every routes
         defaults: {
             function: {
@@ -17,11 +17,7 @@ export function SwapParamsStack({ stack }: StackContext) {
             },
         },
         // TODO: Domain name configuration, when domain name will be on route53
-        /*customDomain: {
-      domainName: `api-${stack.stage}.cashmere.com`,
-      hostedZone: "domain.com",
-      path: "swapParams/v1",
-    },*/
+        /*customDomain: use(CoreStack).getDomainPath("params") */
     });
 
     // Add the contract routes

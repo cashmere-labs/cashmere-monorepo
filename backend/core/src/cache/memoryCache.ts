@@ -23,8 +23,13 @@ interface CacheType {
 // Our current memoryCache instance
 let memoryCache: CacheType = {};
 
-// Get or set a value from memoryCache
-export const getOrSetFromCache = async <T>(
+/**
+ * Get or set a value from the memory cache
+ * @DEPRECATED -> Use the getOrSetFromCache from dyanmodb db instead
+ * @param params
+ * @param valueAccessor
+ */
+export const getOrSetFromMemoryCache = async <T>(
     params: GetOrSetFromCacheParams,
     valueAccessor: () => Promise<T>
 ) => {

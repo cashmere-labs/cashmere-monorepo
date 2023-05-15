@@ -12,7 +12,7 @@ const contractHandler = ContractFunctionHandler(estimateSwapContract);
 // Export our handler
 export const handler = contractHandler(async (event) => {
     useLogger();
-    logger.debug({ event }, 'Received event');
+
     const response = await swapEstimation({
         srcChainId: parseInt(event.queryStringParameters.srcChainId),
         dstChainId: parseInt(event.queryStringParameters.dstChainId),

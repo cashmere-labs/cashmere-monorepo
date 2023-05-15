@@ -21,6 +21,8 @@ export const estimateSwapResponseBodyType = Type.Object({
     nativeFee: Type.String(),
 });
 
+// Get the api path into account when building the contract
+// TODO : Maybe an export of the whole API routes contracts, with path? Used by front & back
 export const estimateSwapContract = buildSstApiGatewayContract({
     id: 'swap-params-estimate',
     path: '/estimate',
