@@ -7,11 +7,15 @@ const path = './backend/functions/core/src';
  */
 export function WebSocketStack({ stack }: StackContext) {
     // Build the table we will use to store each connection
-    const socketTable = new Table(stack, 'SocketTable', {
+    const socketTable = new Table(stack, 'WebSocketDynamo', {
         fields: {
             id: 'string',
+            room: 'string',
         },
-        primaryIndex: { partitionKey: 'id' },
+        primaryIndex: { partitionKey: 'room', sortKey: 'id' },
+        globalIndexes: {
+            gSIConnectionId: { partitionKey: 'id', sortKey: 'room' },
+        },
     });
 
     // Then, build our websocket api

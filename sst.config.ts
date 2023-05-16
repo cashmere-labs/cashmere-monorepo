@@ -1,6 +1,7 @@
 import { SSTConfig } from 'sst';
 import { use } from 'sst/constructs';
 import { CoreStack } from './backend/core/stacks/CoreStack';
+import { WebSocketStack } from './backend/core/stacks/WebSocketStack';
 import { SwapParamsStack } from './backend/functions/swap-params/SwapParamsStack';
 
 export default {
@@ -36,6 +37,7 @@ export default {
 
         // Our core stack (main api, caching etc)
         app.stack(CoreStack);
+        app.stack(WebSocketStack);
 
         // Bind the caching table to all of our stack
         app.addDefaultFunctionBinding([use(CoreStack).cachingTable]);

@@ -1,11 +1,12 @@
 {
-    "name": "@cashmere-monorepo/backend-service-web-socket",
+    "name": "@cashmere-monorepo/backend-service-websocket",
     "version": "0.0.0",
     "type": "module",
     "scripts": {
         "typecheck": "tsc -noEmit"
     },
     "dependencies": {
+        "@aws-sdk/client-dynamodb": "^3.332.0",
         "@cashmere-monorepo/backend-core": "workspace:^",
         "viem": "^0.3.24"
     },
