@@ -1,7 +1,7 @@
 import { SSTConfig } from 'sst';
 import { use } from 'sst/constructs';
 import { CoreStack } from './backend/core/stacks/CoreStack';
-import { SwapParamsStack } from './backend/functions/swap-params/src/SwapParamsStack';
+import { SwapParamsStack } from './backend/functions/swap-params/SwapParamsStack';
 
 export default {
     config(_input) {

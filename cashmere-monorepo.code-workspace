@@ -78,8 +78,20 @@
             "name": "[backend][functions] swap params"
         },
         {
+            "path": "backend/functions/progress",
+            "name": "[backend][functions] progress"
+        },
+        {
+            "path": "backend/services/websocket",
+            "name": "[backend][services] web socket"
+        },
+        {
             "path": "backend/services/swap",
             "name": "[backend][services] swap"
+        },
+        {
+            "path": "backend/services/progress",
+            "name": "[backend][services] progress"
         },
         {
             "path": "shared/blockchain",
