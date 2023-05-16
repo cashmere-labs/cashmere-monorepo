@@ -53,3 +53,17 @@ export const getAllConnectionIdsForRoom = async (roomId: string) =>
         },
         KeyConditionExpression: 'room = :roomId',
     });
+
+/**
+ * Get all the connection ids for a given room
+ * @param roomId
+ */
+export const getAllRoomForConnectionId = async (connectionId: string) =>
+    await dynamoDbClient.query({
+        TableName: Table.WebSocketDynamo.tableName,
+        IndexName: 'idIndex',
+        ExpressionAttributeValues: {
+            ':id': { S: connectionId },
+        },
+        KeyConditionExpression: 'id = :id',
+    });

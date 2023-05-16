@@ -1,6 +1,7 @@
 import { logger } from '@cashmere-monorepo/backend-core';
 import {
     deleteConnections,
+    getAllRoomForConnectionId,
     saveNewConnection,
 } from '../repositories/wsDynamo.repository';
 import { defaultRoomId } from './room';
@@ -23,8 +24,12 @@ export const wsConnection = async (connectionId: string) => {
 export const wsDisconnection = async (connectionId: string) => {
     logger.debug({ connectionId }, 'Web socket disconnection');
 
-    // TODO: Find all the room the user was in, to get the composite key's
+    // Get all the room for the given connection id
+    const dynamoItems = await getAllRoomForConnectionId(connectionId);
+    const rooms = (dynamoItems.Items?.map((item) => item.room.S)?.filter(
+        (room) => room !== undefined
+    ) as string[]) ?? [defaultRoomId];
 
     // Delete the entry in our dynamo db table
-    await deleteConnections(connectionId, [defaultRoomId]);
+    await deleteConnections(connectionId, rooms);
 };

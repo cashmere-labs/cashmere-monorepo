@@ -14,7 +14,7 @@ export function WebSocketStack({ stack }: StackContext) {
         },
         primaryIndex: { partitionKey: 'room', sortKey: 'id' },
         globalIndexes: {
-            gSIConnectionId: { partitionKey: 'id', sortKey: 'room' },
+            idIndex: { partitionKey: 'id', sortKey: 'room' },
         },
     });
 
