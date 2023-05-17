@@ -8,14 +8,14 @@
     "devDependencies": {
         "@types/aws-lambda": "^8.10.115",
         "@types/node": "^18.16.12",
-        "sst": "^2.8.23",
-        "vitest": "^0.31.0"
+        "sst": "^2.8.26",
+        "vitest": "^0.31.1"
     },
     "dependencies": {
         "@aws-sdk/client-dynamodb": "^3.332.0",
         "@cashmere-monorepo/backend-service-websocket": "workspace:^",
         "@cashmere-monorepo/shared-contract-core": "workspace:^",
-        "@sinclair/typebox": "^0.28.10",
+        "@sinclair/typebox": "^0.28.11",
         "async-mutex": "^0.4.0",
         "pino": "^8.14.1",
         "pino-lambda": "^4.2.1"
