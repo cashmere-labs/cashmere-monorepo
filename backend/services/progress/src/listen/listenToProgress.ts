@@ -20,4 +20,20 @@ export const addProgressListener = async (
     const roomId = buildProgressRoom(getAddress(address));
     // Register the user to the given room
     await wsEnterRoom(connectionId, roomId);
+
+    /*
+    TODO:
+            this.databaseService
+            .getSwapDataByReceiver(getAddress(address), {
+                progressHidden: null,
+                swapContinueConfirmed: null,
+            })
+            .then(({ items, count }) => {
+                client.emit('pendingCount', count);
+                items.forEach((swapData) =>
+                    client.emit('progressUpdate', swapData)
+                );
+            });
+
+     */
 };

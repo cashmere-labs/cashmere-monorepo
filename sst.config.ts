@@ -2,6 +2,7 @@ import { SSTConfig } from 'sst';
 import { use } from 'sst/constructs';
 import { CoreStack } from './backend/core/stacks/CoreStack';
 import { WebSocketStack } from './backend/core/stacks/WebSocketStack';
+import { DatabaseStack } from './backend/database/DatabaseStack';
 import { SwapParamsStack } from './backend/functions/swap-params/SwapParamsStack';
 
 export default {
@@ -35,9 +36,13 @@ export default {
             tracing: 'disabled',
         });
 
-        // Our core stack (main api, caching etc)
+        // Our core stack (main api, caching, database)
         app.stack(CoreStack);
+        app.stack(DatabaseStack);
         app.stack(WebSocketStack);
+
+        // Add the db env to our default function env
+        app.addDefaultFunctionEnv(use(DatabaseStack).environment);
 
         // Bind the caching table to all of our stack
         app.addDefaultFunctionBinding([use(CoreStack).cachingTable]);
