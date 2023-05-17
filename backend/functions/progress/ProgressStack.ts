@@ -9,7 +9,7 @@ export function ProgressStack({ stack }: StackContext) {
 
     // Add the set address route for progress
     webSocketApi.addRoutes(stack, {
-        setAddressForProgress: `${path}/handlers/ws/setAddress.handler`,
+        setAddressForProgress: `${path}/handlers/ws/setAddressForProgress.handler`,
     });
 
     // TODO: Also port the http api of the progress?
