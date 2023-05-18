@@ -24,7 +24,11 @@ export function ProgressStack({ stack }: StackContext) {
             },
         },
         // TODO: Domain name configuration, when domain name will be on route53
-        /*customDomain: use(CoreStack).getDomainPath("params") */
+        customDomain: {
+            path: 'progress',
+            domainName: `ws-${stack.stage}.aws.cashmere.exchange`.toLowerCase(),
+            hostedZone: 'aws.cashmere.exchange',
+        },
         // All our web socket routes
         routes: {
             $connect: `${path}/handlers/ws/connect.handler`,

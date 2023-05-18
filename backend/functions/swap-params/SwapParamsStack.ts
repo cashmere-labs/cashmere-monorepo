@@ -1,6 +1,7 @@
 import { ContractApiGatewayRoute } from '@cashmere-monorepo/backend-core/contracts';
+import { CoreStack } from '@cashmere-monorepo/backend-core/stacks/CoreStack';
 import { estimateSwapContract } from '@cashmere-monorepo/shared-contract-swap-params';
-import { Api, StackContext } from 'sst/constructs';
+import { Api, StackContext, use } from 'sst/constructs';
 
 const path = './backend/functions/swap-params/src';
 
@@ -17,7 +18,7 @@ export function SwapParamsStack({ stack }: StackContext) {
             },
         },
         // TODO: Domain name configuration, when domain name will be on route53
-        /*customDomain: use(CoreStack).getDomainPath("params") */
+        customDomain: use(CoreStack).getDomainPath('swap'),
     });
 
     // Add the contract routes

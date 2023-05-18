@@ -3,10 +3,11 @@ import { Api, ApiDomainProps, StackContext, Table } from 'sst/constructs';
 export function CoreStack({ stack }: StackContext) {
     // Build our initial API that's linked to our route53 domain
     const api = new Api(stack, 'CoreApi', {
-        /*customDomain: {
-            domainName: `api-${stack.stage}.route53.cashmere.exchange`.toLowerCase(),
-            hostedZone: "route53.cashmere.exchange",
-        },*/
+        customDomain: {
+            domainName:
+                `api-${stack.stage}.aws.cashmere.exchange`.toLowerCase(),
+            hostedZone: 'aws.cashmere.exchange',
+        },
         // TODO : This will be used to declare the root custom domain, via CDK, that will be later used by all the child API Gateway
     });
 
