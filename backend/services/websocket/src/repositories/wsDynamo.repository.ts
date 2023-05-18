@@ -1,6 +1,6 @@
 import { DynamoDB } from '@aws-sdk/client-dynamodb';
 import { Table } from 'sst/node/table';
-import { defaultRoomId } from '../session/room';
+import { defaultRoomId } from '../session';
 
 // Access to our dynamoDB
 // TODO: Should check if we have the region on the env variable, if not add it

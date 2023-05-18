@@ -1,4 +1,4 @@
-import { Schema } from 'mongoose';
+import { HydratedDocumentFromSchema, Schema } from 'mongoose';
 
 /**
  * Define the swap data schema
@@ -56,3 +56,8 @@ export const SwapDataSchema = new Schema({
 });
 // Add unique index on swap id and src chain id
 SwapDataSchema.index({ swapId: 1, srcChainId: 1 }, { unique: true });
+
+// The type for our swap data document
+export type SwapDataDocument = HydratedDocumentFromSchema<
+    typeof SwapDataSchema
+>;

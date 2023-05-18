@@ -8,6 +8,7 @@
     "dependencies": {
         "@cashmere-monorepo/backend-blockchain": "workspace:^",
         "@cashmere-monorepo/backend-core": "workspace:^",
+        "@cashmere-monorepo/backend-database": "workspace:^",
         "@cashmere-monorepo/backend-service-websocket": "workspace:^",
         "viem": "^0.3.28"
     },
