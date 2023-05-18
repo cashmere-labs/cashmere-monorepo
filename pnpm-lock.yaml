@@ -80,9 +80,6 @@ importers:
       '@aws-sdk/client-dynamodb':
         specifier: ^3.332.0
         version: 3.332.0
-      '@cashmere-monorepo/backend-service-websocket':
-        specifier: workspace:^
-        version: link:../services/websocket
       '@cashmere-monorepo/shared-contract-core':
         specifier: workspace:^
         version: link:../../shared/contracts/core
@@ -145,6 +142,9 @@ importers:
       '@cashmere-monorepo/backend-service-progress':
         specifier: workspace:^
         version: link:../../services/progress
+      '@cashmere-monorepo/backend-service-websocket':
+        specifier: workspace:^
+        version: link:../../services/websocket
       '@cashmere-monorepo/shared-contract-progress':
         specifier: workspace:^
         version: link:../../../shared/contracts/progress

@@ -13,7 +13,6 @@
     },
     "dependencies": {
         "@aws-sdk/client-dynamodb": "^3.332.0",
-        "@cashmere-monorepo/backend-service-websocket": "workspace:^",
         "@cashmere-monorepo/shared-contract-core": "workspace:^",
         "@sinclair/typebox": "^0.28.11",
         "async-mutex": "^0.4.0",

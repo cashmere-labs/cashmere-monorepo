@@ -6,6 +6,7 @@
     },
     "dependencies": {
         "@cashmere-monorepo/backend-core": "workspace:^",
+        "@cashmere-monorepo/backend-service-websocket": "workspace:^",
         "@cashmere-monorepo/backend-service-progress": "workspace:^",
         "@cashmere-monorepo/shared-contract-progress": "workspace:^"
     },

@@ -1,8 +1,8 @@
 import { SSTConfig } from 'sst';
 import { use } from 'sst/constructs';
 import { CoreStack } from './backend/core/stacks/CoreStack';
-import { WebSocketStack } from './backend/core/stacks/WebSocketStack';
 import { DatabaseStack } from './backend/database/DatabaseStack';
+import { ProgressStack } from './backend/functions/progress/ProgressStack';
 import { SwapParamsStack } from './backend/functions/swap-params/SwapParamsStack';
 
 export default {
@@ -39,7 +39,6 @@ export default {
         // Our core stack (main api, caching, database)
         app.stack(CoreStack);
         app.stack(DatabaseStack);
-        app.stack(WebSocketStack);
 
         // Add the db env to our default function env
         app.addDefaultFunctionEnv(use(DatabaseStack).environment);
@@ -49,5 +48,6 @@ export default {
 
         // Every API Stack's
         app.stack(SwapParamsStack);
+        app.stack(ProgressStack);
     },
 } satisfies SSTConfig;
