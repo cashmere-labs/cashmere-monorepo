@@ -7,12 +7,12 @@
     },
     "devDependencies": {
         "@types/aws-lambda": "^8.10.115",
-        "@types/node": "^18.16.12",
-        "sst": "^2.8.26",
+        "@types/node": "^18.16.13",
+        "sst": "^2.8.27",
         "vitest": "^0.31.1"
     },
     "dependencies": {
-        "@aws-sdk/client-dynamodb": "^3.332.0",
+        "@aws-sdk/client-dynamodb": "^3.335.0",
         "@cashmere-monorepo/shared-contract-core": "workspace:^",
         "@sinclair/typebox": "^0.28.11",
         "async-mutex": "^0.4.0",

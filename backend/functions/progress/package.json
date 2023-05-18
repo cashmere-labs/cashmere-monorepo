@@ -6,14 +6,14 @@
     },
     "dependencies": {
         "@cashmere-monorepo/backend-core": "workspace:^",
-        "@cashmere-monorepo/backend-service-websocket": "workspace:^",
         "@cashmere-monorepo/backend-service-progress": "workspace:^",
+        "@cashmere-monorepo/backend-service-websocket": "workspace:^",
         "@cashmere-monorepo/shared-contract-progress": "workspace:^"
     },
     "devDependencies": {
         "@types/aws-lambda": "^8.10.115",
-        "@types/node": "^18.16.12",
-        "sst": "^2.8.26",
+        "@types/node": "^18.16.13",
+        "sst": "^2.8.27",
         "vitest": "^0.31.1"
     }
 }

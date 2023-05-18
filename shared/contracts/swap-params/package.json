@@ -7,9 +7,9 @@
         "typecheck": "tsc -noEmit"
     },
     "devDependencies": {
-        "@types/node": "^18.16.12",
+        "@types/node": "^18.16.13",
         "json-schema-to-ts": "^2.8.2",
-        "sst": "^2.8.26",
+        "sst": "^2.8.27",
         "vitest": "^0.31.1"
     },
     "dependencies": {
