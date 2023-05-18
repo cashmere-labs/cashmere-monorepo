@@ -1,0 +1,28 @@
+# Pnpm lock
+pnpm-lock.yaml
+
+# dependencies
+node_modules
+
+# sst
+.sst
+.build
+
+# opennext
+.open-next
+
+# misc
+.DS_Store
+
+# local env files
+.env*.local
+
+# production
+/build
+**/dist
+
+# Build memoryCache manifests
+*.tsbuildinfo
+
+# Turbo repo build
+.turbo
