@@ -1,7 +1,7 @@
 import { Address, Hash, Hex } from 'viem';
 
 // Swap data interface
-export interface SwapData {
+export interface SwapDataDbDto {
     swapId: Hex;
 
     // Chains info

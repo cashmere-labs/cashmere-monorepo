@@ -8,7 +8,7 @@ import {
     isPlaceholderToken,
 } from '@cashmere-monorepo/backend-blockchain';
 import { InvalidArgumentsError, logger } from '@cashmere-monorepo/backend-core';
-import { SwapData } from '@cashmere-monorepo/backend-database';
+import { SwapDataDbDto } from '@cashmere-monorepo/backend-database';
 import { DateTime } from 'luxon';
 import { Address, getAddress } from 'viem';
 import { getAllSwapParamsDatas } from '../helpers/paramsUtils';
@@ -39,7 +39,7 @@ export interface SwapParamsResponse {
     args: StartSwapTxArgs;
     to: Address;
     value: string;
-    swapData: SwapData;
+    swapData: SwapDataDbDto;
 }
 
 /**
@@ -183,7 +183,7 @@ export async function buildPlaceholderSwapData(
     dstTokenOriginal: Address,
     amount: bigint,
     receiver: Address
-): Promise<SwapData> {
+): Promise<SwapDataDbDto> {
     const progressRepository = getProgressRepository();
 
     return {
