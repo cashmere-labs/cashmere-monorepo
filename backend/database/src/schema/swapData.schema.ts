@@ -1,10 +1,11 @@
-import { HydratedDocumentFromSchema, Schema } from 'mongoose';
+import { HydratedDocument, Schema } from 'mongoose';
+import { SwapDataDbDto } from '../dto/swapData';
 
 /**
  * Define the swap data schema
  */
-export const SwapDataSchema = new Schema({
-    swapId: { type: String, index: true },
+export const SwapDataSchema = new Schema<SwapDataDbDto>({
+    swapId: { type: String, required: true, index: true },
 
     // Chain's infos
     chains: {
@@ -32,7 +33,7 @@ export const SwapDataSchema = new Schema({
 
     // Status data
     status: {
-        swapInitiatedTimestamp: { type: Date },
+        swapInitiatedTimestamp: { type: Number },
         swapInitiatedTxid: { type: String },
         l0Link: { type: String },
         swapPerformedTxid: { type: String },
@@ -54,10 +55,9 @@ export const SwapDataSchema = new Schema({
 
     skipProcessing: { type: Boolean },
 });
+
 // Add unique index on swap id and src chain id
-SwapDataSchema.index({ swapId: 1, srcChainId: 1 }, { unique: true });
+SwapDataSchema.index({ swapId: 1, 'chains.srcChainId': 1 }, { unique: true });
 
 // The type for our swap data document
-export type SwapDataDocument = HydratedDocumentFromSchema<
-    typeof SwapDataSchema
->;
+export type SwapDataDocument = HydratedDocument<SwapDataDbDto>;
