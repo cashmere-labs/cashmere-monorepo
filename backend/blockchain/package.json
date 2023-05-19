@@ -9,12 +9,12 @@
     "dependencies": {
         "@cashmere-monorepo/backend-core": "workspace:^",
         "@cashmere-monorepo/shared-blockchain": "workspace:^",
-        "viem": "^0.3.24"
+        "viem": "^0.3.30"
     },
     "devDependencies": {
         "@types/aws-lambda": "^8.10.115",
-        "@types/node": "^18.16.9",
-        "sst": "^2.8.20",
-        "vitest": "^0.31.0"
+        "@types/node": "^18.16.13",
+        "sst": "^2.8.27",
+        "vitest": "^0.31.1"
     }
 }

@@ -1,0 +1,19 @@
+{
+    "name": "@cashmere-monorepo/backend-service-websocket",
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "typecheck": "tsc -noEmit"
+    },
+    "dependencies": {
+        "@aws-sdk/client-dynamodb": "^3.335.0",
+        "@cashmere-monorepo/backend-core": "workspace:^",
+        "viem": "^0.3.30"
+    },
+    "devDependencies": {
+        "@types/aws-lambda": "^8.10.115",
+        "@types/node": "^18.16.13",
+        "sst": "^2.8.27",
+        "vitest": "^0.31.1"
+    }
+}

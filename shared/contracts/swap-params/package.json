@@ -7,13 +7,13 @@
         "typecheck": "tsc -noEmit"
     },
     "devDependencies": {
-        "@types/node": "^18.16.9",
+        "@types/node": "^18.16.13",
         "json-schema-to-ts": "^2.8.2",
-        "sst": "^2.8.20",
-        "vitest": "^0.31.0"
+        "sst": "^2.8.27",
+        "vitest": "^0.31.1"
     },
     "dependencies": {
         "@cashmere-monorepo/shared-contract-core": "workspace:^",
-        "@sinclair/typebox": "^0.28.10"
+        "@sinclair/typebox": "^0.28.11"
     }
 }

@@ -1,5 +1,9 @@
 import { SSTConfig } from 'sst';
-import { SwapParamsStack } from './backend/functions/swap-params/src/SwapParamsStack';
+import { use } from 'sst/constructs';
+import { CoreStack } from './backend/core/stacks/CoreStack';
+import { DatabaseStack } from './backend/database/DatabaseStack';
+import { ProgressStack } from './backend/functions/progress/ProgressStack';
+import { SwapParamsStack } from './backend/functions/swap-params/SwapParamsStack';
 
 export default {
     config(_input) {
@@ -20,6 +24,7 @@ export default {
             // Function generic params
             memorySize: '512 MB',
             timeout: '30 seconds',
+            // TODO: Function name builder (should take api base path + url endpoint if any, otherwise handler filename)
             // Runtime and build env
             nodejs: {
                 // Minify code for prod
@@ -27,16 +32,22 @@ export default {
             },
             // Runtime node env
             runtime: 'nodejs18.x',
-            // Allow all external call by default
-            // allowAllOutbound: true,
             // Disable xray tracing
             tracing: 'disabled',
         });
 
-        // TODO: Unused for now since we don't have any domain setup
-        // app.stack(CoreStack);
+        // Our core stack (main api, caching, database)
+        app.stack(CoreStack);
+        app.stack(DatabaseStack);
+
+        // Add the db env to our default function env
+        app.addDefaultFunctionEnv(use(DatabaseStack).environment);
+
+        // Bind the caching table to all of our stack
+        app.addDefaultFunctionBinding([use(CoreStack).cachingTable]);
 
         // Every API Stack's
         app.stack(SwapParamsStack);
+        app.stack(ProgressStack);
     },
 } satisfies SSTConfig;

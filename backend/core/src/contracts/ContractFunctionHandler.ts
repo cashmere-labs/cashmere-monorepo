@@ -61,7 +61,7 @@ export type FunctionHandlerType<Contract extends GenericApiGatewayContract> = (
 ) => Promise<Static<ReturnType<Contract['getOutputSchema']>>>;
 
 // Validate a type from a type compiler or throw an error
-function validateTypeOrThrow<SchemaType extends TSchema, EventType>(
+export function validateTypeOrThrow<SchemaType extends TSchema, EventType>(
     eventTypeCompiler: TypeCheck<SchemaType>,
     object: EventType
 ): Static<SchemaType> {
