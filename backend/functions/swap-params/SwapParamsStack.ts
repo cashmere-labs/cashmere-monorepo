@@ -1,6 +1,9 @@
 import { ContractApiGatewayRoute } from '@cashmere-monorepo/backend-core/contracts';
 import { CoreStack } from '@cashmere-monorepo/backend-core/stacks/CoreStack';
-import { estimateSwapContract } from '@cashmere-monorepo/shared-contract-swap-params';
+import {
+    estimateSwapContract,
+    swapParamsContract,
+} from '@cashmere-monorepo/shared-contract-swap-params';
 import { Api, StackContext, use } from 'sst/constructs';
 
 const path = './backend/functions/swap-params/src';
@@ -27,6 +30,13 @@ export function SwapParamsStack({ stack }: StackContext) {
         ContractApiGatewayRoute(
             `${path}/handlers/estimate-swap-params.handler`,
             estimateSwapContract
+        )
+    );
+    api.addRoutes(
+        stack,
+        ContractApiGatewayRoute(
+            `${path}/handlers/get-swap-params.handler`,
+            swapParamsContract
         )
     );
 
