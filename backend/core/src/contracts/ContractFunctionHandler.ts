@@ -4,7 +4,12 @@ import { Static, TSchema } from '@sinclair/typebox';
 import { TypeCheck, TypeCompiler } from '@sinclair/typebox/compiler';
 import { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
 import { ApiHandler } from 'sst/node/api';
-import { createHttpError } from '../helpers/createHttpError';
+import {
+    HttpError,
+    InternalServerError,
+    InvalidArgumentsError,
+} from '../error';
+import { logger } from '../logger/logger';
 
 // Build an SST Api Gateway function handler
 export const ContractFunctionHandler = <
@@ -56,19 +61,23 @@ export const ContractFunctionHandler = <
                 // Otherwise, return a response with no body
                 return Object.assign(validatedResponse, { body: undefined });
             } catch (e) {
-                if (e.statusCode) {
-                    return {
-                        statusCode: e.statusCode,
-                        body: JSON.stringify({
-                            error: true,
-                            statusCode: e.statusCode,
-                            message: e.message,
-                        }),
-                        headers: { 'content-type': 'application/json' },
-                    };
-                } else {
-                    throw e;
-                }
+                let httpError: HttpError =
+                    e instanceof HttpError
+                        ? e
+                        : new InternalServerError('Unknown error', e);
+                logger.error(
+                    httpError,
+                    'An error occurred while handling a request'
+                );
+                return {
+                    statusCode: httpError.statusCode,
+                    body: JSON.stringify({
+                        errorCode: httpError.errorCode,
+                        message: httpError.message,
+                        details: httpError.options?.details,
+                    }),
+                    headers: { 'content-type': 'application/json' },
+                };
             }
         });
 };
@@ -87,15 +96,13 @@ export function validateTypeOrThrow<SchemaType extends TSchema, EventType>(
     if (eventTypeCompiler.Check(object)) return object;
     // Otherwise throw an error
     const errors = [...eventTypeCompiler.Errors(object)];
-    // Throw an error
-    // TODO: Custom error with status code: 422
-    throw createHttpError(
-        `Invalid request: ${errors
-            .map(
-                (error) =>
-                    `path: ${error.path}, value: ${error.value}, msg${error.message}`
-            )
-            .join('; ')}`,
-        422
-    );
+    // Build a message string
+    const messageString = `Invalid request: ${errors
+        .map(
+            (error) =>
+                `path: ${error.path}, value: ${error.value}, msg: ${error.message}`
+        )
+        .join('; ')}`;
+    // Return the message string
+    throw new InvalidArgumentsError(messageString, errors);
 }
