@@ -8,9 +8,9 @@
     "dependencies": {
         "@cashmere-monorepo/backend-blockchain": "workspace:^",
         "@cashmere-monorepo/backend-core": "workspace:^",
-        "luxon": "^3.3.0",
         "@cashmere-monorepo/backend-database": "workspace:^",
-        "viem": "^0.3.30"
+        "luxon": "^3.3.0",
+        "viem": "^0.3.31"
     },
     "devDependencies": {
         "@types/aws-lambda": "^8.10.115",

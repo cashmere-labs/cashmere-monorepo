@@ -14,7 +14,7 @@
     "dependencies": {
         "@cashmere-monorepo/backend-core": "workspace:^",
         "async-mutex": "^0.4.0",
-        "mongoose": "^7.1.1",
-        "viem": "^0.3.30"
+        "mongoose": "^7.1.2",
+        "viem": "^0.3.31"
     }
 }
