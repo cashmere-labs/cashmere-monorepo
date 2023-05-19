@@ -3,8 +3,7 @@ import { Table } from 'sst/node/table';
 import { defaultRoomId } from '../session';
 
 // Access to our dynamoDB
-// TODO: Should check if we have the region on the env variable, if not add it
-const dynamoDbClient = new DynamoDB({ region: 'us-east-1' });
+const dynamoDbClient = new DynamoDB({ region: process.env.AWS_REGION });
 
 /**
  * Save a new connection in our dynamo db table

@@ -5,8 +5,7 @@ import { Table } from 'sst/node/table';
 import { logger } from '../logger/logger';
 
 // Access to our dynamoDB
-// TODO: Should check if we have the region on the env variable, if not add it
-const dynamoDbClient = new DynamoDB({ region: 'us-east-1' });
+const dynamoDbClient = new DynamoDB({ region: process.env.AWS_REGION });
 
 // Default expiration from our dynamoDbCache, 10minutes
 const defaultTtl = 10 * 60 * 1000;
