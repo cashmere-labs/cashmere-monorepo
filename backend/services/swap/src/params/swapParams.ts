@@ -7,7 +7,7 @@ import {
     getUniswapRepository,
     isPlaceholderToken,
 } from '@cashmere-monorepo/backend-blockchain';
-import { createHttpError, logger } from '@cashmere-monorepo/backend-core';
+import { InvalidArgumentsError, logger } from '@cashmere-monorepo/backend-core';
 import { SwapData } from '@cashmere-monorepo/backend-database';
 import { DateTime } from 'luxon';
 import { Address, getAddress } from 'viem';
@@ -257,9 +257,11 @@ export async function getSwapParams(
         getAddress(params.receiver),
     ];
 
-    if (!amount) throw createHttpError('Amount should be non-zero');
+    if (!amount) throw new InvalidArgumentsError('Amount should be non-zero');
     if (srcChainId === dstChainId)
-        throw createHttpError('Same chain swaps are currently not supported');
+        throw new InvalidArgumentsError(
+            'Same chain swaps are currently not supported'
+        );
 
     try {
         // Get all the swap params
