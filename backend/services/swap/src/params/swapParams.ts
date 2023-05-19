@@ -8,12 +8,10 @@ import {
     isPlaceholderToken,
 } from '@cashmere-monorepo/backend-blockchain';
 import { createHttpError, logger } from '@cashmere-monorepo/backend-core';
+import { SwapData } from '@cashmere-monorepo/backend-database';
 import { DateTime } from 'luxon';
 import { Address, getAddress } from 'viem';
 import { getAllSwapParamsDatas } from '../helpers/paramsUtils';
-
-// TODO: remove and import actual type once it is added
-type SwapData = any;
 
 // Swap params args
 export type SwapParamsArgs = {
@@ -190,30 +188,40 @@ export async function buildPlaceholderSwapData(
 
     return {
         swapId: '0x',
-        srcChainId,
-        dstChainId,
-        srcL0ChainId: 0,
-        dstL0ChainId: 0,
-        lwsPoolId: 0,
-        hgsPoolId: 0,
-        hgsAmount: '0',
-        dstToken,
-        minHgsAmount: '0',
-        fee: '0',
-        receiver,
-        signature: '0x',
-        swapInitiatedTimestamp: DateTime.now().toUnixInteger(),
-        swapInitiatedTxid: '0x',
-        srcAmount: amount.toString(),
-        srcToken,
-        ...(await progressRepository.getTokenMetadata({
+        chains: {
             srcChainId,
             dstChainId,
-            srcToken: srcTokenOriginal,
-            lwsToken,
-            hgsToken,
-            dstToken: dstTokenOriginal,
-        })),
+            srcL0ChainId: 0,
+            dstL0ChainId: 0,
+        },
+        path: {
+            lwsPoolId: 0,
+            hgsPoolId: 0,
+            hgsAmount: '0',
+            dstToken,
+            minHgsAmount: '0',
+            fee: '0',
+        },
+        user: {
+            receiver,
+            signature: '0x',
+        },
+        status: {
+            swapInitiatedTimestamp: DateTime.now().toUnixInteger(),
+            swapInitiatedTxid: '0x',
+        },
+        progress: {
+            srcToken,
+            srcAmount: amount.toString(),
+            ...(await progressRepository.getTokenMetadata({
+                srcChainId,
+                dstChainId,
+                srcToken: srcTokenOriginal,
+                lwsToken,
+                hgsToken,
+                dstToken: dstTokenOriginal,
+            })),
+        },
     };
 }
 
