@@ -4,6 +4,7 @@ import { Static, TSchema } from '@sinclair/typebox';
 import { TypeCheck, TypeCompiler } from '@sinclair/typebox/compiler';
 import { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
 import { ApiHandler } from 'sst/node/api';
+import { createHttpError } from '../helpers/createHttpError';
 
 // Build an SST Api Gateway function handler
 export const ContractFunctionHandler = <
@@ -27,31 +28,48 @@ export const ContractFunctionHandler = <
     // Build our api handler
     return (handler: FunctionHandlerType<Contract>) =>
         ApiHandler(async (_event, _context) => {
-            // Parse the event body and update the event if needed (TODO: Also handle base64 body, like useBody() hooks from SST)
-            if (_event.body && typeof _event.body === 'string') {
-                // Update the event with the parsed body
-                Object.assign(_event, { body: JSON.parse(_event.body) });
+            try {
+                // Parse the event body and update the event if needed (TODO: Also handle base64 body, like useBody() hooks from SST)
+                if (_event.body && typeof _event.body === 'string') {
+                    // Update the event with the parsed body
+                    Object.assign(_event, { body: JSON.parse(_event.body) });
+                }
+                // Validate the input
+                const input = validateTypeOrThrow(eventTypeCompiler, _event);
+
+                // Run the handler
+                const response = await handler(input);
+
+                // Validate the output
+                const validatedResponse = validateTypeOrThrow(
+                    responseTypeCompiler,
+                    response
+                );
+
+                // Return the response with a string version of the body (if body present)
+                if (validatedResponse.body) {
+                    return Object.assign(validatedResponse, {
+                        body: JSON.stringify(validatedResponse.body),
+                        headers: { 'content-type': 'application/json' },
+                    });
+                }
+                // Otherwise, return a response with no body
+                return Object.assign(validatedResponse, { body: undefined });
+            } catch (e) {
+                if (e.statusCode) {
+                    return {
+                        statusCode: e.statusCode,
+                        body: JSON.stringify({
+                            error: true,
+                            statusCode: e.statusCode,
+                            message: e.message,
+                        }),
+                        headers: { 'content-type': 'application/json' },
+                    };
+                } else {
+                    throw e;
+                }
             }
-            // Validate the input
-            const input = validateTypeOrThrow(eventTypeCompiler, _event);
-
-            // Run the handler
-            const response = await handler(input);
-
-            // Validate the output
-            const validatedResponse = validateTypeOrThrow(
-                responseTypeCompiler,
-                response
-            );
-
-            // Return the response with a string version of the body (if body present)
-            if (validatedResponse.body) {
-                return Object.assign(validatedResponse, {
-                    body: JSON.stringify(validatedResponse.body),
-                });
-            }
-            // Otherwise, return a response with no body
-            return Object.assign(validatedResponse, { body: undefined });
         });
 };
 
@@ -71,12 +89,13 @@ export function validateTypeOrThrow<SchemaType extends TSchema, EventType>(
     const errors = [...eventTypeCompiler.Errors(object)];
     // Throw an error
     // TODO: Custom error with status code: 422
-    throw new Error(
+    throw createHttpError(
         `Invalid request: ${errors
             .map(
                 (error) =>
                     `path: ${error.path}, value: ${error.value}, msg${error.message}`
             )
-            .join('; ')}`
+            .join('; ')}`,
+        422
     );
 }
