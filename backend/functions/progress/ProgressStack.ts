@@ -1,4 +1,12 @@
-import { StackContext, Table, WebSocketApi } from 'sst/constructs';
+import { ContractApiGatewayRoute } from '@cashmere-monorepo/backend-core/contracts';
+import { CoreStack } from '@cashmere-monorepo/backend-core/stacks/CoreStack';
+import {
+    deleteTxsListBySwapIdContract,
+    deleteTxsListContract,
+    getTxsListContract,
+    getUndetectedTxIdsContract,
+} from '@cashmere-monorepo/shared-contract-progress';
+import { Api, StackContext, Table, WebSocketApi, use } from 'sst/constructs';
 
 const path = './backend/functions/progress/src';
 
@@ -37,12 +45,58 @@ export function ProgressStack({ stack }: StackContext) {
         },
     });
 
+    // Then, build our progress  API
+    const httpApi = new Api(stack, 'ProgressHttpApi', {
+        // Default prop's for every routes
+        defaults: {
+            function: {
+                // Default timeout to 30seconds
+                timeout: '30 seconds',
+                // Default memory to 512MB
+                memorySize: '512 MB',
+            },
+        },
+        // TODO: Domain name configuration, when domain name will be on route53
+        customDomain: use(CoreStack).getDomainPath('progress'),
+    });
+
+    // Add the contract routes
+    httpApi.addRoutes(
+        stack,
+        ContractApiGatewayRoute(
+            `${path}/handlers/http/get-txs-list.handler`,
+            getTxsListContract
+        )
+    );
+    httpApi.addRoutes(
+        stack,
+        ContractApiGatewayRoute(
+            `${path}/handlers/http/delete-txs-list.handler`,
+            deleteTxsListContract
+        )
+    );
+    httpApi.addRoutes(
+        stack,
+        ContractApiGatewayRoute(
+            `${path}/handlers/http/delete-txs-list-by-swapId.handler`,
+            deleteTxsListBySwapIdContract
+        )
+    );
+    httpApi.addRoutes(
+        stack,
+        ContractApiGatewayRoute(
+            `${path}/handlers/http/get-undetected-txIds.handler`,
+            getUndetectedTxIdsContract
+        )
+    );
+
     // Add the outputs to our stack
     stack.addOutputs({
         StockTableId: socketTable.id,
         WebSocketApiEndpoint: webSocketApi.url,
+        HttpApiEndpoint: httpApi.url,
     });
 
-    // Return the web socket api
-    return { webSocketApi };
+    // Return the web socket api and http api
+    return { webSocketApi, httpApi };
 }
