@@ -110,7 +110,7 @@ export const SwapDataSchema = new Schema<SwapData>({
 });
 
 // Add unique index on swap id and src chain id
-SwapDataSchema.index({ swapId: 1, srcChainId: 1 }, { unique: true });
+SwapDataSchema.index({ swapId: 1, 'chains.srcChainId': 1 }, { unique: true });
 
 // The type for our swap data document
 export type SwapDataDocument = HydratedDocument<SwapData>;
