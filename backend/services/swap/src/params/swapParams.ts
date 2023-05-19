@@ -9,11 +9,14 @@ import {
 } from '@cashmere-monorepo/backend-blockchain';
 import { createHttpError, logger } from '@cashmere-monorepo/backend-core';
 import { DateTime } from 'luxon';
-import { getAddress } from 'viem';
+import { Address, getAddress } from 'viem';
 import { getAllSwapParamsDatas } from '../helpers/paramsUtils';
 
+// TODO: remove and import actual type once it is added
+type SwapData = any;
+
 // Swap params args
-type SwapParamsArgs = {
+export type SwapParamsArgs = {
     srcChainId: number;
     srcToken: string;
     amount: bigint;
@@ -22,25 +25,211 @@ type SwapParamsArgs = {
     receiver: string;
 };
 
+export type StartSwapTxArgs = {
+    srcToken: string;
+    srcAmount: string;
+    lwsPoolId: string;
+    hgsPoolId: string;
+    dstToken: string;
+    dstChain: string;
+    dstAggregatorAddress: string;
+    minHgsAmount: string;
+};
+
 // Swap params response
 export interface SwapParamsResponse {
-    args: {
-        srcToken: string;
-        srcAmount: string;
-        lwsPoolId: string;
-        hgsPoolId: string;
-        dstToken: string;
-        dstChain: string;
-        dstAggregatorAddress: string;
-        minHgsAmount: string;
-    };
-    to: string;
+    args: StartSwapTxArgs;
+    to: Address;
     value: string;
-    swapData: any; // TODO: Add type
+    swapData: SwapData;
 }
 
-// Generate swap params
-export async function getSwapParams(params: SwapParamsArgs) {
+/**
+ * Calculate LWS token amount
+ * @param needSrcSwap
+ * @param amount
+ * @param srcChainId
+ * @param srcToken
+ * @param lwsToken
+ */
+export async function getLwsAmount(
+    needSrcSwap: boolean,
+    amount: bigint,
+    srcChainId: number,
+    srcToken: Address,
+    lwsToken: Address
+) {
+    // If we need an src swap
+    if (needSrcSwap) {
+        // Get the LWS Amount post routing
+        const { dstAmount: tmpDstAmount } = await getUniswapRepository(
+            srcChainId
+        ).getAmountOut({
+            amount,
+            fromToken: srcToken,
+            toToken: lwsToken,
+        });
+        return tmpDstAmount;
+    } else {
+        // Otherwise, we can just use the amount
+        return amount;
+    }
+}
+
+/**
+ * Calculate HGS token amount
+ * @param srcChainId
+ * @param dstChainId
+ * @param lwsAssetId
+ * @param hgsAssetId
+ * @param lwsAmount
+ */
+export async function getHgsAmount(
+    srcChainId: number,
+    dstChainId: number,
+    lwsAssetId: string,
+    hgsAssetId: string,
+    lwsAmount: bigint
+) {
+    const { potentialOutcome: hgsAmount } = await getAssetRouterRepository(
+        srcChainId
+    ).quoteSwaps({
+        lwsAssetId: parseInt(lwsAssetId),
+        hgsAssetId: parseInt(hgsAssetId),
+        dstChainId: getL0ChainFromChainId(dstChainId),
+        amount: lwsAmount,
+        minAmount: 0n,
+    });
+    return hgsAmount;
+}
+
+/**
+ * Calculate the swap tx value
+ * @param srcChainId
+ * @param dstChainId
+ * @param srcTokenOriginal
+ * @param amount
+ */
+export async function getSwapTxValue(
+    srcChainId: number,
+    dstChainId: number,
+    srcTokenOriginal: Address,
+    amount: bigint
+) {
+    // Get the native swap fee
+    let value = await getBridgeRepository(srcChainId).getSwapFeeL0(
+        getL0ChainFromChainId(dstChainId)
+    );
+    // If swap is performed from native token, add the amount to the value
+    if (isPlaceholderToken(srcTokenOriginal)) {
+        value += amount;
+    }
+    return value;
+}
+
+/**
+ * Get the swap params
+ * @param srcTokenOriginal
+ * @param amount
+ * @param lwsAssetId
+ * @param hgsAssetId
+ * @param dstTokenOriginal
+ * @param dstChainId
+ * @param hgsAmount
+ */
+export async function buildSwapTxArgs(
+    srcTokenOriginal: Address,
+    amount: bigint,
+    lwsAssetId: string,
+    hgsAssetId: string,
+    dstTokenOriginal: Address,
+    dstChainId: number,
+    hgsAmount: bigint
+): Promise<StartSwapTxArgs> {
+    const dstAggregatorAddress =
+        getNetworkConfig(dstChainId).getContractAddress('aggregator');
+    const dstChainL0Id = getL0ChainFromChainId(dstChainId);
+    return {
+        srcToken: srcTokenOriginal,
+        srcAmount: amount.toString(),
+        lwsPoolId: lwsAssetId,
+        hgsPoolId: hgsAssetId,
+        dstToken: dstTokenOriginal,
+        dstChain: dstChainL0Id.toString(),
+        dstAggregatorAddress,
+        minHgsAmount: hgsAmount.toString(),
+    };
+}
+
+/**
+ * Build placeholder swap data for frontend progress display
+ * @param srcChainId
+ * @param dstChainId
+ * @param srcTokenOriginal
+ * @param srcToken
+ * @param lwsToken
+ * @param hgsToken
+ * @param dstToken
+ * @param dstTokenOriginal
+ * @param amount
+ * @param receiver
+ */
+export async function buildPlaceholderSwapData(
+    srcChainId: number,
+    dstChainId: number,
+    srcTokenOriginal: Address,
+    srcToken: Address,
+    lwsToken: Address,
+    hgsToken: Address,
+    dstToken: Address,
+    dstTokenOriginal: Address,
+    amount: bigint,
+    receiver: Address
+): Promise<SwapData> {
+    const progressRepository = getProgressRepository();
+
+    return {
+        swapId: '0x',
+        srcChainId,
+        dstChainId,
+        srcL0ChainId: 0,
+        dstL0ChainId: 0,
+        lwsPoolId: 0,
+        hgsPoolId: 0,
+        hgsAmount: '0',
+        dstToken,
+        minHgsAmount: '0',
+        fee: '0',
+        receiver,
+        signature: '0x',
+        swapInitiatedTimestamp: DateTime.now().toUnixInteger(),
+        swapInitiatedTxid: '0x',
+        srcAmount: amount.toString(),
+        srcToken,
+        ...(await progressRepository.getTokenMetadata({
+            srcChainId,
+            dstChainId,
+            srcToken: srcTokenOriginal,
+            lwsToken,
+            hgsToken,
+            dstToken: dstTokenOriginal,
+        })),
+    };
+}
+
+/**
+ * Generate swap params
+ * @param params
+ * @param params.srcChainId
+ * @param params.srcToken
+ * @param params.amount
+ * @param params.dstChainId
+ * @param params.dstToken
+ * @param params.receiver
+ */
+export async function getSwapParams(
+    params: SwapParamsArgs
+): Promise<SwapParamsResponse> {
     logger.debug({ params }, 'Generating swap params');
 
     // Extract and format our params
@@ -66,7 +255,6 @@ export async function getSwapParams(params: SwapParamsArgs) {
 
     try {
         // Get all the swap params
-        let lwsAmount: bigint;
         const {
             srcToken,
             dstToken,
@@ -82,88 +270,55 @@ export async function getSwapParams(params: SwapParamsArgs) {
             dstTokenOriginal
         );
 
-        // If we need an src swap
-        if (needSrcSwap) {
-            // Get the LWS Amount post routing
-            const { dstAmount: tmpDstAmount } = await getUniswapRepository(
-                srcChainId
-            ).getAmountOut({
-                amount,
-                fromToken: srcToken,
-                toToken: lwsToken,
-            });
-            lwsAmount = tmpDstAmount;
-        } else {
-            // Otherwise, we can just use the amount
-            lwsAmount = amount;
-        }
-
-        const { potentialOutcome: hgsAmount } = await getAssetRouterRepository(
-            srcChainId
-        ).quoteSwaps({
-            lwsAssetId: parseInt(lwsAssetId),
-            hgsAssetId: parseInt(hgsAssetId),
-            dstChainId: getL0ChainFromChainId(dstChainId),
-            amount: lwsAmount,
-            minAmount: 0n,
-        });
-
-        // Get the native swap fee
-        let value = await getBridgeRepository(srcChainId).getSwapFeeL0(
-            getL0ChainFromChainId(dstChainId)
+        // Get LWS and HGS token amounts
+        const lwsAmount = await getLwsAmount(
+            needSrcSwap,
+            amount,
+            srcChainId,
+            srcToken,
+            lwsToken
+        );
+        const hgsAmount = await getHgsAmount(
+            srcChainId,
+            dstChainId,
+            lwsAssetId,
+            hgsAssetId,
+            lwsAmount
         );
 
-        // If swap is performed from native token, add the amount to the value
-        if (isPlaceholderToken(srcTokenOriginal)) {
-            value += amount;
-        }
-
-        const progressRepository = getProgressRepository();
+        // Get swap tx value
+        const value = await getSwapTxValue(
+            srcChainId,
+            dstChainId,
+            srcTokenOriginal,
+            amount
+        );
 
         return {
-            args: {
-                srcToken: srcTokenOriginal,
-                srcAmount: amount.toString(),
-                lwsPoolId: lwsAssetId,
-                hgsPoolId: hgsAssetId,
-                dstToken: dstTokenOriginal,
-                dstChain: getL0ChainFromChainId(dstChainId).toString(),
-                dstAggregatorAddress:
-                    getNetworkConfig(dstChainId).getContractAddress(
-                        'aggregator'
-                    ),
-                minHgsAmount: hgsAmount.toString(),
-            },
+            args: await buildSwapTxArgs(
+                srcTokenOriginal,
+                amount,
+                lwsAssetId,
+                hgsAssetId,
+                dstTokenOriginal,
+                dstChainId,
+                hgsAmount
+            ),
             to: getNetworkConfig(srcChainId).getContractAddress('aggregator'),
             value: value.toString(),
-            swapData: {
-                swapId: '0x',
+            swapData: await buildPlaceholderSwapData(
                 srcChainId,
                 dstChainId,
-                srcL0ChainId: 0,
-                dstL0ChainId: 0,
-                lwsPoolId: 0,
-                hgsPoolId: 0,
-                hgsAmount: '0',
-                dstToken,
-                minHgsAmount: '0',
-                fee: '0',
-                receiver,
-                signature: '0x',
-                swapInitiatedTimestamp: DateTime.now().toUnixInteger(),
-                swapInitiatedTxid: '0x',
-                srcAmount: amount.toString(),
+                srcTokenOriginal,
                 srcToken,
-                ...(await progressRepository.getTokenMetadata({
-                    srcChainId,
-                    dstChainId,
-                    srcToken: srcTokenOriginal,
-                    lwsToken,
-                    hgsToken,
-                    dstToken: dstTokenOriginal,
-                })),
-            },
-        } as SwapParamsResponse;
+                lwsToken,
+                hgsToken,
+                dstToken,
+                dstTokenOriginal,
+                amount,
+                receiver
+            ),
+        };
     } catch (e) {
         logger.error(e, 'Swap params error');
         throw new Error('Unable to generate swap params');

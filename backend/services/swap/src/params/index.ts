@@ -1,2 +1,7 @@
 export * from './estimate';
-export * from './swapParams';
+export {
+    StartSwapTxArgs,
+    SwapParamsArgs,
+    SwapParamsResponse,
+    getSwapParams,
+} from './swapParams';
