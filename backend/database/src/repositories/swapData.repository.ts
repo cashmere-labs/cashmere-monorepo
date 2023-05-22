@@ -26,6 +26,7 @@ export const getSwapDataRepository = async (): Promise<SwapDataRepository> => {
  * Build our swap data repository
  * @param connection
  */
+// Build our swap data repository
 const buildSwapDataRepository = (connection: Connection) => {
     // Get our swap data model
     const model = connection.model('SwapData', SwapDataSchema);
@@ -36,13 +37,15 @@ const buildSwapDataRepository = (connection: Connection) => {
             receiver: string,
             filters: Omit<FilterQuery<SwapDataDocument>, 'receiver'> = {},
             page?: number // zero-based
-        ) {
-            const count = model.find({ receiver, ...filters }).count();
+        ): Promise<{ count: number; items: SwapDataDocument[] }> {
+            const count = await model
+                .find({ receiver, ...filters })
+                .countDocuments(); // Updated here
             let cursor = model.find({ receiver, ...filters });
             if (page !== undefined) cursor = cursor.skip(10 * page).limit(10);
             return {
                 count,
-                items: await cursor.sort({ swapInitiatedTimestamp: -1 }),
+                items: await cursor.sort({ swapInitiatedTimestamp: -1 }).exec(),
             };
         },
     };

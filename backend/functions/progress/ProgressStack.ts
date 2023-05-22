@@ -1,11 +1,6 @@
 import { ContractApiGatewayRoute } from '@cashmere-monorepo/backend-core/contracts';
 import { CoreStack } from '@cashmere-monorepo/backend-core/stacks/CoreStack';
-import {
-    deleteTxsListBySwapIdContract,
-    deleteTxsListContract,
-    getTxsListContract,
-    getUndetectedTxIdsContract,
-} from '@cashmere-monorepo/shared-contract-progress';
+import { transactionsListContract } from '@cashmere-monorepo/shared-contract-progress';
 import { Api, StackContext, Table, WebSocketApi, use } from 'sst/constructs';
 
 const path = './backend/functions/progress/src';
@@ -64,31 +59,31 @@ export function ProgressStack({ stack }: StackContext) {
     httpApi.addRoutes(
         stack,
         ContractApiGatewayRoute(
-            `${path}/handlers/http/get-txs-list.handler`,
-            getTxsListContract
+            `${path}/handlers/http/transactionsList.handler`,
+            transactionsListContract
+        )
+    );
+    /*  httpApi.addRoutes(
+        stack,
+        ContractApiGatewayRoute(
+            `${path}/handlers/http/deleteTransactionsList.handler`,
+            deleteTransactionsListContract
         )
     );
     httpApi.addRoutes(
         stack,
         ContractApiGatewayRoute(
-            `${path}/handlers/http/delete-txs-list.handler`,
-            deleteTxsListContract
-        )
-    );
-    httpApi.addRoutes(
-        stack,
-        ContractApiGatewayRoute(
-            `${path}/handlers/http/delete-txs-list-by-swapId.handler`,
+            `${path}/handlers/http/deleteTxsListBySwapId.handler`,
             deleteTxsListBySwapIdContract
         )
     );
     httpApi.addRoutes(
         stack,
         ContractApiGatewayRoute(
-            `${path}/handlers/http/get-undetected-txIds.handler`,
-            getUndetectedTxIdsContract
+            `${path}/handlers/http/undetectedTxIds.handler`,
+            undetectedTxIdsContract
         )
-    );
+    ); */
 
     // Add the outputs to our stack
     stack.addOutputs({
