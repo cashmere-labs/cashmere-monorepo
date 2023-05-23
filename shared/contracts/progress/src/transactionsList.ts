@@ -4,14 +4,12 @@ import { Type } from '@sinclair/typebox';
 // The schema for the request query parameters
 export const transactionsListQueryParamsType = Type.Object({
     account: Type.String(),
-    type: Type.Optional(
-        Type.Union([Type.Literal('pending'), Type.Literal('complete')])
-    ),
+    type: Type.Optional(Type.Union([Type.Literal('complete')])),
     page: Type.Optional(Type.Number()),
 });
 
 // Typebox schema for the SwapDataDbDto
-const SwapDataDbDtoType = Type.Object({
+const SwapDataResponseDtoType = Type.Object({
     swapId: Type.String(),
     chains: Type.Object({
         srcChainId: Type.Number(),
@@ -55,7 +53,7 @@ const SwapDataDbDtoType = Type.Object({
 // Typebox schema for the response body
 export const transactionsListResponseBodyType = Type.Object({
     count: Type.Number(),
-    items: Type.Array(SwapDataDbDtoType),
+    items: Type.Array(SwapDataResponseDtoType),
 });
 
 // SST API Gateway contract

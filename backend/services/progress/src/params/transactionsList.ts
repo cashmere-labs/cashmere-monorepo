@@ -8,7 +8,7 @@ import { getAddress } from 'viem';
 // TransactionsList args
 export type TransactionsListArgs = {
     account: string;
-    type?: 'pending' | 'complete';
+    type?: 'complete';
     page?: number;
 };
 
@@ -42,7 +42,6 @@ export async function getTransactionsList(
         receiver,
         {
             progressHidden: null,
-            ...(type === 'pending' && { swapContinueConfirmed: null }),
             ...(type === 'complete' && { swapContinueConfirmed: true }),
         },
         type === 'complete' ? page : undefined

@@ -1,4 +1,5 @@
 import { Connection, FilterQuery } from 'mongoose';
+import { SwapDataDbDto } from '../dto/swapData';
 import { SwapDataDocument, SwapDataSchema } from '../schema/swapData.schema';
 import { getMongooseConnection } from '../utils/connection';
 
@@ -26,7 +27,6 @@ export const getSwapDataRepository = async (): Promise<SwapDataRepository> => {
  * Build our swap data repository
  * @param connection
  */
-// Build our swap data repository
 const buildSwapDataRepository = (connection: Connection) => {
     // Get our swap data model
     const model = connection.model('SwapData', SwapDataSchema);
@@ -37,10 +37,10 @@ const buildSwapDataRepository = (connection: Connection) => {
             receiver: string,
             filters: Omit<FilterQuery<SwapDataDocument>, 'receiver'> = {},
             page?: number // zero-based
-        ): Promise<{ count: number; items: SwapDataDocument[] }> {
+        ): Promise<{ count: number; items: SwapDataDbDto[] }> {
             const count = await model
                 .find({ receiver, ...filters })
-                .countDocuments(); // Updated here
+                .countDocuments();
             let cursor = model.find({ receiver, ...filters });
             if (page !== undefined) cursor = cursor.skip(10 * page).limit(10);
             return {
