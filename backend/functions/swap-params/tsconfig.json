@@ -9,12 +9,12 @@
         "paths": {
             "@cashmere-monorepo/backend-core/*": ["../../core/src/*"],
             "@cashmere-monorepo/shared-contract-swap-params/*": [
-                "../../../common/contracts/swap-params/*"
+                "../../../shared/contracts/swap-params/*"
             ]
         }
     },
     "references": [
         { "path": "../../core/tsconfig.json" },
-        { "path": "../../../common/contracts/swap-params/tsconfig.json" }
+        { "path": "../../../shared/contracts/swap-params/tsconfig.json" }
     ]
 }

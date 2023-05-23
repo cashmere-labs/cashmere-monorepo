@@ -3,6 +3,8 @@
     "version": "0.0.0",
     "type": "module",
     "scripts": {
+        "test": "sst bind vitest run",
+        "test:watch": "sst bind vitest watch",
         "typecheck": "tsc -noEmit"
     },
     "dependencies": {
@@ -10,7 +12,8 @@
         "@cashmere-monorepo/backend-core": "workspace:^",
         "@cashmere-monorepo/backend-database": "workspace:^",
         "luxon": "^3.3.0",
-        "viem": "^0.3.31"
+        "viem": "^0.3.31",
+        "vitest": "^0.31.1"
     },
     "devDependencies": {
         "@types/aws-lambda": "^8.10.115",

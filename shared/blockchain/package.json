@@ -5,7 +5,7 @@
     "type": "module",
     "scripts": {
         "test": "sst bind vitest run",
-        "test:watch": "sst bind vitest run",
+        "test:watch": "sst bind vitest watch",
         "typecheck": "tsc -noEmit"
     },
     "devDependencies": {
