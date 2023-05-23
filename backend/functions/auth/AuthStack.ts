@@ -26,9 +26,9 @@ export function AuthStack({ stack }: StackContext) {
         customDomain: use(CoreStack).getDomainPath('auth'),
     });
 
+    // Bind JWT secrets
     const JWT_ACCESS_SECRET = new Config.Secret(stack, 'JWT_ACCESS_SECRET');
     const JWT_REFRESH_SECRET = new Config.Secret(stack, 'JWT_REFRESH_SECRET');
-
     stack.addDefaultFunctionBinding([JWT_ACCESS_SECRET, JWT_REFRESH_SECRET]);
 
     // Add the contract routes
@@ -43,10 +43,7 @@ export function AuthStack({ stack }: StackContext) {
         stack,
         ContractApiGatewayRoute(
             `${path}/handlers/logout-auth.handler`,
-            logoutContract,
-            {
-                bind: [],
-            }
+            logoutContract
         )
     );
     api.addRoutes(
