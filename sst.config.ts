@@ -2,6 +2,7 @@ import { SSTConfig } from 'sst';
 import { use } from 'sst/constructs';
 import { CoreStack } from './backend/core/stacks/CoreStack';
 import { DatabaseStack } from './backend/database/DatabaseStack';
+import { AuthStack } from './backend/functions/auth/AuthStack';
 import { ProgressStack } from './backend/functions/progress/ProgressStack';
 import { SwapParamsStack } from './backend/functions/swap-params/SwapParamsStack';
 
@@ -49,5 +50,6 @@ export default {
         // Every API Stack's
         app.stack(SwapParamsStack);
         app.stack(ProgressStack);
+        app.stack(AuthStack);
     },
 } satisfies SSTConfig;

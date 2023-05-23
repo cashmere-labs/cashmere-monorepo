@@ -21,11 +21,11 @@
     },
     "devDependencies": {
         "@tsconfig/node18": "^2.0.1",
-        "@typescript-eslint/eslint-plugin": "^5.59.6",
-        "@typescript-eslint/parser": "^5.59.6",
+        "@typescript-eslint/eslint-plugin": "^5.59.7",
+        "@typescript-eslint/parser": "^5.59.7",
         "aws-cdk-lib": "2.72.1",
-        "constructs": "10.2.23",
-        "eslint": "^8.40.0",
+        "constructs": "10.1.156",
+        "eslint": "^8.41.0",
         "eslint-config-prettier": "^8.8.0",
         "eslint-plugin-prettier": "^4.2.1",
         "husky": "^8.0.3",
@@ -33,7 +33,7 @@
         "nx": "16.1.4",
         "prettier": "^2.8.8",
         "prettier-plugin-organize-imports": "^3.2.2",
-        "sst": "^2.8.27",
+        "sst": "^2.8.28",
         "typescript": "^5.0.4"
     },
     "lint-staged": {

@@ -1,0 +1,19 @@
+{
+    "name": "@cashmere-monorepo/backend-service-auth",
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "typecheck": "tsc -noEmit"
+    },
+    "dependencies": {
+        "@cashmere-monorepo/backend-core": "workspace:^",
+        "@cashmere-monorepo/backend-database": "workspace:^",
+        "argon2": "^0.30.3",
+        "fast-jwt": "^3.0.0",
+        "pbkdf2-password-hash": "^3.1.0",
+        "viem": "^0.3.35"
+    },
+    "devDependencies": {
+        "@types/node": "^18.16.14"
+    }
+}

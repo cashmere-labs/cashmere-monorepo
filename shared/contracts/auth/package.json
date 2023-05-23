@@ -1,0 +1,19 @@
+{
+    "name": "@cashmere-monorepo/shared-contract-auth",
+    "version": "0.0.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "typecheck": "tsc -noEmit"
+    },
+    "devDependencies": {
+        "@types/node": "^18.16.14",
+        "json-schema-to-ts": "^2.8.2",
+        "sst": "^2.8.28",
+        "vitest": "^0.31.1"
+    },
+    "dependencies": {
+        "@cashmere-monorepo/shared-contract-core": "workspace:^",
+        "@sinclair/typebox": "^0.28.11"
+    }
+}
