@@ -15,10 +15,11 @@ export function WorkerStack({ stack }: StackContext) {
         // TODO: CDK definition for batching window, batching item etc
     });
 
-    // Build the bridge queue
-    // TODO: Queue or cron running every minutes?
-    const bridgeQueue = new Queue(stack, 'BridgeQueue', {
+    // Build the bridge cron job's, running every minutes, with a dynamo mutex per chain to prevent concurrent iteration
+    const bridgeCron = new Cron(stack, 'BridgeQueue', {
         consumer: `${path}/handlers/bridge.handler`,
+        schedule: 'rate(1 minute)',
+        // TODO: CDK definition for batching window, batching item etc
     });
 
     // Build the supervisor cron
@@ -31,11 +32,10 @@ export function WorkerStack({ stack }: StackContext) {
     stack.addOutputs({
         TxSenderQueueUrl: txSenderQueue.queueUrl,
         TxSenderQueueId: txSenderQueue.id,
-        BridgeQueueUrl: bridgeQueue.queueUrl,
-        BridgeQueueId: bridgeQueue.id,
+        BridgeCronId: bridgeCron.id,
         SupervisorCronId: supervisorCron.id,
     });
 
     // Return the function's built
-    return { txSenderQueue, bridgeQueue, supervisorCron };
+    return { txSenderQueue, bridgeCron, supervisorCron };
 }

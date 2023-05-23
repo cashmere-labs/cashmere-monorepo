@@ -218,6 +218,25 @@ importers:
         specifier: ^0.31.1
         version: 0.31.1
 
+  backend/functions/worker:
+    dependencies:
+      '@cashmere-monorepo/backend-core':
+        specifier: workspace:^
+        version: link:../../core
+    devDependencies:
+      '@types/aws-lambda':
+        specifier: ^8.10.115
+        version: 8.10.115
+      '@types/node':
+        specifier: ^18.16.13
+        version: 18.16.14
+      sst:
+        specifier: ^2.8.27
+        version: 2.10.2
+      vitest:
+        specifier: ^0.31.1
+        version: 0.31.1
+
   backend/services/auth:
     dependencies:
       '@cashmere-monorepo/backend-core':
@@ -3759,7 +3778,7 @@ packages:
     resolution: {integrity: sha512-xq+q3SRMOxGivLhBNaUdC64hDTQwejJ+H0T/NB1XMtTVEwNTrfFF3gAxiyW0Bu/xWEGhjVKgUcMhCrUy2+uCWg==}
     dependencies:
       base64-js: 1.5.1
-      ieee754: 1.1.13
+      ieee754: 1.2.1
       isarray: 1.0.0
     dev: true
 
@@ -4080,7 +4099,7 @@ packages:
     resolution: {integrity: sha512-rraC8NXWOEjhADbZe9QBNzLAN5Q3fsTPQtBV+fEVj6xKIgDgNiEVE6ZNfHpZOqfQ21YUzfVNUXLOEZquYvQPPg==}
     dependencies:
       leven: 2.1.0
-      minimist: 1.2.6
+      minimist: 1.2.8
     dev: true
 
   /compare-timing-safe@2.1.1:
