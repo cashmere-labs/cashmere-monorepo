@@ -47,9 +47,11 @@ export default {
         // Bind the caching table to all of our stack
         app.addDefaultFunctionBinding([use(CoreStack).cachingTable]);
 
+        // Auth stack (since it will be used to protect all other stacks)
+        app.stack(AuthStack);
+
         // Every API Stack's
         app.stack(SwapParamsStack);
         app.stack(ProgressStack);
-        app.stack(AuthStack);
     },
 } satisfies SSTConfig;
