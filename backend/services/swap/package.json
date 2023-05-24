@@ -10,13 +10,13 @@
         "@cashmere-monorepo/backend-core": "workspace:^",
         "@cashmere-monorepo/backend-database": "workspace:^",
         "luxon": "^3.3.0",
-        "viem": "^0.3.31"
+        "viem": "^0.3.35"
     },
     "devDependencies": {
         "@types/aws-lambda": "^8.10.115",
         "@types/luxon": "^3.3.0",
-        "@types/node": "^18.16.13",
-        "sst": "^2.8.27",
+        "@types/node": "^18.16.14",
+        "sst": "^2.8.28",
         "vitest": "^0.31.1"
     }
 }
