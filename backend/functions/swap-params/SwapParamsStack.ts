@@ -1,4 +1,4 @@
-import { ContractApiGatewayRoute } from '@cashmere-monorepo/backend-core/contracts';
+import { ContractApiGatewayRoute } from '@cashmere-monorepo/backend-core';
 import { CoreStack } from '@cashmere-monorepo/backend-core/stacks/CoreStack';
 import {
     estimateSwapContract,
