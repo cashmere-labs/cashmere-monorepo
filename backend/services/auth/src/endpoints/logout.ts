@@ -1,15 +1,11 @@
 import { getUserRepository } from '@cashmere-monorepo/backend-database';
-import { verifyAccessToken } from '../tokens';
+import { Address } from 'viem';
 
 /**
  * Logout endpoint
- * @param accessToken
+ * @param address
  */
-export async function logout(accessToken: string) {
-    // Verify the access token and get the address from its payload
-    const {
-        payload: { sub: address },
-    } = verifyAccessToken(accessToken);
+export async function logout(address: Address) {
     // Remove the refresh token hash from the database
     await (
         await getUserRepository()

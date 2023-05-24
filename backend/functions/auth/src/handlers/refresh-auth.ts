@@ -14,7 +14,7 @@ export const handler = contractHandler(async (event) => {
     useLogger();
 
     logger.debug({ event }, 'Received event');
-    const response = await refresh(event.headers.authorization);
+    const response = await refresh(event.requestContext.authorizer.lambda.sub);
     logger.debug({ response }, 'Computed response');
     return {
         statusCode: 200,

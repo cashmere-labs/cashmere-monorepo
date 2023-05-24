@@ -14,7 +14,7 @@ export const handler = contractHandler(async (event) => {
     useLogger();
 
     logger.debug({ event }, 'Received event');
-    const response = await logout(event.headers.authorization);
+    const response = await logout(event.requestContext.authorizer.lambda.sub);
     logger.debug({ response }, 'Computed response');
     return {
         statusCode: 201,

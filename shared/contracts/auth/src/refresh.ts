@@ -1,10 +1,8 @@
-import { buildSstApiGatewayContract } from '@cashmere-monorepo/shared-contract-core';
+import {
+    buildSstApiGatewayContract,
+    CustomType,
+} from '@cashmere-monorepo/shared-contract-core';
 import { Type } from '@sinclair/typebox';
-
-// The schema for the request headers
-export const refreshHeadersType = Type.Object({
-    authorization: Type.RegEx(/^Bearer .+$/),
-});
 
 // The schema for the response body
 export const refreshResponseBodyType = Type.Object({
@@ -19,5 +17,5 @@ export const refreshContract = buildSstApiGatewayContract({
     path: '/auth/refresh',
     method: 'POST',
     responseSchema: refreshResponseBodyType,
-    headersSchema: refreshHeadersType,
+    requestContextSchema: CustomType.AuthRequestContext,
 });
