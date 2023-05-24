@@ -1,0 +1,13 @@
+{
+    "extends": "@tsconfig/node18/tsconfig.json",
+    "compilerOptions": {
+        "composite": true,
+        "incremental": true,
+        "baseUrl": "src",
+        "rootDir": ".",
+        "paths": {
+            "@cashmere-monorepo/backend-core/*": ["../../core/src/*"]
+        }
+    },
+    "references": [{ "path": "../../core/tsconfig.json" }]
+}

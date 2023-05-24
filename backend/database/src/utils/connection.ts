@@ -23,6 +23,11 @@ export const getMongooseConnection = (): Promise<Connection> =>
         const builtMongoose = await connect(process.env.MONGO_DB_URI!, {
             dbName: process.env.MONGO_DB_NAME,
         });
+        // Another check for existing connection because javascript
+        // TODO: make prettier?
+        if (builtMongoose.connections.length > 0)
+            return builtMongoose.connections[0];
+
         const newConnection = await builtMongoose
             .createConnection()
             .asPromise();

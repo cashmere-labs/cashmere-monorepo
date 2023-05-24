@@ -49,7 +49,7 @@ export const getFromCache = async <T>(
 /**
  * Sets a value in misc dynamo db
  */
-const setInCache = async (
+export const setInCache = async (
     key: string,
     value: unknown,
     ttl: number = defaultTtl
