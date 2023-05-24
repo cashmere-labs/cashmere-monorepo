@@ -64,12 +64,12 @@ const buildSwapDataRepository = (connection: Connection) => {
         },
 
         /**
-         * Updates specified fields of SwapData in the database by swapId and srcChainId. If fields are not specified,
-         * updates all the fields.
+         * Retrieves the SwapData associated with the provided swapId and optionally srcChainId
+         * from the database.
          *
-         * @param swapData An object containing the swap data to update.
-         * @param fields An array of field names to update. By default, updates all fields.
-         * @returns A Promise that resolves to the updated SwapData object.
+         * @param swapId A string representing the swapId to retrieve SwapData for.
+         * @param srcChainId An optional number representing the srcChainId to retrieve SwapData for.
+         * @returns A Promise that resolves to the retrieved SwapData object.
          */
         async getSwapData(
             swapId: string,
@@ -81,8 +81,8 @@ const buildSwapDataRepository = (connection: Connection) => {
         },
 
         /**
-         * Updates specified fields of SwapData in the database by swapId and srcChainId. If fields are not specified,
-         * updates all the fields.
+         * Updates specified fields of SwapData in the database by swapId and srcChainId.
+         * If fields are not specified, updates all the fields.
          *
          * @param swapData An object containing the swap data to update.
          * @param fields An array of field names to update. By default, updates all fields.
@@ -108,8 +108,9 @@ const buildSwapDataRepository = (connection: Connection) => {
         },
 
         /**
-         * Retrieves a list of initiated transaction hashes that have been discovered in the SwapData collection.
-         * This function filters the collection by the provided transaction IDs and returns those which are found.
+         * Retrieves a list of initiated transaction hashes that have been discovered in
+         * the SwapData collection. This function filters the collection by the provided
+         * transaction IDs and returns those which are found.
          *
          * @param txids An array of transaction IDs to search for.
          * @returns A Promise that resolves to an array of transaction hashes that were found.
