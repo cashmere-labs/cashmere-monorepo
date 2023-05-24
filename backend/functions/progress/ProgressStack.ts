@@ -4,6 +4,7 @@ import {
     transactionsListContract,
     transactionsListDeleteContract,
     transactionsListDeleteSwapIdContract,
+    undetectedTxIdsContract,
 } from '@cashmere-monorepo/shared-contract-progress';
 import { Api, StackContext, Table, WebSocketApi, use } from 'sst/constructs';
 
@@ -84,14 +85,13 @@ export function ProgressStack({ stack }: StackContext) {
         )
     );
 
-    /*
     httpApi.addRoutes(
         stack,
         ContractApiGatewayRoute(
             `${path}/handlers/http/undetectedTxIds.handler`,
             undetectedTxIdsContract
         )
-    ); */
+    );
 
     // Add the outputs to our stack
     stack.addOutputs({

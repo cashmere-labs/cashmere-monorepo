@@ -9,9 +9,10 @@ export type TransactionsListDeleteArgs = {
 };
 
 /**
- * Delete all transactions for a specific account
- * @param params
- * @param params.account
+ * Hides all transactions related to the specified account.
+ *
+ * @param params An object containing the parameters for the function.
+ * @returns A Promise that resolves to a success message.
  */
 export async function deleteTransactionsList(
     params: TransactionsListDeleteArgs

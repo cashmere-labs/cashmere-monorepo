@@ -1,4 +1,6 @@
+import { get, set } from 'lodash';
 import { Connection, FilterQuery } from 'mongoose';
+import { Hash } from 'viem';
 import { SwapDataDbDto } from '../dto/swapData';
 import { SwapDataDocument, SwapDataSchema } from '../schema/swapData.schema';
 import { getMongooseConnection } from '../utils/connection';
@@ -49,7 +51,11 @@ const buildSwapDataRepository = (connection: Connection) => {
             };
         },
 
-        // Hide all the swap Ids. This achives the same effect to deleting all transactions list
+        /**
+         * Marks all the SwapData entries associated with the provided receiver address as hidden.
+         *
+         * @param address A string representing the receiver address.
+         */
         async hideAllSwapIds(address: string) {
             await model.updateMany(
                 { receiver: address, swapContinueConfirmed: true },
@@ -57,7 +63,14 @@ const buildSwapDataRepository = (connection: Connection) => {
             );
         },
 
-        // Get SwapData by swapId and optionally by srcChainId
+        /**
+         * Updates specified fields of SwapData in the database by swapId and srcChainId. If fields are not specified,
+         * updates all the fields.
+         *
+         * @param swapData An object containing the swap data to update.
+         * @param fields An array of field names to update. By default, updates all fields.
+         * @returns A Promise that resolves to the updated SwapData object.
+         */
         async getSwapData(
             swapId: string,
             srcChainId?: number
@@ -67,15 +80,23 @@ const buildSwapDataRepository = (connection: Connection) => {
             return await model.findOne(filter);
         },
 
-        // Update SwapData by swapId and srcChainId, updating only specified fields
+        /**
+         * Updates specified fields of SwapData in the database by swapId and srcChainId. If fields are not specified,
+         * updates all the fields.
+         *
+         * @param swapData An object containing the swap data to update.
+         * @param fields An array of field names to update. By default, updates all fields.
+         * @returns A Promise that resolves to the updated SwapData object.
+         */
         async updateSwapData(
             swapData: SwapDataDbDto,
-            fields: (keyof SwapDataDbDto)[] = Object.keys(
-                SwapDataSchema.paths
-            ) as (keyof SwapDataDbDto)[]
+            fields: string[] = Object.keys(SwapDataSchema.paths) as string[]
         ): Promise<SwapDataDbDto | null> {
             const data: Record<string, unknown> = {};
-            fields.forEach((key) => (data[key] = swapData[key]));
+            fields.forEach((key) => {
+                const value = get(swapData, key);
+                set(data, key, value);
+            });
             return await model.findOneAndUpdate(
                 {
                     srcChainId: swapData.chains.srcChainId,
@@ -84,6 +105,28 @@ const buildSwapDataRepository = (connection: Connection) => {
                 { $set: data },
                 { new: true }
             );
+        },
+
+        /**
+         * Retrieves a list of initiated transaction hashes that have been discovered in the SwapData collection.
+         * This function filters the collection by the provided transaction IDs and returns those which are found.
+         *
+         * @param txids An array of transaction IDs to search for.
+         * @returns A Promise that resolves to an array of transaction hashes that were found.
+         */
+        async getDiscoveredSwapInitiatedTxids(
+            txids: string[]
+        ): Promise<Hash[]> {
+            const swapData = await model.find(
+                {
+                    'status.swapInitiatedTxid': { $in: txids },
+                },
+                'status.swapInitiatedTxid'
+            ); // selecting only 'status.swapInitiatedTxid' field
+
+            return swapData
+                .filter((sd) => sd.status.swapInitiatedTxid !== undefined) // filter out undefined entries
+                .map((sd) => sd.status.swapInitiatedTxid as Hash);
         },
     };
 };

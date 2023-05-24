@@ -7,6 +7,12 @@ export type TransactionsListDeleteSwapIdArgs = {
     swapId: Hex;
 };
 
+/**
+ * Hides a specific transaction identified by swapId related to the specified account.
+ *
+ * @param params An object containing the parameters for the function.
+ * @returns A Promise that resolves to a success message.
+ */
 export async function deleteTransactionsListBySwapId(
     params: TransactionsListDeleteSwapIdArgs
 ): Promise<{ message: string }> {
@@ -28,7 +34,9 @@ export async function deleteTransactionsListBySwapId(
     }
 
     swapData.status.progressHidden = true;
-    await swapDataRepository.updateSwapData(swapData, ['progressHidden']);
+    await swapDataRepository.updateSwapData(swapData, [
+        'status.progressHidden',
+    ]);
 
     return { message: 'Transaction deleted successfully.' };
 }
