@@ -17,7 +17,7 @@ export function WorkerStack({ stack }: StackContext) {
 
     // Build the bridge cron job's, running every minutes, with a dynamo mutex per chain to prevent concurrent iteration
     const bridgeCron = new Cron(stack, 'BridgeQueue', {
-        consumer: `${path}/handlers/bridge.handler`,
+        job: `${path}/handlers/bridge.handler`,
         schedule: 'rate(1 minute)',
         // TODO: CDK definition for batching window, batching item etc
     });

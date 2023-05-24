@@ -352,6 +352,40 @@ importers:
         specifier: ^0.31.1
         version: 0.31.1
 
+  backend/services/worker:
+    dependencies:
+      '@cashmere-monorepo/backend-blockchain':
+        specifier: workspace:^
+        version: link:../../blockchain
+      '@cashmere-monorepo/backend-core':
+        specifier: workspace:^
+        version: link:../../core
+      '@cashmere-monorepo/backend-database':
+        specifier: workspace:^
+        version: link:../../database
+      luxon:
+        specifier: ^3.3.0
+        version: 3.3.0
+      viem:
+        specifier: ^0.3.36
+        version: 0.3.36(typescript@5.0.4)
+      vitest:
+        specifier: ^0.31.1
+        version: 0.31.1
+    devDependencies:
+      '@types/aws-lambda':
+        specifier: ^8.10.115
+        version: 8.10.115
+      '@types/luxon':
+        specifier: ^3.3.0
+        version: 3.3.0
+      '@types/node':
+        specifier: ^18.16.14
+        version: 18.16.14
+      sst:
+        specifier: 2.10.2
+        version: 2.10.2
+
   shared/blockchain:
     dependencies:
       viem:
