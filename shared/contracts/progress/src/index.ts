@@ -1,4 +1,4 @@
 export * from './transactionsList';
-//  export * from './deleteTransactionsList';
-//  export * from './deleteTxsListBySwapId';
+export * from './transactionsListDelete';
+export * from './transactionsListDeleteSwapId';
 // export * from './undetectedTxIds';

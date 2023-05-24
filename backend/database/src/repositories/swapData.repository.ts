@@ -48,6 +48,43 @@ const buildSwapDataRepository = (connection: Connection) => {
                 items: await cursor.sort({ swapInitiatedTimestamp: -1 }).exec(),
             };
         },
+
+        // Hide all the swap Ids. This achives the same effect to deleting all transactions list
+        async hideAllSwapIds(address: string) {
+            await model.updateMany(
+                { receiver: address, swapContinueConfirmed: true },
+                { $set: { progressHidden: true } }
+            );
+        },
+
+        // Get SwapData by swapId and optionally by srcChainId
+        async getSwapData(
+            swapId: string,
+            srcChainId?: number
+        ): Promise<SwapDataDbDto | null> {
+            const filter: FilterQuery<SwapDataDocument> = { swapId };
+            if (srcChainId) filter.srcChainId = srcChainId;
+            return await model.findOne(filter);
+        },
+
+        // Update SwapData by swapId and srcChainId, updating only specified fields
+        async updateSwapData(
+            swapData: SwapDataDbDto,
+            fields: (keyof SwapDataDbDto)[] = Object.keys(
+                SwapDataSchema.paths
+            ) as (keyof SwapDataDbDto)[]
+        ): Promise<SwapDataDbDto | null> {
+            const data: Record<string, unknown> = {};
+            fields.forEach((key) => (data[key] = swapData[key]));
+            return await model.findOneAndUpdate(
+                {
+                    srcChainId: swapData.chains.srcChainId,
+                    swapId: swapData.swapId,
+                },
+                { $set: data },
+                { new: true }
+            );
+        },
     };
 };
 
