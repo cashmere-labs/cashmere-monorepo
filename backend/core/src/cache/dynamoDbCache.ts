@@ -117,7 +117,7 @@ export type GetOrSetFromCacheParams = {
 export const getOrSetFromCache = async <T>(
     params: GetOrSetFromCacheParams,
     valueAccessor: () => Promise<T>
-) => {
+): Promise<T> => {
     // Build our key hash
     let keyHash: string;
     if (typeof params.key === 'string') {
@@ -139,7 +139,7 @@ export const getOrSetFromCache = async <T>(
             await updateCacheTtlInDb(keyHash, neverExpireProlongationTtl);
         }
         // Return the current value
-        return currentCacheEntry.value;
+        return currentCacheEntry.value as T;
     }
 
     // Otherwise, fetch the new value and set it in the cache
