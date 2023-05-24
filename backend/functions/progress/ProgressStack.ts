@@ -1,3 +1,4 @@
+import { AuthStack } from '@cashmere-monorepo/backend-auth/AuthStack';
 import { ContractApiGatewayRoute } from '@cashmere-monorepo/backend-core/contracts';
 import { CoreStack } from '@cashmere-monorepo/backend-core/stacks/CoreStack';
 import { transactionsListContract } from '@cashmere-monorepo/shared-contract-progress';
@@ -17,6 +18,9 @@ export function ProgressStack({ stack }: StackContext) {
             idIndex: { partitionKey: 'id', sortKey: 'room' },
         },
     });
+
+    // Import our authorizer
+    const { accessTokenAuthorizer } = use(AuthStack);
 
     // Then, build our websocket api
     const webSocketApi = new WebSocketApi(stack, 'ProgressWebSocketApi', {
@@ -44,6 +48,7 @@ export function ProgressStack({ stack }: StackContext) {
     const httpApi = new Api(stack, 'ProgressHttpApi', {
         // Domain name configuration, when domain name will be on route53
         customDomain: use(CoreStack).getDomainPath('progress'),
+        authorizers: { accessTokenAuthorizer },
     });
 
     // Add the contract routes

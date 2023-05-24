@@ -97,7 +97,6 @@ export function AuthStack({ stack }: StackContext) {
 export const getAccessTokenAuthorizer = (stack: Stack): ApiAuthorizer => ({
     type: 'lambda',
     function: new Function(stack, 'AccessTokenAuthorizer', {
-        functionName: 'accessTokenAuthorizerFunction',
         handler: `${path}/authorizers.accessTokenHandler`,
     }),
 });
@@ -106,7 +105,6 @@ export const getAccessTokenAuthorizer = (stack: Stack): ApiAuthorizer => ({
 export const getRefreshTokenAuthorizer = (stack: Stack): ApiAuthorizer => ({
     type: 'lambda',
     function: new Function(stack, 'RefreshTokenAuthorizer', {
-        functionName: 'refreshTokenAuthorizerFunction',
         handler: `${path}/authorizers.refreshTokenHandler`,
     }),
 });

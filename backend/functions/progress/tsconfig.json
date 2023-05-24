@@ -8,6 +8,7 @@
         "rootDir": ".",
         "paths": {
             "@cashmere-monorepo/backend-core/*": ["../../core/src/*"],
+            "@cashmere-monorepo/backend-auth/*": ["../../auth/src/*"],
             "@cashmere-monorepo/shared-contract-progress/*": [
                 "../../../common/contracts/progress/*"
             ]
@@ -15,6 +16,7 @@
     },
     "references": [
         { "path": "../../core/tsconfig.json" },
+        { "path": "../../auth/tsconfig.json" },
         { "path": "../../../common/contracts/progress/tsconfig.json" }
     ]
 }
