@@ -81,6 +81,7 @@ export function AuthStack({ stack }: StackContext) {
     });
 }
 
+// Build an access token authorizer object
 export function getAccessTokenAuthorizer(
     stack: Stack,
     bindSecret = true
@@ -97,6 +98,7 @@ export function getAccessTokenAuthorizer(
     };
 }
 
+// Build a refresh token authorizer object
 export function getRefreshTokenAuthorizer(
     stack: Stack,
     bindSecret = true
