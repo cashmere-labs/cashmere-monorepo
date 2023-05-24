@@ -26,7 +26,7 @@ describe('[Stack] StackParams', () => {
     /**
      * Ensure all the endpoints are deployed
      */
-    it("All endpoint's deployed", async () => {
+    it("[Ok] All endpoint's deployed", async () => {
         // Get the cloud formation template of the stack
         const stack = getStack(SwapParamsStack);
         const template = Template.fromStack(stack);

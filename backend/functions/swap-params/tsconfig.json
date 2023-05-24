@@ -6,6 +6,7 @@
         "module": "esnext",
         "baseUrl": ".",
         "rootDir": ".",
+        "lib": ["dom"], // Import dom lib to access fetch, https://github.com/DefinitelyTyped/DefinitelyTyped/issues/60924
         "paths": {
             "@cashmere-monorepo/backend-core/*": ["../../core/src/*"],
             "@cashmere-monorepo/shared-contract-swap-params/*": [
