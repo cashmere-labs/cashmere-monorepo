@@ -8,13 +8,13 @@
     "devDependencies": {
         "@types/aws-lambda": "^8.10.115",
         "@types/node": "^18.16.14",
-        "sst": "^2.8.28",
+        "sst": "2.10.2",
         "vitest": "^0.31.1"
     },
     "dependencies": {
         "@cashmere-monorepo/backend-core": "workspace:^",
         "async-mutex": "^0.4.0",
         "mongoose": "^7.2.0",
-        "viem": "^0.3.35"
+        "viem": "^0.3.36"
     }
 }
