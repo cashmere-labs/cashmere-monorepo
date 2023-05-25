@@ -1,8 +1,9 @@
 import { logger } from '@cashmere-monorepo/backend-core';
 import { getSwapDataRepository } from '@cashmere-monorepo/backend-database';
+import { Hash } from 'viem';
 
 export type UndetectedTxIdsArgs = {
-    txIds: string;
+    txIds: Hash[];
 };
 
 /**
@@ -16,7 +17,7 @@ export async function getUndetectedTxIds(
 ): Promise<string[]> {
     logger.debug({ params }, 'Getting undetected transaction ids');
 
-    const txIdsArray = params.txIds.split(',');
+    const txIdsArray = params.txIds;
 
     const swapDataRepository = await getSwapDataRepository();
 

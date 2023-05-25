@@ -130,6 +130,9 @@ importers:
       '@types/aws-lambda':
         specifier: ^8.10.115
         version: 8.10.115
+      '@types/lodash':
+        specifier: ^4.14.194
+        version: 4.14.194
       '@types/node':
         specifier: ^18.16.14
         version: 18.16.14
@@ -2972,6 +2975,10 @@ packages:
 
   /@types/json-schema@7.0.11:
     resolution: {integrity: sha512-wOuvG1SN4Us4rez+tylwwwCV1psiNVOkJeM3AUWUNWg/jDQY2+HE/444y5gc+jBmRqASOm2Oeh5c1axHobwRKQ==}
+    dev: true
+
+  /@types/lodash@4.14.194:
+    resolution: {integrity: sha512-r22s9tAS7imvBt2lyHC9B8AGwWnXaYb1tY09oyLkXDs4vArpYJzw09nj8MLx5VfciBPGIb+ZwG0ssYnEPJxn/g==}
     dev: true
 
   /@types/luxon@3.3.0:

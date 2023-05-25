@@ -1,9 +1,16 @@
 import { get, set } from 'lodash';
 import { Connection, FilterQuery } from 'mongoose';
-import { Hash } from 'viem';
+import { Address, Hash } from 'viem';
 import { SwapDataDbDto } from '../dto/swapData';
 import { SwapDataDocument, SwapDataSchema } from '../schema/swapData.schema';
 import { getMongooseConnection } from '../utils/connection';
+
+type NestedKeyOf<ObjectType extends object> = {
+    [Key in keyof ObjectType &
+        (string | number)]: ObjectType[Key] extends object
+        ? `${Key}` | `${Key}.${NestedKeyOf<ObjectType[Key]>}`
+        : `${Key}`;
+}[keyof ObjectType & (string | number)];
 
 /**
  * Our current swap data repository (can be null if not init yet)
@@ -56,7 +63,7 @@ const buildSwapDataRepository = (connection: Connection) => {
          *
          * @param address A string representing the receiver address.
          */
-        async hideAllSwapIds(address: string) {
+        async hideAllSwapIds(address: Address) {
             await model.updateMany(
                 { receiver: address, swapContinueConfirmed: true },
                 { $set: { progressHidden: true } }
@@ -90,12 +97,14 @@ const buildSwapDataRepository = (connection: Connection) => {
          */
         async updateSwapData(
             swapData: SwapDataDbDto,
-            fields: string[] = Object.keys(SwapDataSchema.paths) as string[]
+            fields: NestedKeyOf<SwapDataDbDto>[] = Object.keys(
+                SwapDataSchema.paths
+            ) as NestedKeyOf<SwapDataDbDto>[]
         ): Promise<SwapDataDbDto | null> {
             const data: Record<string, unknown> = {};
             fields.forEach((key) => {
-                const value = get(swapData, key);
-                set(data, key, value);
+                const value = get(swapData, key as string);
+                set(data, key as string, value);
             });
             return await model.findOneAndUpdate(
                 {
@@ -115,9 +124,7 @@ const buildSwapDataRepository = (connection: Connection) => {
          * @param txids An array of transaction IDs to search for.
          * @returns A Promise that resolves to an array of transaction hashes that were found.
          */
-        async getDiscoveredSwapInitiatedTxids(
-            txids: string[]
-        ): Promise<Hash[]> {
+        async getDiscoveredSwapInitiatedTxids(txids: Hash[]): Promise<Hash[]> {
             const swapData = await model.find(
                 {
                     'status.swapInitiatedTxid': { $in: txids },

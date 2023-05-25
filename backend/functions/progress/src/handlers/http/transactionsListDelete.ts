@@ -16,7 +16,7 @@ export const handler = contractHandler(async (event) => {
     logger.debug({ event }, 'Received event');
     const account = event.requestContext.authorizer.lambda.sub;
     const response = await deleteTransactionsList({
-        account: account,
+        account,
     });
     logger.debug({ response }, 'Computed response');
     return {

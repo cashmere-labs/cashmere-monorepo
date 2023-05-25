@@ -6,7 +6,7 @@ import { Type } from '@sinclair/typebox';
 
 // The schema for the request path parameters
 export const transactionsListDeleteSwapIdParamsType = Type.Object({
-    swapId: Type.String(),
+    swapId: CustomType.Hex(),
 });
 
 // Typebox schema for the response body

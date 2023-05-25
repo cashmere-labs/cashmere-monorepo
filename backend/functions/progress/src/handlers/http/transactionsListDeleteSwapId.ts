@@ -17,8 +17,8 @@ export const handler = contractHandler(async (event) => {
     const account = event.requestContext.authorizer.lambda.sub;
     const swapId = event.pathParameters.swapId as Hex;
     const response = await deleteTransactionsListBySwapId({
-        account: account,
-        swapId: swapId,
+        account,
+        swapId,
     });
     logger.debug({ response }, 'Computed response');
     return {
