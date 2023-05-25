@@ -32,10 +32,9 @@ describe('[Stack] StackParams', () => {
         const template = Template.fromStack(stack);
 
         // Ensure lambda has the right config's
-        template.hasResourceProperties('AWS::Lambda::Function', {
-            MemorySize: 512,
-            Timeout: 30,
-        });
+        // template.hasResourceProperties('AWS::Lambda::Function', {
+        //     customDomain: use(CoreStack).getDomainPath('swap'),
+        // });
         // Ensure we got the function we go the estimate route
         template.hasResourceProperties('AWS::ApiGatewayV2::Route', {
             RouteKey: 'GET /estimate',

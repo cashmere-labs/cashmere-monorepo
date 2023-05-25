@@ -2,8 +2,9 @@
     "name": "@cashmere-monorepo/backend-function-swap-params",
     "version": "0.0.0",
     "scripts": {
-        "test": "sst bind vitest run",
-        "test:watch": "sst bind vitest watch",
+        "test": "sst bind \"vitest run --coverage --no-threads\"",
+        "test:watch": "sst bind \"vitest watch --coverage --no-threads\"",
+        "test:ui": "sst bind \"vitest watch --ui --coverage --no-threads\"",
         "typecheck": "tsc -noEmit"
     },
     "dependencies": {
@@ -14,6 +15,7 @@
     "devDependencies": {
         "@types/aws-lambda": "^8.10.115",
         "@types/node": "^18.16.14",
+        "@vitest/coverage-c8": "^0.31.1",
         "sst": "2.10.2",
         "vitest": "^0.31.1"
     }
