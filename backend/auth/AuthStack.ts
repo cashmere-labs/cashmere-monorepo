@@ -18,28 +18,28 @@ import {
 
 const path = './backend/functions/auth/src';
 
+/**
+ * Build our authentication stack
+ * @param stack
+ * @constructor
+ */
 export function AuthStack({ stack }: StackContext) {
     // Bind JWT secrets
     const JWT_ACCESS_SECRET = new Config.Secret(stack, 'JWT_ACCESS_SECRET');
     const JWT_REFRESH_SECRET = new Config.Secret(stack, 'JWT_REFRESH_SECRET');
     stack.addDefaultFunctionBinding([JWT_ACCESS_SECRET, JWT_REFRESH_SECRET]);
 
+    // Build our access token authorizer
+    const accessTokenAuthorizer = getAccessTokenAuthorizer(stack);
+
     // Build our swap param's API
     const api = new Api(stack, 'AuthApi', {
-        // Default prop's for every routes
-        defaults: {
-            function: {
-                // Default timeout to 30seconds
-                timeout: '30 seconds',
-                // Default memory to 512MB
-                memorySize: '512 MB',
-            },
-        },
-        // TODO: Domain name configuration, when domain name will be on route53
+        // Domain name configuration, when domain name will be on route53
         customDomain: use(CoreStack).getDomainPath('auth'),
+        // Authorizer for the API
         authorizers: {
-            accessTokenAuthorizer: getAccessTokenAuthorizer(stack, false),
-            refreshTokenAuthorizer: getRefreshTokenAuthorizer(stack, false),
+            accessTokenAuthorizer,
+            refreshTokenAuthorizer: getRefreshTokenAuthorizer(stack),
         },
     });
 
@@ -56,7 +56,10 @@ export function AuthStack({ stack }: StackContext) {
         ContractApiGatewayRoute(
             `${path}/handlers/logout-auth.handler`,
             logoutContract,
-            'accessTokenAuthorizer'
+            undefined,
+            {
+                authorizer: 'accessTokenAuthorizer',
+            }
         )
     );
     api.addRoutes(
@@ -71,46 +74,37 @@ export function AuthStack({ stack }: StackContext) {
         ContractApiGatewayRoute(
             `${path}/handlers/refresh-auth.handler`,
             refreshContract,
-            'refreshTokenAuthorizer'
+            undefined,
+            {
+                authorizer: 'refreshTokenAuthorizer',
+            }
         )
     );
 
     // Add the outputs to our stack
     stack.addOutputs({
         AuthEndpoint: api.url,
+        AccessTokenAuthorizerName: accessTokenAuthorizer.name,
     });
+
+    // Return a reference to our authorizers
+    return {
+        accessTokenAuthorizer,
+    };
 }
 
 // Build an access token authorizer object
-export function getAccessTokenAuthorizer(
-    stack: Stack,
-    bindSecret = true
-): ApiAuthorizer {
-    return {
-        type: 'lambda',
-        function: new Function(stack, 'AccessTokenAuthorizer', {
-            functionName: 'accessTokenAuthorizerFunction',
-            handler: `${path}/authorizers.accessTokenHandler`,
-            bind: bindSecret
-                ? [new Config.Secret(stack, 'JWT_ACCESS_SECRET')]
-                : undefined,
-        }),
-    };
-}
+export const getAccessTokenAuthorizer = (stack: Stack): ApiAuthorizer => ({
+    type: 'lambda',
+    function: new Function(stack, 'AccessTokenAuthorizer', {
+        handler: `${path}/authorizers.accessTokenHandler`,
+    }),
+});
 
 // Build a refresh token authorizer object
-export function getRefreshTokenAuthorizer(
-    stack: Stack,
-    bindSecret = true
-): ApiAuthorizer {
-    return {
-        type: 'lambda',
-        function: new Function(stack, 'RefreshTokenAuthorizer', {
-            functionName: 'refreshTokenAuthorizerFunction',
-            handler: `${path}/authorizers.refreshTokenHandler`,
-            bind: bindSecret
-                ? [new Config.Secret(stack, 'JWT_REFRESH_SECRET')]
-                : undefined,
-        }),
-    };
-}
+export const getRefreshTokenAuthorizer = (stack: Stack): ApiAuthorizer => ({
+    type: 'lambda',
+    function: new Function(stack, 'RefreshTokenAuthorizer', {
+        handler: `${path}/authorizers.refreshTokenHandler`,
+    }),
+});

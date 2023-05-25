@@ -6,14 +6,14 @@ import { FunctionProps } from 'sst/constructs/Function';
 export const ContractApiGatewayRoute = <AuthorizerKeys>(
     handlerPath: string,
     schema: GenericApiGatewayContract,
-    authorizer?: AuthorizerKeys,
-    additionalFunctionProps?: FunctionProps
+    additionalFunctionProps?: FunctionProps,
+    additionalRouteProps?: Omit<ApiRouteProps<AuthorizerKeys>, 'function'>
 ): Record<string, ApiRouteProps<AuthorizerKeys>> => ({
     [schema.method + ' ' + schema.path]: {
         function: {
             handler: handlerPath,
             ...(additionalFunctionProps ?? []),
         },
-        authorizer,
+        ...(additionalRouteProps ?? []),
     },
 });

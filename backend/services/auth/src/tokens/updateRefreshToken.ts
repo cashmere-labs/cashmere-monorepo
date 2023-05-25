@@ -7,11 +7,11 @@ import { Address } from 'viem';
  * @param address
  * @param refreshToken
  */
-export async function updateRefreshToken(
+export const updateRefreshToken = async (
     address: Address,
     refreshToken: string
-) {
+) => {
     await (
         await getUserRepository()
     ).updateRefreshTokenHash(address, await pbkdf2Hash(refreshToken));
-}
+};

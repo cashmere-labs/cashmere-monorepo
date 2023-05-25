@@ -1,5 +1,5 @@
 {
-    "name": "@cashmere-monorepo/backend-function-auth",
+    "name": "@cashmere-monorepo/backend-auth",
     "version": "0.0.0",
     "scripts": {
         "typecheck": "tsc -noEmit"
