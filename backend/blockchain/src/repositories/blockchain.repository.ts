@@ -4,6 +4,9 @@ import { getNetworkConfigAndClient } from '@cashmere-monorepo/shared-blockchain'
 // Generic interface for our uniswap repository
 export type BlockchainRepository = {
     getLastBlock: () => Promise<bigint>;
+    getMaxedOutScanToBlock: (range: { from: bigint; to: bigint }) => {
+        maxBlock: bigint;
+    };
 };
 
 /**
@@ -25,7 +28,9 @@ export const getBlockchainRepository = (
     });
 
     return {
-        // Get the amount out of uniswap
+        /**
+         * Get the last block for the given chain
+         */
         getLastBlock: () =>
             getOrSetFromCache(
                 {
@@ -34,5 +39,25 @@ export const getBlockchainRepository = (
                 },
                 client.getBlockNumber
             ),
+
+        /**
+         * Get the maxed out scan to block for the given range
+         * @param range
+         */
+        getMaxedOutScanToBlock: (range: {
+            from: bigint;
+            to: bigint;
+        }): { maxBlock: bigint } => {
+            // Get the limit for the given chain
+            const limit = config.scanConfig.maxScanBlock ?? 2_000;
+
+            // If the diff between the two blocks is superior to the limit, return the limit
+            if (range.to - range.from > BigInt(limit)) {
+                return { maxBlock: range.from + BigInt(limit) };
+            }
+
+            // Otherwise, return the previous toBlock
+            return { maxBlock: range.to };
+        },
     };
 };

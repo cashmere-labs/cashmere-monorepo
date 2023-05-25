@@ -83,22 +83,6 @@ export class BlockchainConfig {
 
         return getAddress(address);
     }
-
-    // Get the max block to scan for the given range
-    getMaxedOutScanToBlock(
-        fromBlock: bigint,
-        toBlock: bigint
-    ): { all: boolean; toBlock: bigint } {
-        const limit = this.scanConfig.maxScanBlock ?? 2_000;
-
-        // If the diff between the two blocks is superior to the limit, return the limit
-        if (toBlock - fromBlock > BigInt(limit)) {
-            return { all: false, toBlock: fromBlock + BigInt(limit) };
-        }
-
-        // Otherwise, return the previous toBlock
-        return { all: true, toBlock };
-    }
 }
 
 /**
