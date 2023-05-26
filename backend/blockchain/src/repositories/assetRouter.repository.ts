@@ -6,7 +6,7 @@ import {
     swapMessageReceivedEventABI,
 } from '@cashmere-monorepo/shared-blockchain';
 import { Address, Hex, getAddress, pad } from 'viem';
-import { BlockRange } from '../types';
+import { BlockRange, SwapInitiatedLogType } from '../types';
 
 // Generic types for our asset router repository
 export type AssetRouterRepository = {
@@ -161,9 +161,11 @@ export const getAssetRouterRepository = (chainId: number) => {
 
         /**
          * Get all the swap initiated event's
-         * @param blockConfig
+         * @param range
          */
-        getSwapInitiatedEvents: (range: BlockRange) =>
+        getSwapInitiatedEvents: (
+            range: BlockRange
+        ): Promise<SwapInitiatedLogType[]> =>
             client.getLogs({
                 address: config.getContractAddress('bridge'),
                 event: swapMessageReceivedEventABI,

@@ -1,1 +1,1 @@
-export * from './bridgeRepository';
+export * from './bridgeService';
