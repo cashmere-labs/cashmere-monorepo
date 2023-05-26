@@ -2,15 +2,13 @@ import { getOrSetFromCache } from '@cashmere-monorepo/backend-core';
 import {
     bridgeABI,
     getNetworkConfigAndClient,
+    swapMessageReceivedEventABI,
 } from '@cashmere-monorepo/shared-blockchain';
 import { encodeAbiParameters } from 'viem';
-
-export type BridgeRepository = {
-    getSwapFeeL0: (toChainId: number) => Promise<bigint>;
-};
+import { BlockRange } from '../types';
 
 // Get the asset repository for the given chain
-export const getBridgeRepository = (chainId: number): BridgeRepository => {
+export const getBridgeRepository = (chainId: number) => {
     // Get the config and client
     const { config, client } = getNetworkConfigAndClient(chainId);
 
@@ -23,7 +21,10 @@ export const getBridgeRepository = (chainId: number): BridgeRepository => {
     });
 
     return {
-        // Get the swap fee's estimation
+        /**
+         * Get the swap fee for the given chain id
+         * @param toChainId
+         */
         getSwapFeeL0: async (toChainId: number): Promise<bigint> => {
             // Get the fee typle
             const feeTuple = await getOrSetFromCache(
@@ -49,5 +50,16 @@ export const getBridgeRepository = (chainId: number): BridgeRepository => {
 
             return feeTuple[0];
         },
+
+        /**
+         * Get all the swap message received events
+         * @param range
+         */
+        getSwapMessageReceivedEvents: async (range: BlockRange) =>
+            client.getLogs({
+                address: config.getContractAddress('bridge'),
+                event: swapMessageReceivedEventABI,
+                ...range,
+            }),
     };
 };
