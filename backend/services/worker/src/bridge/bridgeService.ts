@@ -16,47 +16,11 @@ export const buildBridgeService = async (chainId: number) => {
     const blockScanner = await buildBridgeBlockScanner(chainId);
 
     /**
-     * Handle new block's on the given chain
-     * @param blockRange The block range to handle
+     * Check all the pending tx status for this chain
+     * TODO: Port the logic
      */
-    const handleNewBlock = async (blockRange: {
-        from: bigint;
-        to: bigint;
-    }): Promise<{ lastBlockHandled: bigint }> => {
-        logger.debug(
-            { chainId, blockRange },
-            `Handling new blocks for potential bridge trigger`
-        );
-
-        // Get the maxed out scan to block for the given range
-        const { maxBlock } =
-            blockchainRepository.getMaxedOutScanToBlock(blockRange);
-        logger.debug(
-            { chainId, maxBlock, blockRange },
-            `Maxed out block to scan for potential bridge trigger`
-        );
-
-        // Check for any swap logs
-        await blockScanner.checkSwapLogsForBlocks({
-            from: blockRange.from,
-            to: maxBlock,
-        });
-
-        /*
-        TODO: Port this logic part
-        // Check all the given swap logs for the given block range
-        await this.checkSwapLogsForBlocks(fromBlock, targetBlock);
-
-        // Check all the tx status
-        try {
-            await this.checkTxStatus();
-        } catch (e) {
-            this.logger.error('Unable to check all the tx status', e, {
-                chainId: this.chainId,
-            });
-        }*/
-
-        return { lastBlockHandled: maxBlock };
+    const checkAllTxStatus = async () => {
+        logger.debug({ chainId }, 'Cheching all the pending tx status');
     };
 
     /**
@@ -94,7 +58,7 @@ export const buildBridgeService = async (chainId: number) => {
         // While we have blocks to handle
         while (startBlock < targetBlock) {
             // Wait to handle all the new blocks on this chain
-            const blockHandlingResult = await handleNewBlock({
+            const blockHandlingResult = await blockScanner.handleNewBlock({
                 from: startBlock,
                 to: targetBlock,
             });
@@ -113,6 +77,9 @@ export const buildBridgeService = async (chainId: number) => {
             // Wait for 500ms before the next trigger
             await new Promise((resolve) => setTimeout(resolve, 500));
         }
+
+        // Once we iterated over every pending blocks, check all the tx status
+        await checkAllTxStatus();
 
         logger.info(
             { chainId, lastBlockIterated, targetBlock },

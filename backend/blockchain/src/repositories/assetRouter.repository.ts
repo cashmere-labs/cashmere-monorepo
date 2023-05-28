@@ -1,12 +1,13 @@
 import { getOrSetFromCache } from '@cashmere-monorepo/backend-core';
 import {
     assetRouterABI,
+    crossChainSwapInitiatedEventABI,
+    CrossChainSwapInitiatedLogType,
     getNetworkConfigAndClient,
     iAssetV2ABI,
-    swapMessageReceivedEventABI,
 } from '@cashmere-monorepo/shared-blockchain';
-import { Address, Hex, getAddress, pad } from 'viem';
-import { BlockRange, SwapInitiatedLogType } from '../types';
+import { Address, getAddress, Hex, pad } from 'viem';
+import { BlockRange } from '../types';
 
 // Generic types for our asset router repository
 export type AssetRouterRepository = {
@@ -165,10 +166,10 @@ export const getAssetRouterRepository = (chainId: number) => {
          */
         getSwapInitiatedEvents: (
             range: BlockRange
-        ): Promise<SwapInitiatedLogType[]> =>
+        ): Promise<CrossChainSwapInitiatedLogType[]> =>
             client.getLogs({
-                address: config.getContractAddress('bridge'),
-                event: swapMessageReceivedEventABI,
+                address: config.getContractAddress('assetRouter'),
+                event: crossChainSwapInitiatedEventABI,
                 ...range,
             }),
     };

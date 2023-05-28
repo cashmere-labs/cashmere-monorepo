@@ -1,8 +1,11 @@
 import {
+    CrossChainSwapInitiatedLogType,
     getAssetRouterRepository,
     getBridgeRepository,
-    SwapInitiatedLogType,
+    l0ChainIdToConfigMapViem,
+    SwapPayload,
 } from '@cashmere-monorepo/backend-blockchain';
+import { getAggregatorRepository } from '@cashmere-monorepo/backend-blockchain/src/repositories/aggregator.repository';
 import { getBlockchainRepository } from '@cashmere-monorepo/backend-blockchain/src/repositories/blockchain.repository';
 import { logger } from '@cashmere-monorepo/backend-core';
 
@@ -15,12 +18,67 @@ export const buildBridgeBlockScanner = async (chainId: number) => {
     const blockchainRepository = await getBlockchainRepository(chainId);
     const assetRouterRepository = getAssetRouterRepository(chainId);
     const bridgeRepository = getBridgeRepository(chainId);
+    const aggregatorRepository = getAggregatorRepository(chainId);
 
     /**
      * Handle a new swap initiated event's
      */
-    const handleSwapInitiatedEvent = async (log: SwapInitiatedLogType) => {
-        logger.debug({ chainId, log }, 'Handling swap initiated event');
+    const handleSwapInitiatedEvent = async (
+        log: CrossChainSwapInitiatedLogType
+    ) => {
+        if (!log.args.payload || !log.args.dstChainId) {
+            logger.warn(
+                { chainId, log },
+                'No swap payload, or dstChainId found in the given log'
+            );
+            return;
+        }
+        // Parse the payload
+        const payload = SwapPayload.decode(log.args.payload);
+        logger.debug(
+            { chainId, log, payload },
+            'Handling swap initiated event'
+        );
+
+        // Ensure we got a tx hash on the given log
+        if (!log.transactionHash) {
+            // TODO: Should queue the process for this swap until we got a tx hash?
+            logger.warn(
+                { chainId, log, payload },
+                'No tx hash founded on the given log, aborting the process'
+            );
+            return;
+        }
+
+        // Get the args used to start this tx
+        const txArgs = await aggregatorRepository.getStartSwapArgs(
+            log.transactionHash
+        );
+        const startSwapTxArgs = txArgs.args[0];
+
+        // Boolean to know if we skip the processing of this swap data or not
+        let skipProcessing = false;
+
+        // Ensure the aggregator address match
+        const dstChainId = l0ChainIdToConfigMapViem[log.args.dstChainId];
+        const dstAggregatorRepository = getAggregatorRepository(dstChainId);
+        if (
+            !dstAggregatorRepository.isContractAddress(
+                startSwapTxArgs.dstAggregatorAddress
+            )
+        ) {
+            logger.warn(
+                { chainId, log, payload, startSwapTxArgs },
+                'Invalid aggregator address, marking it for process skip'
+            );
+            skipProcessing = true;
+        }
+
+        // Extract some data from it
+        const srcToken = startSwapTxArgs.srcToken;
+        const srcAmount = startSwapTxArgs.srcAmount;
+
+        // TODO: Save the data in the database and return the built db dto
     };
 
     /**
@@ -52,6 +110,8 @@ export const buildBridgeBlockScanner = async (chainId: number) => {
                 { chainId, swapInitiatedLog },
                 `Handling swap initiated log`
             );
+            // Handle the event
+            const swapData = await handleSwapInitiatedEvent(swapInitiatedLog);
             // Extract swap data from the event
             /*
             const swapData = await this.handleSwapInitiatedEvent(logOut);
@@ -122,23 +182,10 @@ export const buildBridgeBlockScanner = async (chainId: number) => {
         // Check for any swap logs
         await checkSwapLogsForBlocks({ from: blockRange.from, to: maxBlock });
 
-        /*
-        TODO: Port this logic part
-        // Check all the given swap logs for the given block range
-        await this.checkSwapLogsForBlocks(fromBlock, targetBlock);
-
-        // Check all the tx status
-        try {
-            await this.checkTxStatus();
-        } catch (e) {
-            this.logger.error('Unable to check all the tx status', e, {
-                chainId: this.chainId,
-            });
-        }*/
-
+        // Return the last block handled
         return { lastBlockHandled: maxBlock };
     };
 
     // Return our process bridge function
-    return { checkSwapLogsForBlocks };
+    return { handleNewBlock, checkSwapLogsForBlocks };
 };
