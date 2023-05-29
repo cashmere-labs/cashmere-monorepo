@@ -3,6 +3,9 @@
     "version": "0.0.0",
     "type": "module",
     "scripts": {
+        "test": "sst bind \"vitest run --coverage --no-threads\"",
+        "test:watch": "sst bind \"vitest watch --coverage --no-threads\"",
+        "test:ui": "sst bind \"vitest watch --ui --coverage --no-threads\"",
         "typecheck": "tsc -noEmit"
     },
     "dependencies": {
@@ -14,6 +17,10 @@
         "viem": "^0.3.36"
     },
     "devDependencies": {
-        "@types/node": "^18.16.14"
+        "@types/node": "^18.16.14",
+        "@vitest/coverage-c8": "^0.31.1",
+        "@vitest/ui": "^0.31.1",
+        "clear-module": "^4.1.2",
+        "vitest": "^0.31.1"
     }
 }

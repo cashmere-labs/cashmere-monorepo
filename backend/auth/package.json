@@ -2,7 +2,8 @@
     "name": "@cashmere-monorepo/backend-auth",
     "version": "0.0.0",
     "scripts": {
-        "typecheck": "tsc -noEmit"
+        "typecheck": "tsc -noEmit",
+        "test:ui": "vitest --ui"
     },
     "dependencies": {
         "@cashmere-monorepo/backend-core": "workspace:^",
@@ -12,6 +13,7 @@
     "devDependencies": {
         "@types/aws-lambda": "^8.10.115",
         "@types/node": "^18.16.14",
+        "@vitest/ui": "^0.31.1",
         "sst": "2.10.2",
         "vitest": "^0.31.1"
     }
