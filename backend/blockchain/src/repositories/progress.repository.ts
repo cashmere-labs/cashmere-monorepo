@@ -2,7 +2,7 @@ import { Address } from 'viem';
 import { getAssetRepository } from './asset.repository';
 
 // Tokens metadata request argument type
-type GetTokenMetadataArgs = {
+export type GetTokenMetadataArgs = {
     srcChainId: number;
     dstChainId: number;
     srcToken: Address;

@@ -135,7 +135,7 @@ export async function getSwapTxValue(
  * @param dstChainId
  * @param hgsAmount
  */
-export async function buildSwapTxArgs(
+export function buildSwapTxArgs(
     srcTokenOriginal: Address,
     amount: bigint,
     lwsAssetId: string,
@@ -143,7 +143,7 @@ export async function buildSwapTxArgs(
     dstTokenOriginal: Address,
     dstChainId: number,
     hgsAmount: bigint
-): Promise<StartSwapTxArgs> {
+): StartSwapTxArgs {
     const dstAggregatorAddress =
         getNetworkConfig(dstChainId).getContractAddress('aggregator');
     const dstChainL0Id = getL0ChainFromChainId(dstChainId);
@@ -305,7 +305,7 @@ export async function getSwapParams(
         );
 
         return {
-            args: await buildSwapTxArgs(
+            args: buildSwapTxArgs(
                 srcTokenOriginal,
                 amount,
                 lwsAssetId,
