@@ -1,7 +1,16 @@
+import { get, set } from 'lodash';
 import { Connection, FilterQuery } from 'mongoose';
+import { Address, Hash } from 'viem';
 import { SwapDataDbDto } from '../dto/swapData';
 import { SwapDataDocument, SwapDataSchema } from '../schema/swapData.schema';
 import { getMongooseConnection } from '../utils/connection';
+
+type NestedKeyOf<ObjectType extends object> = {
+    [Key in keyof ObjectType &
+        (string | number)]: ObjectType[Key] extends object
+        ? `${Key}` | `${Key}.${NestedKeyOf<ObjectType[Key]>}`
+        : `${Key}`;
+}[keyof ObjectType & (string | number)];
 
 /**
  * Our current swap data repository (can be null if not init yet)
@@ -47,6 +56,85 @@ const buildSwapDataRepository = (connection: Connection) => {
                 count,
                 items: await cursor.sort({ swapInitiatedTimestamp: -1 }).exec(),
             };
+        },
+
+        /**
+         * Marks all the SwapData entries associated with the provided receiver address as hidden.
+         *
+         * @param address A string representing the receiver address.
+         */
+        async hideAllSwapIds(address: Address) {
+            await model.updateMany(
+                { receiver: address, swapContinueConfirmed: true },
+                { $set: { progressHidden: true } }
+            );
+        },
+
+        /**
+         * Retrieves the SwapData associated with the provided swapId and optionally srcChainId
+         * from the database.
+         *
+         * @param swapId A string representing the swapId to retrieve SwapData for.
+         * @param srcChainId An optional number representing the srcChainId to retrieve SwapData for.
+         * @returns A Promise that resolves to the retrieved SwapData object.
+         */
+        async getSwapData(
+            swapId: string,
+            srcChainId?: number
+        ): Promise<SwapDataDbDto | null> {
+            const filter: FilterQuery<SwapDataDocument> = { swapId };
+            if (srcChainId) filter.srcChainId = srcChainId;
+            return await model.findOne(filter);
+        },
+
+        /**
+         * Updates specified fields of SwapData in the database by swapId and srcChainId.
+         * If fields are not specified, updates all the fields.
+         *
+         * @param swapData An object containing the swap data to update.
+         * @param fields An array of field names to update. By default, updates all fields.
+         * @returns A Promise that resolves to the updated SwapData object.
+         */
+        async updateSwapData(
+            swapData: SwapDataDbDto,
+            fields: NestedKeyOf<SwapDataDbDto>[] = Object.keys(
+                SwapDataSchema.paths
+            ) as NestedKeyOf<SwapDataDbDto>[]
+        ): Promise<SwapDataDbDto | null> {
+            const data: Record<string, unknown> = {};
+            fields.forEach((key) => {
+                const value = get(swapData, key as string);
+                set(data, key as string, value);
+            });
+            return await model.findOneAndUpdate(
+                {
+                    srcChainId: swapData.chains.srcChainId,
+                    swapId: swapData.swapId,
+                },
+                { $set: data },
+                { new: true }
+            );
+        },
+
+        /**
+         * Retrieves a list of initiated transaction hashes that have been discovered in
+         * the SwapData collection. This function filters the collection by the provided
+         * transaction IDs and returns those which are found.
+         *
+         * @param txids An array of transaction IDs to search for.
+         * @returns A Promise that resolves to an array of transaction hashes that were found.
+         */
+        async getDiscoveredSwapInitiatedTxids(txids: Hash[]): Promise<Hash[]> {
+            const swapData = await model.find(
+                {
+                    'status.swapInitiatedTxid': { $in: txids },
+                },
+                'status.swapInitiatedTxid'
+            ); // selecting only 'status.swapInitiatedTxid' field
+
+            return swapData
+                .filter((sd) => sd.status.swapInitiatedTxid !== undefined) // filter out undefined entries
+                .map((sd) => sd.status.swapInitiatedTxid as Hash);
         },
     };
 };

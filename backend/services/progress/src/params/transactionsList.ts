@@ -19,11 +19,10 @@ export interface TransactionsListResponse {
 }
 
 /**
- * Get the transactions list
- * @param params
- * @param params.account
- * @param params.type
- * @param params.page
+ * Retrieves a list of transaction data for the specified account, type, and page.
+ *
+ * @param params An object containing the parameters for the function.
+ * @returns A Promise that resolves to a list of transaction data.
  */
 export async function getTransactionsList(
     params: TransactionsListArgs
