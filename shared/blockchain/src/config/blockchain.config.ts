@@ -47,7 +47,7 @@ export class BlockchainConfig {
     constructor(
         public readonly chain: Chain,
         public readonly rpcUrl: string,
-        public readonly l0ChainId: string,
+        public readonly l0ChainId: number,
         public readonly scanConfig: {
             maxScanBlock?: number;
             scanDelay?: number;
@@ -96,60 +96,60 @@ export const networkConfigs: {
         polygonMumbai,
         //'https://nd-205-910-430.p2pify.com/5e4fbcfe1a1af2bb2c6f5b0e9e538551',
         'https://ultra-wispy-season.matic-testnet.quiknode.pro/29108b7afd374f0c65eb9ce39476825c049bd0e8/',
-        '10109'
+        10109
     ),
     [GOERLI_CHAIN_ID]: new BlockchainConfig(
         goerli,
         // 'https://nd-186-519-127.p2pify.com/17f1fca4fe1e8dc55f77dfbcc05ccc7b',
         'https://few-long-seed.ethereum-goerli.quiknode.pro/b765f3dc49661b48dd40f0e272d7455ad2c15857/',
-        '10121'
+        10121
     ),
     [BSC_TESTNET_CHAIN_ID]: new BlockchainConfig(
         bscTestnet,
         'https://nd-982-104-569.p2pify.com/1166714fe3a4c30fb55695634c134102',
-        '10102'
+        10102
     ),
     [AVALANCHE_FUJI_CHAIN_ID]: new BlockchainConfig(
         avalancheFuji,
         'https://nd-846-924-870.p2pify.com/32a211f05d2760eba35fa37618da2f14/ext/bc/C/rpc',
-        '10106',
+        10106,
         { maxScanBlock: 10_000 } // Lower than the max to prevent memory overload on our side
     ),
     [FANTOM_TESTNET_CHAIN_ID]: new BlockchainConfig(
         fantomTestnet,
         'https://nd-994-420-936.p2pify.com/85c3578cdeead5b178d6179d89467d6b',
-        '10112',
+        10112,
         { maxScanBlock: 100 }
     ),
     [ARBITRUM_GOERLI_CHAIN_ID]: new BlockchainConfig(
         arbitrumGoerli,
         'https://nd-441-846-758.p2pify.com/114f826fa77fc433864d1a8c595c9797',
-        '10143'
+        10143
     ),
     [OPTIMISM_GOERLI_CHAIN_ID]: new BlockchainConfig(
         optimismGoerli,
         'https://opt-goerli.g.alchemy.com/v2/tXa8Otacz1x4z-uN9Ut2F_LjYnJeq1cE',
-        '10132'
+        10132
     ),
     [BASE_GOERLI_CHAIN_ID]: new BlockchainConfig(
         baseGoerli,
         'https://base-goerli.blastapi.io/b79c6fd6-a635-482a-b14e-9b414a643dfd',
-        '10160'
+        10160
     ),
     [LINEA_ZK_TESTNET_CHAIN_ID]: new BlockchainConfig(
         lineaZk,
         'https://consensys-zkevm-goerli-prealpha.infura.io/v3/a7819dae3e524fe88aaa9999c1128fbe',
-        '10157'
+        10157
     ),
     [POLYGON_ZK_TESTNET_CHAIN_ID]: new BlockchainConfig(
         polygonZkEvmTestnet,
         'https://nd-128-575-364.p2pify.com/d3d6013c9736474060b5eefc44d81660',
-        '10158'
+        10158
     ),
     [METIS_GOERLI_CHAIN_ID]: new BlockchainConfig(
         metisGoerli,
         'https://goerli.gateway.metisdevops.link',
-        '10151'
+        10151
     ),
     // [ETHEREUM_CHAIN_ID]: new BlockchainConfig(
     //   ETHEREUM_CHAIN_ID,

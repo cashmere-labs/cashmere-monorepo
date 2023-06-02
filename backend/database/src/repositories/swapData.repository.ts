@@ -32,7 +32,9 @@ const buildSwapDataRepository = (connection: Connection) => {
     const model = connection.model('SwapData', SwapDataSchema);
     // Return all the function needed to interact with the swap data
     return {
-        // Get all the swap data progress for a given address
+        /**
+         * Get all the swap data progress for a given address
+         */
         async getByReceiver(
             receiver: string,
             filters: Omit<FilterQuery<SwapDataDocument>, 'receiver'> = {},
@@ -47,6 +49,14 @@ const buildSwapDataRepository = (connection: Connection) => {
                 count,
                 items: await cursor.sort({ swapInitiatedTimestamp: -1 }).exec(),
             };
+        },
+
+        /**
+         * Add a new swap data in our repository
+         */
+        async saveSwapData(swapData: SwapDataDbDto) {
+            // Build our swap data db dto
+            model.create(swapData);
         },
     };
 };

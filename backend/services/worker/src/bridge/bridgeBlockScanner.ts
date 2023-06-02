@@ -1,5 +1,6 @@
 import {
     CrossChainSwapInitiatedLogType,
+    getAssetRepository,
     getAssetRouterRepository,
     getBridgeRepository,
     l0ChainIdToConfigMapViem,
@@ -7,7 +8,11 @@ import {
 } from '@cashmere-monorepo/backend-blockchain';
 import { getAggregatorRepository } from '@cashmere-monorepo/backend-blockchain/src/repositories/aggregator.repository';
 import { getBlockchainRepository } from '@cashmere-monorepo/backend-blockchain/src/repositories/blockchain.repository';
+import { SwapDataTokenMetadata } from '@cashmere-monorepo/backend-blockchain/src/repositories/progress.repository';
 import { logger } from '@cashmere-monorepo/backend-core';
+import { getSwapDataRepository } from '@cashmere-monorepo/backend-database';
+import { Address } from 'viem';
+import { buildSwapDataDbDto } from '../utils';
 
 /**
  * Build the bridge repository for the given chain
@@ -19,6 +24,41 @@ export const buildBridgeBlockScanner = async (chainId: number) => {
     const assetRouterRepository = getAssetRouterRepository(chainId);
     const bridgeRepository = getBridgeRepository(chainId);
     const aggregatorRepository = getAggregatorRepository(chainId);
+
+    // Get our swap data db repository
+    const swapDataRepository = await getSwapDataRepository();
+
+    /**
+     * Get the token data for the given swap
+     */
+    const getTokenDataByPoolIdsForProgress = async (
+        srcChainId: number,
+        dstChainId: number,
+        srcToken: Address,
+        lwsPoolId: number,
+        hgsPoolId: number,
+        dstToken: Address
+    ): Promise<SwapDataTokenMetadata> => {
+        // Get all of our tokens
+        const lwsToken = await getAssetRouterRepository(
+            srcChainId
+        ).getPoolTokenAsset(lwsPoolId);
+        const hgsToken = await getAssetRouterRepository(
+            dstChainId
+        ).getPoolTokenAsset(hgsPoolId);
+
+        // Get our two asset repository
+        const srcAssetRepo = getAssetRepository(srcChainId);
+        const dstAssetRepo = getAssetRepository(dstChainId);
+
+        return {
+            srcDecimals: await srcAssetRepo.tokenDecimal(srcToken),
+            srcTokenSymbol: await srcAssetRepo.tokenSymbol(srcToken),
+            lwsTokenSymbol: await srcAssetRepo.tokenSymbol(lwsToken),
+            hgsTokenSymbol: await dstAssetRepo.tokenSymbol(hgsToken),
+            dstTokenSymbol: await dstAssetRepo.tokenSymbol(dstToken),
+        };
+    };
 
     /**
      * Handle a new swap initiated event's
@@ -78,6 +118,27 @@ export const buildBridgeBlockScanner = async (chainId: number) => {
         const srcToken = startSwapTxArgs.srcToken;
         const srcAmount = startSwapTxArgs.srcAmount;
 
+        // Get the token metadata
+        const swapTokenMetadata = await getTokenDataByPoolIdsForProgress(
+            chainId,
+            dstChainId,
+            srcToken,
+            startSwapTxArgs.lwsPoolId,
+            startSwapTxArgs.hgsPoolId,
+            payload.dstToken
+        );
+
+        // Build the swap data db dto
+        const swapData = buildSwapDataDbDto(
+            chainId,
+            payload,
+            log,
+            swapTokenMetadata,
+            srcAmount,
+            skipProcessing
+        );
+
+        // Add the data in our database
         // TODO: Save the data in the database and return the built db dto
     };
 
