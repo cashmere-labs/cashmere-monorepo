@@ -138,8 +138,9 @@ export const buildBridgeBlockScanner = async (chainId: number) => {
             skipProcessing
         );
 
-        // Add the data in our database
-        // TODO: Save the data in the database and return the built db dto
+        // TODO: The add swap data was also increasing stat's
+        // Save the swap data in our database and return the fresh data
+        return await swapDataRepository.save(swapData);
     };
 
     /**
@@ -172,32 +173,18 @@ export const buildBridgeBlockScanner = async (chainId: number) => {
                 `Handling swap initiated log`
             );
             // Handle the event
-            const swapData = await handleSwapInitiatedEvent(swapInitiatedLog);
-            // Extract swap data from the event
-            /*
-            const swapData = await this.handleSwapInitiatedEvent(logOut);
-            this.progressService.notifyProgressUpdate(swapData);
-            if (swapData) {
-                this.logger.log(
-                    `Swap id ${logOut.args.id} initiated on block ${logOut.blockNumber}, tx ${logOut.transactionHash} recorded`,
-                    {
-                        chainId: this.chainId,
-                        swapId: logOut.args.id,
-                        txid: logOut.transactionHash,
-                    }
+            try {
+                const swapData = await handleSwapInitiatedEvent(
+                    swapInitiatedLog
                 );
-            } else {
-                this.logger.warn(
-                    `Did not create swap id ${logOut.args.id} initiated on block ${logOut.blockNumber}, tx ${logOut.transactionHash} (already recorded?)`,
-                    {
-                        chainId: this.chainId,
-                        swapId: logOut.args.id,
-                        txid: logOut.transactionHash,
-                    }
+                // TODO: Was previously notifying the progress here, find another way
+                logger.info({ chainId, swapData }, 'Swap data created');
+            } catch (e) {
+                logger.error(
+                    { chainId, error: e },
+                    'Error while handling swap initiated event'
                 );
             }
-
-             */
         }
 
         // Get all the swap performed logs for the given filter
@@ -216,6 +203,21 @@ export const buildBridgeBlockScanner = async (chainId: number) => {
                 { chainId, swapMessageReceivedEvent },
                 `Handling swap message received event`
             );
+            /*
+            TODO: Sending this data to the swap bridge queue, in our case preparing all the data here and only send the tx request?
+            TODO: Or we can also have a queue to handle all this event, and another one to perform the tx, maybe a bit overkill but better for scaling
+            await this.swapBridgeQueue.add(
+                'workerSwapPerformed',
+                {
+                    chainId: this.chainId,
+                    log: logIn,
+                },
+                {
+                    jobId: `swap-performed-${this.chainId}-${logIn.transactionHash}`,
+                    ...swapBridgeJobConfig,
+                }
+            );
+             */
         }
     };
 

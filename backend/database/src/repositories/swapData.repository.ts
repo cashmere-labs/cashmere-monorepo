@@ -54,9 +54,10 @@ const buildSwapDataRepository = (connection: Connection) => {
         /**
          * Add a new swap data in our repository
          */
-        async saveSwapData(swapData: SwapDataDbDto) {
-            // Build our swap data db dto
-            model.create(swapData);
+        async save(swapData: SwapDataDbDto): Promise<SwapDataDbDto> {
+            // Insert and return it
+            // TODO: Also check for duplicate id & srcChainId?
+            return await model.create(swapData);
         },
     };
 };
