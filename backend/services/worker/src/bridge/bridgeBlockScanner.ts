@@ -206,6 +206,7 @@ export const buildBridgeBlockScanner = async (chainId: number) => {
             /*
             TODO: Sending this data to the swap bridge queue, in our case preparing all the data here and only send the tx request?
             TODO: Or we can also have a queue to handle all this event, and another one to perform the tx, maybe a bit overkill but better for scaling
+            TODO: If we go with event bridges, we can have a queue to process all the vent's in / out
             await this.swapBridgeQueue.add(
                 'workerSwapPerformed',
                 {
@@ -250,5 +251,5 @@ export const buildBridgeBlockScanner = async (chainId: number) => {
     };
 
     // Return our process bridge function
-    return { handleNewBlock, checkSwapLogsForBlocks };
+    return { handleNewBlock };
 };

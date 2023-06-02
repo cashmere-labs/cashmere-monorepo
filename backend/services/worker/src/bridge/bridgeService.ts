@@ -1,5 +1,6 @@
 import { getBlockchainRepository } from '@cashmere-monorepo/backend-blockchain/src/repositories/blockchain.repository';
 import { logger } from '@cashmere-monorepo/backend-core';
+import { getSwapDataRepository } from '@cashmere-monorepo/backend-database';
 import { getLastBlockRepository } from '@cashmere-monorepo/backend-database/src/repositories/lastBlock.repository';
 import { buildBridgeBlockScanner } from './bridgeBlockScanner';
 
@@ -15,12 +16,80 @@ export const buildBridgeService = async (chainId: number) => {
     // Get our bridge block scanner
     const blockScanner = await buildBridgeBlockScanner(chainId);
 
+    // Get our swap data db repository
+    const swapDataRepository = await getSwapDataRepository();
+
     /**
      * Check all the pending tx status for this chain
      * TODO: Port the logic
      */
     const checkAllTxStatus = async () => {
-        logger.debug({ chainId }, 'Cheching all the pending tx status');
+        logger.debug({ chainId }, 'Checking all the pending tx status');
+        // Get the cursor of all the pending swap data for the given chain
+        const swapDataWaitingForCompletionCursor =
+            await swapDataRepository.getWaitingForCompletionsOnDstChainCursor(
+                chainId
+            );
+
+        // Iterate over each swap data
+        for await (const swapData of swapDataWaitingForCompletionCursor) {
+            logger.debug(
+                { chainId, swapData },
+                'Checking the tx status for this swap data'
+            );
+            // Extract the continue tx hash from the swap data
+            const continueTxHash = swapData.status.swapContinueTxid;
+            if (!continueTxHash) {
+                logger.error(
+                    { chainId, swapData },
+                    'Swap data has no continue tx hash'
+                );
+                continue;
+            }
+            try {
+                // Get the tx receipt
+                const txReceipt =
+                    await blockchainRepository.getTransactionReceipt(
+                        continueTxHash
+                    );
+
+                // Ensure the validity of the receipt
+                if (!txReceipt || !txReceipt.blockNumber) {
+                    logger.debug(
+                        { chainId, swapData },
+                        'Continue tx receipt not found or not yet validated'
+                    );
+                    continue;
+                }
+
+                // If the tx was reverted
+                if (txReceipt.status === 'reverted') {
+                    // If the tx is reverted, we should re handle the initial swap performed event
+                    /*await this.handleSwapPerformedEvent(swapData);
+                    this.logger.log(
+                        `Swap ${swapData.swapId} continue retried: ${swapData.swapContinueTxid}`,
+                        {
+                            chainId: this.chainId,
+                            swapId: swapData.swapId,
+                            txid: swapData.swapContinueTxid,
+                        }
+                    );*/
+                } else {
+                    // Otherwise, we should update the swap data
+                    swapData.status.swapContinueConfirmed = true;
+                    await swapDataRepository.updateSwapDataStatus(
+                        swapData.id,
+                        swapData.status
+                    );
+                    // TODO: We where previously notifying the user of the progress here
+                }
+            } catch (err) {
+                logger.warn(
+                    { chainId, swapData, err },
+                    'Failed to get tx receipt'
+                );
+            }
+        }
     };
 
     /**

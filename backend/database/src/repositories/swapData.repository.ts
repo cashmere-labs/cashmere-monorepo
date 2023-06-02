@@ -55,9 +55,33 @@ const buildSwapDataRepository = (connection: Connection) => {
          * Add a new swap data in our repository
          */
         async save(swapData: SwapDataDbDto): Promise<SwapDataDbDto> {
-            // Insert and return it
+            // Save the swap data
             // TODO: Also check for duplicate id & srcChainId?
             return await model.create(swapData);
+        },
+
+        /**
+         * Add a new swap data in our repository
+         */
+        async updateSwapDataStatus(
+            swapId: string,
+            status: SwapDataDbDto['status']
+        ) {
+            // Update the swap data status
+            await model.updateOne({ swapId }, { $set: { status } });
+        },
+
+        /**
+         * Get all the swap data that need to be checked for completion
+         */
+        async getWaitingForCompletionsOnDstChainCursor(chainId: number) {
+            return model
+                .find({
+                    'chains.dstChainId': chainId,
+                    'status.swapContinueTxid': { $ne: null },
+                    'status.swapContinueConfirmed': null,
+                })
+                .cursor();
         },
     };
 };

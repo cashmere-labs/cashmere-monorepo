@@ -1,5 +1,6 @@
 import { getOrSetFromCache } from '@cashmere-monorepo/backend-core/cache/dynamoDbCache';
 import { getNetworkConfigAndClient } from '@cashmere-monorepo/shared-blockchain';
+import { Hex } from 'viem';
 
 // Generic interface for our uniswap repository
 export type BlockchainRepository = {
@@ -13,9 +14,7 @@ export type BlockchainRepository = {
  * Get the blockchain repository for the given chain
  * @param chainId
  */
-export const getBlockchainRepository = (
-    chainId: number
-): BlockchainRepository => {
+export const getBlockchainRepository = (chainId: number) => {
     // Get the config and client
     const { config, client } = getNetworkConfigAndClient(chainId);
 
@@ -59,5 +58,17 @@ export const getBlockchainRepository = (
             // Otherwise, return the previous toBlock
             return { maxBlock: range.to };
         },
+
+        /**
+         * Get the transaction receipt for the given tx hash
+         */
+        getTransactionReceipt: (txHash: Hex) =>
+            getOrSetFromCache(
+                {
+                    key: cacheParams('getTxReceipt', { txHash }),
+                    ttl: 300_000,
+                },
+                () => client.getTransactionReceipt({ hash: txHash })
+            ),
     };
 };
