@@ -10,18 +10,19 @@ let currentRepository: BatchedTxRepository | undefined = undefined;
 /**
  * Get the current batched tx repository
  */
-export const getUserRepository = async (): Promise<BatchedTxRepository> => {
-    if (currentRepository) return currentRepository;
+export const getBatchedTxRepository =
+    async (): Promise<BatchedTxRepository> => {
+        if (currentRepository) return currentRepository;
 
-    // Get the current connection
-    const connection = await getMongooseConnection();
-    // Build our repository
-    const newRepository: BatchedTxRepository =
-        buildBatchedTxRepository(connection);
-    // Save it and return it
-    currentRepository = newRepository;
-    return newRepository;
-};
+        // Get the current connection
+        const connection = await getMongooseConnection();
+        // Build our repository
+        const newRepository: BatchedTxRepository =
+            buildBatchedTxRepository(connection);
+        // Save it and return it
+        currentRepository = newRepository;
+        return newRepository;
+    };
 
 /**
  * Build our batched tx repository

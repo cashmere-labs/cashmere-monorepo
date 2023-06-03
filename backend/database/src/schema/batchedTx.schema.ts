@@ -1,5 +1,5 @@
 import { HydratedDocument, Schema } from 'mongoose';
-import { BatchedTxDbDto } from '../dto/batchedTx';
+import { BatchedTxDbDto } from '../dto';
 
 // Define the user schema
 export const BatchedTxSchema = new Schema<BatchedTxDbDto>({

@@ -227,6 +227,9 @@ importers:
       '@cashmere-monorepo/backend-core':
         specifier: workspace:^
         version: link:../../core
+      '@cashmere-monorepo/backend-service-worker':
+        specifier: workspace:^
+        version: link:../../services/worker
       '@cashmere-monorepo/shared-contract-worker':
         specifier: workspace:^
         version: link:../../../shared/contracts/worker
