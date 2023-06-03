@@ -5,7 +5,8 @@
         "typecheck": "tsc -noEmit"
     },
     "dependencies": {
-        "@cashmere-monorepo/backend-core": "workspace:^"
+        "@cashmere-monorepo/backend-core": "workspace:^",
+        "@cashmere-monorepo/shared-contract-worker": "workspace:^"
     },
     "devDependencies": {
         "@types/aws-lambda": "^8.10.115",

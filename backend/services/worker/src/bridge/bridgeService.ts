@@ -131,6 +131,7 @@ export const buildBridgeService = async (chainId: number) => {
                 from: startBlock,
                 to: targetBlock,
             });
+
             logger.debug(
                 { chainId, startBlock, targetBlock, blockHandlingResult },
                 `Finished to handle new block's for potential bridge trigger`

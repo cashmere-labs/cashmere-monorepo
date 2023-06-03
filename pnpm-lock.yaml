@@ -227,6 +227,9 @@ importers:
       '@cashmere-monorepo/backend-core':
         specifier: workspace:^
         version: link:../../core
+      '@cashmere-monorepo/shared-contract-worker':
+        specifier: workspace:^
+        version: link:../../../shared/contracts/worker
     devDependencies:
       '@types/aws-lambda':
         specifier: ^8.10.115
@@ -473,6 +476,28 @@ importers:
         version: 0.31.4
 
   shared/contracts/swap-params:
+    dependencies:
+      '@cashmere-monorepo/shared-contract-core':
+        specifier: workspace:^
+        version: link:../core
+      '@sinclair/typebox':
+        specifier: ^0.28.14
+        version: 0.28.14
+    devDependencies:
+      '@types/node':
+        specifier: ^18.16.16
+        version: 18.16.16
+      json-schema-to-ts:
+        specifier: ^2.9.1
+        version: 2.9.1
+      sst:
+        specifier: 2.11.14
+        version: 2.11.14
+      vitest:
+        specifier: ^0.31.4
+        version: 0.31.4
+
+  shared/contracts/worker:
     dependencies:
       '@cashmere-monorepo/shared-contract-core':
         specifier: workspace:^
@@ -5183,6 +5208,7 @@ packages:
       minimatch: 3.1.2
       once: 1.4.0
       path-is-absolute: 1.0.1
+    dev: true
 
   /glob@7.2.3:
     resolution: {integrity: sha512-nFR0zLpU2YCaRxwoCJvL6UvCH2JFyFVIvwTLsIf21AuHlMskA1hhTdk+LlYJtOlYt9v6dvszD2BGRqBL+iQK9Q==}
@@ -5193,7 +5219,6 @@ packages:
       minimatch: 3.1.2
       once: 1.4.0
       path-is-absolute: 1.0.1
-    dev: true
 
   /glob@8.1.0:
     resolution: {integrity: sha512-r8hpEjiQEYlF2QU0df3dS+nxxSIreXQS1qRhMJM0Q5NDdR386C7jb7Hwwod8Fgiuex+k0GFjgft18yvxm5XoCQ==}
@@ -7089,7 +7114,7 @@ packages:
     resolution: {integrity: sha512-JZkJMZkAGFFPP2YqXZXPbMlMBgsxzE8ILs4lMIX/2o0L9UBw9O/Y3o6wFw/i9YLapcUJWwqbi3kdxIPdC62TIA==}
     hasBin: true
     dependencies:
-      glob: 7.1.4
+      glob: 7.2.3
 
   /rollup@3.23.0:
     resolution: {integrity: sha512-h31UlwEi7FHihLe1zbk+3Q7z1k/84rb9BSwmBSr/XjOCEaBJ2YyedQDuM0t/kfOS0IxM+vk1/zI9XxYj9V+NJQ==}
