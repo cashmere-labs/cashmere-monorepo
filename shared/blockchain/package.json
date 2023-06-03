@@ -9,11 +9,11 @@
         "typecheck": "tsc -noEmit"
     },
     "devDependencies": {
-        "@types/node": "^18.16.14",
-        "sst": "2.10.2",
-        "vitest": "^0.31.1"
+        "@types/node": "^18.16.16",
+        "sst": "2.11.14",
+        "vitest": "^0.31.4"
     },
     "dependencies": {
-        "viem": "^0.3.36"
+        "viem": "^0.3.50"
     }
 }
