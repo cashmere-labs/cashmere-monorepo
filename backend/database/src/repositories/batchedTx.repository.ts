@@ -1,4 +1,5 @@
 import { Connection } from 'mongoose';
+import { BatchedTxDbDto } from '../dto';
 import { BatchedTxSchema } from '../schema';
 import { getMongooseConnection } from '../utils/connection';
 
@@ -32,7 +33,39 @@ const buildBatchedTxRepository = (connection: Connection) => {
     // Get our user model
     const model = connection.model('BatchedTx', BatchedTxSchema);
     // Return all the function needed to interact with the batched tx model
-    return {};
+    return {
+        /**
+         * Check if we don't have a tx in queue with the same security hash
+         */
+        async hasTxWithSecurityHash(securityHash: string) {
+            const count = await model.count({
+                securityHash,
+                'status.type': 'queued',
+            });
+            return count > 0;
+        },
+
+        /**
+         * Create a new batched tx
+         */
+        async create(batchedTx: Omit<BatchedTxDbDto, 'status'>) {
+            await model.create({
+                ...batchedTx,
+                status: { type: 'queued' },
+            });
+        },
+
+        /**
+         * Get the txs to send for a given chain
+         * @param chainId
+         */
+        async getPendingTxForChain(chainId: number) {
+            return model.find({
+                chainId,
+                'status.type': 'queued',
+            });
+        },
+    };
 };
 
 export type BatchedTxRepository = ReturnType<typeof buildBatchedTxRepository>;

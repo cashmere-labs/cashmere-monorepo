@@ -124,6 +124,9 @@ importers:
       pino-lambda:
         specifier: ^4.2.1
         version: 4.2.1(pino@8.14.1)
+      radash:
+        specifier: ^10.8.1
+        version: 10.8.1
     devDependencies:
       '@types/aws-lambda':
         specifier: ^8.10.115
@@ -6930,6 +6933,11 @@ packages:
 
   /quick-format-unescaped@4.0.4:
     resolution: {integrity: sha512-tYC1Q1hgyRuHgloV/YXs2w15unPVh8qfu/qCTfhTYamaw7fyhumKa2yGpdSo87vY32rIclj+4fWYQXUMs9EHvg==}
+    dev: false
+
+  /radash@10.8.1:
+    resolution: {integrity: sha512-NzYo3XgM9Tzjf5iFPIMG2l5+LSOCi2H7Axe3Ry/1PrhlvuqxUoiLsmcTBtw4CfKtzy5Fzo79STiEj9JZWMfDQg==}
+    engines: {node: '>=14.18.0'}
     dev: false
 
   /range-parser@1.2.1:

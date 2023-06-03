@@ -45,7 +45,8 @@ export default {
         app.addDefaultFunctionEnv(use(DatabaseStack).environment);
 
         // Bind the caching table to all of our stack
-        app.addDefaultFunctionBinding([use(CoreStack).cachingTable]);
+        const { cachingTable, mutexTable } = use(CoreStack);
+        app.addDefaultFunctionBinding([cachingTable, mutexTable]);
 
         // Auth stack (since it will be used to protect all other stacks)
         app.stack(AuthStack);
