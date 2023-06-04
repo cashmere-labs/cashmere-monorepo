@@ -12,6 +12,7 @@
         "@cashmere-monorepo/backend-core": "workspace:^",
         "@cashmere-monorepo/backend-database": "workspace:^",
         "luxon": "^3.3.0",
+        "radash": "^10.8.1",
         "viem": "^0.3.50",
         "vitest": "^0.31.4"
     },

@@ -2,12 +2,11 @@ import {
     Address,
     Chain,
     createPublicClient,
+    fallback,
     getAddress,
     http,
-    HttpTransport,
     PublicClient,
     webSocket,
-    WebSocketTransport,
 } from 'viem';
 import {
     arbitrumGoerli,
@@ -207,22 +206,7 @@ export const getNetworkConfigAndClient = (
     // Find the config
     const config = getNetworkConfig(chainId);
     // Build the transport for our client
-    let transport: HttpTransport | WebSocketTransport;
-    if (config.rpcUrl.startsWith('ws')) {
-        transport = webSocket(config.rpcUrl, {
-            retryCount: 5,
-            retryDelay: 2_000,
-        });
-    } else {
-        transport = http(config.rpcUrl, {
-            retryCount: 5,
-            retryDelay: 2_000,
-            timeout: 30_000,
-            fetchOptions: {
-                priority: 'high',
-            },
-        });
-    }
+    const transport = findTransport(config.rpcUrl);
 
     const client = createPublicClient({
         chain: config.chain,
@@ -235,5 +219,30 @@ export const getNetworkConfigAndClient = (
 // Match L0 chain id to destination chain id
 export const l0ChainIdToConfigMapViem: { [chainId: number]: number } = {};
 Object.entries(networkConfigs).forEach(([chainId, network]) => {
-    l0ChainIdToConfigMapViem[parseInt(network.l0ChainId)] = parseInt(chainId);
+    l0ChainIdToConfigMapViem[network.l0ChainId] = parseInt(chainId);
 });
+
+// Find the right transport for the given rpc url
+export const findTransport = (rpcUrl: string | string[]) => {
+    if (typeof rpcUrl === 'string' && rpcUrl.startsWith('http')) {
+        // Http transport
+        return http(rpcUrl as string, {
+            retryCount: 5,
+            retryDelay: 2_000,
+            timeout: 30_000,
+        });
+    } else if (typeof rpcUrl === 'string' && rpcUrl.startsWith('wss')) {
+        // WebSocket transport
+        return webSocket(rpcUrl as string, {
+            retryCount: 5,
+            retryDelay: 2_000,
+            timeout: 30_000,
+        });
+    } else if (Array.isArray(rpcUrl)) {
+        // Fallback transports, multi rpc's
+        const transports = rpcUrl.map((url) => findTransport(url as string));
+        return fallback(transports);
+    } else {
+        throw new Error(`Invalid rpcUrl: ${rpcUrl}`);
+    }
+};

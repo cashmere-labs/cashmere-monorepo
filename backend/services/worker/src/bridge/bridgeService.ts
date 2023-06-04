@@ -105,7 +105,7 @@ export const buildBridgeService = async (chainId: number) => {
         );
 
         // Get the latest blockchain block
-        const targetBlock = await blockchainRepository.getLastBlock();
+        const targetBlock = await blockchainRepository.getLastBlockNumber();
 
         // If we don't have a last block iterated, we start from the last block
         if (!lastBlockIterated) {

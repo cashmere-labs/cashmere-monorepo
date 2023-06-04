@@ -1,6 +1,11 @@
 import { getOrSetFromCache } from '@cashmere-monorepo/backend-core/cache/dynamoDbCache';
-import { getNetworkConfigAndClient } from '@cashmere-monorepo/shared-blockchain';
-import { Hex } from 'viem';
+import {
+    findTransport,
+    getNetworkConfigAndClient,
+} from '@cashmere-monorepo/shared-blockchain';
+import { POLYGON_ZK_TESTNET_CHAIN_ID } from '@cashmere-monorepo/shared-blockchain/chain/chain.constants';
+import { Hex, createWalletClient, parseGwei } from 'viem';
+import { privateKeyToAccount } from 'viem/accounts';
 
 // Generic interface for our uniswap repository
 export type BlockchainRepository = {
@@ -26,11 +31,40 @@ export const getBlockchainRepository = (chainId: number) => {
         params,
     });
 
+    // Get the latest block
+    const getLatestBlock = async () =>
+        getOrSetFromCache(
+            {
+                key: cacheParams('getLatestBlock', {}),
+                ttl: 30_000,
+            },
+            client.getBlock
+        );
+
     return {
+        config,
+        client,
+
+        /**
+         * Build a private client
+         * @param privateKey
+         */
+        buildPrivateClient: (privateKey: string) => {
+            const account = privateKeyToAccount(privateKey as Hex);
+
+            const privateClient = createWalletClient({
+                account,
+                chain: client.chain,
+                transport: findTransport(config.rpcUrl),
+            });
+
+            return { account, privateClient };
+        },
+
         /**
          * Get the last block for the given chain
          */
-        getLastBlock: () =>
+        getLastBlockNumber: () =>
             getOrSetFromCache(
                 {
                     key: cacheParams('getLastSafeBlock', {}),
@@ -69,6 +103,41 @@ export const getBlockchainRepository = (chainId: number) => {
                     ttl: 300_000,
                 },
                 () => client.getTransactionReceipt({ hash: txHash })
+            ),
+
+        /**
+         * Get the gas fees param for the given chain
+         */
+        getGasFeesParam: async () =>
+            getOrSetFromCache(
+                {
+                    key: cacheParams('getGasFeesParam', {}),
+                    ttl: 30_000,
+                },
+                async () => {
+                    // Build additional gas param
+                    const latestBlock = await getLatestBlock();
+                    if (latestBlock.baseFeePerGas) {
+                        // In case of EIP-1559 fees (Same as prepare request from viem, but with 2x multiplier instead of 1.2x, required for mumbai:
+                        // https://github.com/wagmi-dev/viem/blob/5539f3515e37637347b242ec5a24115c6a960c7d/src/utils/transaction/prepareRequest.ts#L91
+                        const maxPriorityFeePerGas = parseGwei('1.5');
+                        const maxFeePerGas =
+                            (latestBlock.baseFeePerGas * 200n) / 100n +
+                            maxPriorityFeePerGas;
+                        return {
+                            maxPriorityFeePerGas,
+                            maxFeePerGas,
+                            gasLimit: latestBlock.gasLimit,
+                        };
+                    } else if (
+                        config.chain.id !==
+                        parseInt(POLYGON_ZK_TESTNET_CHAIN_ID)
+                    ) {
+                        // In case of legacy tx (and not polygon ZK one)
+                        const gasPrice = await client.getGasPrice();
+                        return { gasPrice, gasLimit: latestBlock.gasLimit };
+                    } else return { gasLimit: latestBlock.gasLimit };
+                }
             ),
     };
 };

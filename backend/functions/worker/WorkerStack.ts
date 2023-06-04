@@ -1,3 +1,4 @@
+import { Duration } from 'aws-cdk-lib';
 import { Cron, Queue, StackContext } from 'sst/constructs';
 
 const path = './backend/functions/worker/src';
@@ -11,7 +12,24 @@ export function WorkerStack({ stack }: StackContext) {
 
     // Build the TX Sender sqs queue's
     const txSenderQueue = new Queue(stack, 'TxSenderQueue', {
-        consumer: `${path}/handlers/send_tx.handler`,
+        consumer: {
+            function: `${path}/handlers/send_tx.handler`,
+            cdk: {
+                eventSource: {
+                    maxConcurrency: 5, // We can increase it needed, since we are using a mutex per chain to send tx's
+                    maxBatchingWindow: Duration.seconds(10), // Only allow 10 sec of batching window, reduce if needed
+                    batchSize: 100, // Max tx we can save & process per exec
+                },
+            },
+        },
+        cdk: {
+            queue: {
+                retentionPeriod: Duration.days(7),
+                visibilityTimeout: Duration.minutes(5 * 6).plus(
+                    Duration.seconds(10)
+                ), // 6 x timout + batching window
+            },
+        },
         // TODO: CDK definition for batching window, batching item etc
     });
 
