@@ -8,6 +8,7 @@
         "typecheck": "tsc -noEmit"
     },
     "dependencies": {
+        "@aws-sdk/client-sqs": "^3.345.0",
         "@cashmere-monorepo/backend-blockchain": "workspace:^",
         "@cashmere-monorepo/backend-core": "workspace:^",
         "@cashmere-monorepo/backend-database": "workspace:^",

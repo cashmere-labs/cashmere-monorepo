@@ -2,18 +2,7 @@ import { getBlockchainRepository } from '@cashmere-monorepo/backend-blockchain/s
 import { logger, runInMutex } from '@cashmere-monorepo/backend-core';
 import { getBatchedTxRepository } from '@cashmere-monorepo/backend-database';
 import { sift } from 'radash';
-import { Address, Hex } from 'viem';
-
-/**
- * The new batched tx type
- */
-type NewBatchedTx = {
-    chainId: number;
-    priority: number;
-    target: Address;
-    data: Hex;
-    securityHash: string;
-};
+import { NewBatchedTx } from './types';
 
 /**
  * Build our batched tx service

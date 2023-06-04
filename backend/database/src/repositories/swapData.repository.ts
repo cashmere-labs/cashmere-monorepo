@@ -1,4 +1,5 @@
 import { Connection, FilterQuery } from 'mongoose';
+import { Hex } from 'viem';
 import { SwapDataDbDto } from '../dto/swapData';
 import { SwapDataDocument, SwapDataSchema } from '../schema/swapData.schema';
 import { getMongooseConnection } from '../utils/connection';
@@ -49,6 +50,13 @@ const buildSwapDataRepository = (connection: Connection) => {
                 count,
                 items: await cursor.sort({ swapInitiatedTimestamp: -1 }).exec(),
             };
+        },
+
+        /**
+         * Get a swap data from it's id
+         */
+        async getById(id: Hex): Promise<SwapDataDbDto | undefined> {
+            return (await model.findOne({ swapId: id })) ?? undefined;
         },
 
         /**

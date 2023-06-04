@@ -1,9 +1,16 @@
 import { getOrSetFromCache } from '@cashmere-monorepo/backend-core';
 import {
+    cashmereAggregatorUniswapABI,
     getNetworkConfigAndClient,
     startSwapFunctionABI,
 } from '@cashmere-monorepo/shared-blockchain';
-import { Address, Hex, decodeFunctionData, isAddressEqual } from 'viem';
+import {
+    Address,
+    Hex,
+    decodeFunctionData,
+    encodeFunctionData,
+    isAddressEqual,
+} from 'viem';
 
 /**
  * Get the aggregator repository on the given chain
@@ -48,5 +55,22 @@ export const getAggregatorRepository = (chainId: number) => {
          */
         isContractAddress: (address: Address) =>
             isAddressEqual(address, config.getContractAddress('aggregator')),
+
+        /**
+         * Encode the continue swap function call data
+         */
+        encodeContinueSwapCallData: (data: { srcChainId: number; id: Hex }) => {
+            // Build the function call data
+            const callData = encodeFunctionData({
+                abi: cashmereAggregatorUniswapABI,
+                functionName: 'continueSwap',
+                args: [data],
+            });
+            // Return generic tx info's
+            return {
+                target: config.getContractAddress('aggregator'),
+                data: callData,
+            };
+        },
     };
 };

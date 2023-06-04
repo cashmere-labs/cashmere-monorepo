@@ -5,6 +5,7 @@ import { CoreStack } from './backend/core/stacks/CoreStack';
 import { DatabaseStack } from './backend/database/DatabaseStack';
 import { ProgressStack } from './backend/functions/progress/ProgressStack';
 import { SwapParamsStack } from './backend/functions/swap-params/SwapParamsStack';
+import { WorkerStack } from './backend/functions/worker/WorkerStack';
 
 export default {
     config(_input) {
@@ -54,5 +55,6 @@ export default {
         // Every API Stack's
         app.stack(SwapParamsStack);
         app.stack(ProgressStack);
+        app.stack(WorkerStack);
     },
 } satisfies SSTConfig;

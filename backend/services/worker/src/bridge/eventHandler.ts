@@ -4,12 +4,16 @@ import {
     getAssetRepository,
     getAssetRouterRepository,
     l0ChainIdToConfigMapViem,
+    SwapMessageReceivedLogType,
     SwapPayload,
 } from '@cashmere-monorepo/backend-blockchain';
 import { SwapDataTokenMetadata } from '@cashmere-monorepo/backend-blockchain/src/repositories/progress.repository';
 import { logger } from '@cashmere-monorepo/backend-core';
 import { getSwapDataRepository } from '@cashmere-monorepo/backend-database';
-import { Address } from 'viem';
+import { createHash } from 'node:crypto';
+import { Address, formatEther } from 'viem';
+import { createBatchedTx } from '../batchedTx';
+import { NewBatchedTx } from '../batchedTx/types';
 import { buildSwapDataDbDto } from '../utils';
 
 /**
@@ -140,12 +144,82 @@ export const buildEventHandler = async (chainId: number) => {
      * @param log
      */
     const handleSwapPerformedEvent = async (
-        log: CrossChainSwapInitiatedLogType
+        log: SwapMessageReceivedLogType
     ) => {
-        // TODO: We basically just send the tx right here
+        // Ensure our log contain the right data
+        if (!log.transactionHash) {
+            logger.info(
+                { chainId, log },
+                "The log doesn't contain a tx hash yet, aborting his processing"
+            );
+            return;
+        }
+        // Try to retrieve the swap data for the given log
+        const swapId = log.args._message?.id;
+        if (!swapId) {
+            throw new Error(
+                `No swap id founded for continuation in the log tx:${log.transactionHash} index:${log.logIndex}`
+            );
+        }
+        const swapData = await swapDataRepository.getById(swapId);
+        if (!swapData) {
+            // TODO: For now exist only, otherwise we should try to rebuild it
+            throw new Error(`The swap ${swapId} isn't known, aborting`);
+        }
+
+        // If we don't want to process it, skip it
+        if (swapData.skipProcessing === true) {
+            logger.info(
+                { chainId, swapData, log },
+                'The swap data is flagged for processing skip, aborting'
+            );
+            return;
+        }
+
+        // If the swap was already continued, aborting it
+        if (swapData.status.swapContinueTxid) {
+            logger.warn(
+                { chainId, swapData, log },
+                'The swap data was already continued, aborting the process'
+            );
+            return;
+        }
+
+        // Update the sawp performed tx hash on our swap data
+        swapData.status.swapPerformedTxid = log.transactionHash;
+        await swapDataRepository.updateSwapDataStatus(swapId, swapData.status);
+
+        // Build our function call data
+        const txData = aggregatorRepository.encodeContinueSwapCallData({
+            srcChainId: swapData.chains.srcL0ChainId,
+            id: swapId,
+        });
+
+        // Build the security hash
+        const securityHash = createHash('sha256')
+            .update(`continueSwap-${swapId}`, 'utf8')
+            .digest('hex');
+
+        // Yhe priority of this tx is the minimum between the amount of token & 1
+        const rawSrcAmount = BigInt(swapData.progress.srcAmount ?? '0');
+        const srcAmount = Math.round(parseFloat(formatEther(rawSrcAmount)));
+        const priority = Math.max(srcAmount, 1);
+
+        // Create our completed tx object
+        const tx: NewBatchedTx = {
+            ...txData,
+            chainId,
+            securityHash,
+            priority,
+        };
+
+        // And send it to the queue
+        await createBatchedTx(tx);
+        // TODO: Should have a sort of tx info in each batched tx to handle specific callback's after sent
     };
 
     return {
         handleSwapInitiatedEvent,
+        handleSwapPerformedEvent,
     };
 };

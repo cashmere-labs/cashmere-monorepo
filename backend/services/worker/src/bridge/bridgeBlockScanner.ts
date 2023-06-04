@@ -4,6 +4,7 @@ import {
 } from '@cashmere-monorepo/backend-blockchain';
 import { getBlockchainRepository } from '@cashmere-monorepo/backend-blockchain/src/repositories/blockchain.repository';
 import { logger } from '@cashmere-monorepo/backend-core';
+import { try as inlineTry } from 'radash';
 import { buildEventHandler } from './eventHandler';
 
 /**
@@ -48,16 +49,13 @@ export const buildBridgeBlockScanner = async (chainId: number) => {
                 { chainId, swapInitiatedLog },
                 `Handling swap initiated log`
             );
-            // Handle the event
-            try {
-                const swapData = await eventHandler.handleSwapInitiatedEvent(
-                    swapInitiatedLog
-                );
-                // TODO: Was previously notifying the progress here, find another way
-                logger.info({ chainId, swapData }, 'Swap data created');
-            } catch (e) {
+            // Try to handle this event
+            const [error] = await inlineTry(
+                eventHandler.handleSwapInitiatedEvent
+            )(swapInitiatedLog);
+            if (error) {
                 logger.error(
-                    { chainId, error: e },
+                    { chainId, error },
                     'Error while handling swap initiated event'
                 );
             }
@@ -79,22 +77,16 @@ export const buildBridgeBlockScanner = async (chainId: number) => {
                 { chainId, swapMessageReceivedEvent },
                 `Handling swap message received event`
             );
-            /*
-            TODO: Sending this data to the swap bridge queue, in our case preparing all the data here and only send the tx request?
-            TODO: Or we can also have a queue to handle all this event, and another one to perform the tx, maybe a bit overkill but better for scaling
-            TODO: If we go with event bridges, we can have a queue to process all the vent's in / out
-            await this.swapBridgeQueue.add(
-                'workerSwapPerformed',
-                {
-                    chainId: this.chainId,
-                    log: logIn,
-                },
-                {
-                    jobId: `swap-performed-${this.chainId}-${logIn.transactionHash}`,
-                    ...swapBridgeJobConfig,
-                }
-            );
-             */
+            // Try to handle this event
+            const [error] = await inlineTry(
+                eventHandler.handleSwapPerformedEvent
+            )(swapMessageReceivedEvent);
+            if (error) {
+                logger.error(
+                    { chainId, error },
+                    'Error while handling swap message received event'
+                );
+            }
         }
     };
 

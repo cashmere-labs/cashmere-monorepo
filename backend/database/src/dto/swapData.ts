@@ -6,8 +6,10 @@ export interface SwapDataDbDto {
 
     // Chains info
     chains: {
+        // TODO: Should really clarify what is what
         srcChainId: number;
         dstChainId: number;
+        // TODO: This is used for continue swap, WHY?
         srcL0ChainId: number;
         dstL0ChainId: number;
     };
