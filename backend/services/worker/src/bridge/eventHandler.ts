@@ -9,7 +9,10 @@ import {
 } from '@cashmere-monorepo/backend-blockchain';
 import { SwapDataTokenMetadata } from '@cashmere-monorepo/backend-blockchain/src/repositories/progress.repository';
 import { logger } from '@cashmere-monorepo/backend-core';
-import { getSwapDataRepository } from '@cashmere-monorepo/backend-database';
+import {
+    getSwapDataRepository,
+    SwapDataDbDto,
+} from '@cashmere-monorepo/backend-database';
 import { createHash } from 'node:crypto';
 import { Address, formatEther } from 'viem';
 import { createBatchedTx } from '../batchedTx';
@@ -54,6 +57,40 @@ export const buildEventHandler = async (chainId: number) => {
             hgsTokenSymbol: await dstAssetRepo.tokenSymbol(hgsToken),
             dstTokenSymbol: await dstAssetRepo.tokenSymbol(dstToken),
         };
+    };
+
+    /**
+     * Build the continue tx for the given swap data
+     * @param swapData
+     */
+    const sendContinueTxForSwapData = async (swapData: SwapDataDbDto) => {
+        // Build our function call data
+        const txData = aggregatorRepository.encodeContinueSwapCallData({
+            srcChainId: swapData.chains.srcL0ChainId,
+            id: swapData.swapId,
+        });
+
+        // Build the security hash
+        const securityHash = createHash('sha256')
+            .update(`continueSwap-${swapData.swapId}`, 'utf8')
+            .digest('hex');
+
+        // Yhe priority of this tx is the minimum between the amount of token & 1
+        const rawSrcAmount = BigInt(swapData.progress.srcAmount ?? '0');
+        const srcAmount = Math.round(parseFloat(formatEther(rawSrcAmount)));
+        const priority = Math.max(srcAmount, 1);
+
+        // Create our completed tx object
+        const tx: NewBatchedTx = {
+            ...txData,
+            chainId,
+            securityHash,
+            priority,
+        };
+
+        // And send it to the queue
+        await createBatchedTx(tx);
+        // TODO: Should have a sort of tx info in each batched tx to handle specific callback's after sent
     };
 
     /**
@@ -163,7 +200,7 @@ export const buildEventHandler = async (chainId: number) => {
         }
         const swapData = await swapDataRepository.getById(swapId);
         if (!swapData) {
-            // TODO: For now exist only, otherwise we should try to rebuild it
+            // TODO: For now only handle the one existing, otherwise we should try to rebuild it
             throw new Error(`The swap ${swapId} isn't known, aborting`);
         }
 
@@ -185,41 +222,17 @@ export const buildEventHandler = async (chainId: number) => {
             return;
         }
 
-        // Update the sawp performed tx hash on our swap data
+        // Update the swap performed tx hash on our swap data
         swapData.status.swapPerformedTxid = log.transactionHash;
         await swapDataRepository.updateSwapDataStatus(swapId, swapData.status);
 
-        // Build our function call data
-        const txData = aggregatorRepository.encodeContinueSwapCallData({
-            srcChainId: swapData.chains.srcL0ChainId,
-            id: swapId,
-        });
-
-        // Build the security hash
-        const securityHash = createHash('sha256')
-            .update(`continueSwap-${swapId}`, 'utf8')
-            .digest('hex');
-
-        // Yhe priority of this tx is the minimum between the amount of token & 1
-        const rawSrcAmount = BigInt(swapData.progress.srcAmount ?? '0');
-        const srcAmount = Math.round(parseFloat(formatEther(rawSrcAmount)));
-        const priority = Math.max(srcAmount, 1);
-
-        // Create our completed tx object
-        const tx: NewBatchedTx = {
-            ...txData,
-            chainId,
-            securityHash,
-            priority,
-        };
-
-        // And send it to the queue
-        await createBatchedTx(tx);
-        // TODO: Should have a sort of tx info in each batched tx to handle specific callback's after sent
+        // Send the continuation tx
+        await sendContinueTxForSwapData(swapData);
     };
 
     return {
         handleSwapInitiatedEvent,
         handleSwapPerformedEvent,
+        sendContinueTxForSwapData,
     };
 };

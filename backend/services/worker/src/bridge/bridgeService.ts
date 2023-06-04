@@ -3,18 +3,22 @@ import { logger } from '@cashmere-monorepo/backend-core';
 import { getSwapDataRepository } from '@cashmere-monorepo/backend-database';
 import { getLastBlockRepository } from '@cashmere-monorepo/backend-database/src/repositories/lastBlock.repository';
 import { buildBridgeBlockScanner } from './bridgeBlockScanner';
+import { buildEventHandler } from './eventHandler';
 
 /**
  * Build the bridge repository for the given chain
  * @param chainId
  */
 export const buildBridgeService = async (chainId: number) => {
-    // Fetch some repo we will use every where
-    const lastBlockRepository = await getLastBlockRepository();
-    const blockchainRepository = await getBlockchainRepository(chainId);
+    // Our event handler
+    const eventHandler = await buildEventHandler(chainId);
 
     // Get our bridge block scanner
-    const blockScanner = await buildBridgeBlockScanner(chainId);
+    const blockScanner = await buildBridgeBlockScanner(chainId, eventHandler);
+
+    // Fetch some repo we will use every where
+    const lastBlockRepository = await getLastBlockRepository();
+    const blockchainRepository = getBlockchainRepository(chainId);
 
     // Get our swap data db repository
     const swapDataRepository = await getSwapDataRepository();
@@ -65,15 +69,11 @@ export const buildBridgeService = async (chainId: number) => {
                 // If the tx was reverted
                 if (txReceipt.status === 'reverted') {
                     // If the tx is reverted, we should re handle the initial swap performed event
-                    /*await this.handleSwapPerformedEvent(swapData);
-                    this.logger.log(
-                        `Swap ${swapData.swapId} continue retried: ${swapData.swapContinueTxid}`,
-                        {
-                            chainId: this.chainId,
-                            swapId: swapData.swapId,
-                            txid: swapData.swapContinueTxid,
-                        }
-                    );*/
+                    await eventHandler.sendContinueTxForSwapData(swapData);
+                    logger.info(
+                        { chainId, swapData },
+                        `Swap ${swapData.swapId} continue retried`
+                    );
                 } else {
                     // Otherwise, we should update the swap data
                     swapData.status.swapContinueConfirmed = true;

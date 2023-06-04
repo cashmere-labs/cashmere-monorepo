@@ -12,7 +12,6 @@ import { buildEventHandler } from './eventHandler';
  * @param chainId
  */
 export const buildBridgeBlockScanner = async (chainId: number) => {
-    // Get our event handler
     const eventHandler = await buildEventHandler(chainId);
 
     // Fetch some repo we will use every where
