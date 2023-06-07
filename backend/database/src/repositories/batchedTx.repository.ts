@@ -38,11 +38,11 @@ const buildBatchedTxRepository = (connection: Connection) => {
          * Check if we don't have a tx in queue with the same security hash
          */
         async hasTxWithSecurityHash(securityHash: string) {
-            const count = await model.count({
+            const exists = await model.exists({
                 securityHash,
                 'status.type': 'queued',
             });
-            return count > 0;
+            return exists !== null;
         },
 
         /**

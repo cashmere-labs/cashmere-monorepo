@@ -16,6 +16,7 @@ export const BatchedTxSchema = new Schema<BatchedTxDbDto>({
             type: String,
             enum: ['queued', 'sent'],
             required: true,
+            index: true,
         },
         hash: {
             type: String,

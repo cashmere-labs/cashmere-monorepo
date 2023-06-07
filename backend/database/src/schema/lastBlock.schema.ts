@@ -1,6 +1,5 @@
 import { HydratedDocument, Schema } from 'mongoose';
-import { LastBlockDbDto } from '../dto/lastBlock';
-import { UserDbDto } from '../dto/user';
+import { LastBlockDbDto, UserDbDto } from '../dto';
 import { SwapDataSchema } from './swapData.schema';
 
 // Define the user schema
