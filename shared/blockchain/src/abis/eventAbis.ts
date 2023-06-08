@@ -74,6 +74,7 @@ export type CrossChainSwapInitiatedLogType = Log<
     bigint,
     number,
     typeof crossChainSwapInitiatedEventABI,
+    undefined,
     [typeof crossChainSwapInitiatedEventABI],
     MaybeAbiEventName<typeof crossChainSwapInitiatedEventABI>
 >;
@@ -127,6 +128,7 @@ export type CrossChainSwapPerformedLogType = Log<
     bigint,
     number,
     typeof crossChainSwapPerformedEventABI,
+    undefined,
     [typeof crossChainSwapPerformedEventABI],
     MaybeAbiEventName<typeof crossChainSwapPerformedEventABI>
 >;
@@ -150,6 +152,7 @@ export type SwapContinuedLogType = Log<
     bigint,
     number,
     typeof swapContinuedEventABI,
+    undefined,
     [typeof swapContinuedEventABI],
     MaybeAbiEventName<typeof swapContinuedEventABI>
 >;
@@ -189,6 +192,7 @@ export type SwapMessageReceivedLogType = Log<
     bigint,
     number,
     typeof swapMessageReceivedEventABI,
+    undefined,
     [typeof swapMessageReceivedEventABI],
     MaybeAbiEventName<typeof swapMessageReceivedEventABI>
 >;

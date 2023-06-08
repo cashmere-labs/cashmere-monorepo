@@ -8,7 +8,7 @@
     "dependencies": {
         "@aws-sdk/client-dynamodb": "^3.348.0",
         "@cashmere-monorepo/backend-core": "workspace:^",
-        "viem": "^0.3.50"
+        "viem": "^1.0.0"
     },
     "devDependencies": {
         "@types/aws-lambda": "^8.10.116",

@@ -12,7 +12,7 @@
         "@cashmere-monorepo/backend-core": "workspace:^",
         "@cashmere-monorepo/backend-database": "workspace:^",
         "luxon": "^3.3.0",
-        "viem": "^0.3.50",
+        "viem": "^1.0.0",
         "vitest": "^0.31.4"
     },
     "devDependencies": {

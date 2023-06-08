@@ -14,6 +14,6 @@
         "vitest": "^0.31.4"
     },
     "dependencies": {
-        "viem": "^0.3.50"
+        "viem": "^1.0.0"
     }
 }

@@ -5,4 +5,4 @@ import { getNetworkConfig } from '@cashmere-monorepo/shared-blockchain';
  * @param chainId
  */
 export const getL0ChainFromChainId = (chainId: number): number =>
-    parseInt(getNetworkConfig(chainId).l0ChainId);
+    getNetworkConfig(chainId).l0ChainId;
