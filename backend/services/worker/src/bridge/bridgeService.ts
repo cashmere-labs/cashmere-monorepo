@@ -97,10 +97,9 @@ export const buildBridgeService = async (chainId: number) => {
                 } else {
                     // Otherwise, we should update the swap data
                     swapData.status.swapContinueConfirmed = true;
-                    await swapDataRepository.updateSwapDataStatus(
-                        swapData.id,
-                        swapData.status
-                    );
+                    await swapDataRepository.updateSwapData(swapData, [
+                        'status.swapContinueConfirmed',
+                    ]);
                     // TODO: We where previously notifying the user of the progress here
                 }
             } catch (err) {

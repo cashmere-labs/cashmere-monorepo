@@ -1,6 +1,6 @@
 import { get, set } from 'lodash';
 import { Connection, FilterQuery } from 'mongoose';
-import { Address, Hash, Hex } from 'viem';
+import { Address, Hash } from 'viem';
 import { SwapDataDbDto } from '../dto/swapData';
 import { SwapDataDocument, SwapDataSchema } from '../schema/swapData.schema';
 import { getMongooseConnection } from '../utils/connection';
@@ -140,30 +140,20 @@ const buildSwapDataRepository = (connection: Connection) => {
         },
 
         /**
-         * Get a swap data from it's id
-         */
-        async getById(id: Hex): Promise<SwapDataDbDto | undefined> {
-            return (await model.findOne({ swapId: id })) ?? undefined;
-        },
-
-        /**
          * Add a new swap data in our repository
          */
-        async save(swapData: SwapDataDbDto): Promise<SwapDataDbDto> {
+        async save(
+            swapData: SwapDataDbDto
+        ): Promise<SwapDataDbDto | undefined> {
             // Save the swap data
-            // TODO: Also check for duplicate id & srcChainId?
-            return await model.create(swapData);
-        },
-
-        /**
-         * Add a new swap data in our repository
-         */
-        async updateSwapDataStatus(
-            swapId: string,
-            status: SwapDataDbDto['status']
-        ) {
-            // Update the swap data status
-            await model.updateOne({ swapId }, { $set: { status } });
+            try {
+                return await model.create(swapData);
+            } catch (e) {
+                // If we have a duplicate key error, we return undefined
+                if ((e as any).code === 11000) return undefined;
+                // Otherwise, throw an error
+                throw e;
+            }
         },
 
         /**
