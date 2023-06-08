@@ -80,20 +80,14 @@ const buildSwapDataRepository = (connection: Connection) => {
         },
 
         /**
-         * Retrieves the SwapData associated with the provided swapId and optionally srcChainId
+         * Retrieves the SwapData associated with the provided swapId
          * from the database.
          *
          * @param swapId A string representing the swapId to retrieve SwapData for.
-         * @param srcChainId An optional number representing the srcChainId to retrieve SwapData for.
          * @returns A Promise that resolves to the retrieved SwapData object.
          */
-        async getSwapData(
-            swapId: string,
-            srcChainId?: number
-        ): Promise<SwapDataDbDto | null> {
-            const filter: FilterQuery<SwapDataDocument> = { swapId };
-            if (srcChainId) filter['chains.srcChainId'] = srcChainId;
-            return model.findOne(filter);
+        async get(swapId: string): Promise<SwapDataDbDto | null> {
+            return model.findOne({ swapId });
         },
 
         /**
@@ -101,24 +95,19 @@ const buildSwapDataRepository = (connection: Connection) => {
          * If fields are not specified, updates all the fields.
          *
          * @param swapData An object containing the swap data to update.
-         * @param fields An array of field names to update. By default, updates all fields.
+         * @param fields An array of dot separated field names to update.
          * @returns A Promise that resolves to the updated SwapData object.
          */
-        async updateSwapData(
+        async update(
             swapData: SwapDataDbDto,
-            fields: NestedKeyOf<SwapDataDbDto>[] = Object.keys(
-                SwapDataSchema.paths
-            ) as NestedKeyOf<SwapDataDbDto>[]
+            fields: NestedKeyOf<SwapDataDbDto>[]
         ): Promise<SwapDataDbDto | null> {
             const data: Record<string, unknown> = {};
             fields.forEach((key) => {
                 data[key] = get(swapData, key as string);
             });
             return model.findOneAndUpdate(
-                {
-                    'chains.srcChainId': swapData.chains.srcChainId,
-                    swapId: swapData.swapId,
-                },
+                { swapId: swapData.swapId },
                 { $set: data },
                 { new: true }
             );
