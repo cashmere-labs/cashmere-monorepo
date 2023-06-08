@@ -199,7 +199,7 @@ export const buildEventHandler = async (chainId: number) => {
                 `No swap id founded for continuation in the log tx:${log.transactionHash} index:${log.logIndex}`
             );
         }
-        const swapData = await swapDataRepository.getSwapData(swapId);
+        const swapData = await swapDataRepository.get(swapId);
         if (!swapData) {
             // TODO: For now only handle the one existing, otherwise we should try to rebuild it
             throw new Error(`The swap ${swapId} isn't known, aborting`);
@@ -225,9 +225,7 @@ export const buildEventHandler = async (chainId: number) => {
 
         // Update the swap performed tx hash on our swap data
         swapData.status.swapPerformedTxid = log.transactionHash;
-        await swapDataRepository.updateSwapData(swapData, [
-            'status.swapPerformedTxid',
-        ]);
+        await swapDataRepository.update(swapData, ['status.swapPerformedTxid']);
 
         // Send the continuation tx
         await sendContinueTxForSwapData(swapData);
