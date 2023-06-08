@@ -12,8 +12,7 @@ import {
     it,
     vi,
 } from 'vitest';
-import { UserRepository, getUserRepository } from '../../src';
-import { UserDbDto } from '../../src/dto/user';
+import { UserDbDto, UserRepository, getUserRepository } from '../../src';
 
 describe('[Backend][Database] User repository', () => {
     let userRepository: UserRepository;

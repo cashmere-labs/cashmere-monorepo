@@ -34,6 +34,7 @@ const buildLastBlockRepository = (connection: Connection) => {
     const model = connection.model('LastBlock', LastBlockSchema);
     // Return all the function needed to interact with the user model
     return {
+        model,
         /**
          * Get the last block for a given chain and type
          * @param chainId

@@ -36,13 +36,13 @@ export function WorkerStack({ stack }: StackContext) {
     // Build the bridge cron job's, running every minutes, with a dynamo mutex per chain to prevent concurrent iteration
     const bridgeCron = new Cron(stack, 'BridgeQueue', {
         job: `${path}/handlers/bridge.handler`,
-        schedule: 'rate(2 minute)',
+        schedule: 'rate(2 minutes)',
     });
 
     // Build the supervisor cron
     const supervisorCron = new Cron(stack, 'SupervisorCron', {
         job: `${path}/handlers/supervisor.handler`,
-        schedule: 'rate(5 minute)',
+        schedule: 'rate(5 minutes)',
     });
 
     // Add outputs to our stack

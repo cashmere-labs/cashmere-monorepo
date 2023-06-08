@@ -34,6 +34,7 @@ const buildBatchedTxRepository = (connection: Connection) => {
     const model = connection.model('BatchedTx', BatchedTxSchema);
     // Return all the function needed to interact with the batched tx model
     return {
+        model,
         /**
          * Check if we don't have a tx in queue with the same security hash
          */

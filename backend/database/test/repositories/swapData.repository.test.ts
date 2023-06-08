@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import mongoose from 'mongoose';
+import mongoose, { Error } from 'mongoose';
 import { Address, Hash, Hex } from 'viem';
 import {
     afterAll,
@@ -19,6 +19,37 @@ import {
 } from '../../src';
 
 const PLACEHOLDER = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
+
+const buildFakeSwapData = (i = 0) => ({
+    swapId: faker.string.hexadecimal({ length: 64 }) as Hex,
+    chains: {
+        srcChainId: faker.number.int({ min: 1, max: 256 }),
+        dstChainId: faker.number.int({ min: 1, max: 256 }),
+        srcL0ChainId: faker.number.int({ min: 1, max: 256 }),
+        dstL0ChainId: faker.number.int({ min: 1, max: 256 }),
+    },
+    path: {
+        lwsPoolId: faker.number.int({ min: 1, max: 256 }),
+        hgsPoolId: faker.number.int({ min: 1, max: 256 }),
+        hgsAmount: faker.string.numeric({ length: 10 }),
+        dstToken: faker.finance.ethereumAddress() as Address,
+        minHgsAmount: faker.string.numeric({ length: 10 }),
+        fee: '0',
+    },
+    user: {
+        receiver: (i < 15
+            ? PLACEHOLDER
+            : faker.finance.ethereumAddress()) as Address,
+        signature: faker.string.hexadecimal({ length: 64 }) as Hex,
+    },
+    status: {
+        swapInitiatedTimestamp: 100 - i, // for correct sorting
+        swapInitiatedTxid: faker.string.hexadecimal({
+            length: 64,
+        }) as Hex,
+    },
+    progress: {},
+});
 
 describe('[Backend][Database] SwapData repository', () => {
     let swapDataRepository: SwapDataRepository;
@@ -39,36 +70,9 @@ describe('[Backend][Database] SwapData repository', () => {
 
     beforeEach(async () => {
         // Generate some swap data
-        swapDataFixture = Array.from({ length: 30 }, (_, i) => ({
-            swapId: faker.string.hexadecimal({ length: 64 }) as Hex,
-            chains: {
-                srcChainId: faker.number.int({ min: 1, max: 256 }),
-                dstChainId: faker.number.int({ min: 1, max: 256 }),
-                srcL0ChainId: faker.number.int({ min: 1, max: 256 }),
-                dstL0ChainId: faker.number.int({ min: 1, max: 256 }),
-            },
-            path: {
-                lwsPoolId: faker.number.int({ min: 1, max: 256 }),
-                hgsPoolId: faker.number.int({ min: 1, max: 256 }),
-                hgsAmount: faker.string.numeric({ length: 10 }),
-                dstToken: faker.finance.ethereumAddress() as Address,
-                minHgsAmount: faker.string.numeric({ length: 10 }),
-                fee: '0',
-            },
-            user: {
-                receiver: (i < 15
-                    ? PLACEHOLDER
-                    : faker.finance.ethereumAddress()) as Address,
-                signature: faker.string.hexadecimal({ length: 64 }) as Hex,
-            },
-            status: {
-                swapInitiatedTimestamp: 100 - i, // for correct sorting
-                swapInitiatedTxid: faker.string.hexadecimal({
-                    length: 64,
-                }) as Hex,
-            },
-            progress: {},
-        }));
+        swapDataFixture = Array.from({ length: 30 }, (_, i) =>
+            buildFakeSwapData(i)
+        );
         // Insert the generated swap data into the database
         await swapDataRepository.model.insertMany(swapDataFixture);
     });
@@ -166,79 +170,46 @@ describe('[Backend][Database] SwapData repository', () => {
     it('[Ok] Retrieves the swap data', async () => {
         // Get by swap id
         expect(
-            await swapDataRepository.getSwapData(swapDataFixture[0].swapId)
-        ).toMatchObject(swapDataFixture[0]);
-        // Get by swap id and src chain id
-        expect(
-            await swapDataRepository.getSwapData(
-                swapDataFixture[0].swapId,
-                swapDataFixture[0].chains.srcChainId
-            )
+            await swapDataRepository.get(swapDataFixture[0].swapId)
         ).toMatchObject(swapDataFixture[0]);
         // Returns falsy value if swap data does not exist
         expect(
-            await swapDataRepository.getSwapData(
-                swapDataFixture[0].swapId,
-                swapDataFixture[0].chains.srcChainId + 1
-            )
+            await swapDataRepository.get(swapDataFixture[0].swapId + 'abc')
         ).toBeFalsy();
     });
 
-    describe('Update swap data', () => {
-        it('[Ok] Updates the swap data', async () => {
-            const swapData = swapDataFixture[0];
-            const newSwapData = {
-                ...swapData,
-                status: {
-                    ...swapData.status,
-                    swapContinueConfirmed: true,
-                },
-            };
-            // Returns the new object
-            expect(
-                await swapDataRepository.updateSwapData(newSwapData)
-            ).toMatchObject(newSwapData);
-            // And it is updated in the database
-            expect(
-                await swapDataRepository.model.findOne({
-                    swapId: swapData.swapId,
-                })
-            ).toMatchObject(newSwapData);
-        });
-
-        it('[Ok] Updates the swap data partially', async () => {
-            const swapData = swapDataFixture[0];
-            const newSwapData: SwapDataDbDto = {
-                ...swapData,
-                chains: {
-                    ...swapData.chains,
-                    dstL0ChainId: -1,
-                },
-                status: {
-                    ...swapData.status,
-                    swapContinueConfirmed: true,
-                },
-            };
-            const expected = {
-                ...newSwapData,
-                status: {
-                    ...newSwapData.status,
-                },
-            };
-            delete expected.status.swapContinueConfirmed;
-            // Updates only the specified fields and returns the new object
-            expect(
-                await swapDataRepository.updateSwapData(newSwapData, [
-                    'chains.dstL0ChainId',
-                ])
-            ).toMatchObject(expected);
-            // And it is updated in the database
-            expect(
-                await swapDataRepository.model.findOne({
-                    swapId: newSwapData.swapId,
-                })
-            ).toMatchObject(expected);
-        });
+    it('[Ok] Updates the swap data partially', async () => {
+        const swapData = swapDataFixture[0];
+        const newSwapData: SwapDataDbDto = {
+            ...swapData,
+            chains: {
+                ...swapData.chains,
+                dstL0ChainId: -1,
+            },
+            status: {
+                ...swapData.status,
+                swapContinueConfirmed: true,
+            },
+        };
+        const expected = {
+            ...newSwapData,
+            status: {
+                ...newSwapData.status,
+            },
+        };
+        delete expected.status.swapContinueConfirmed;
+        // Updates only the specified fields and returns the new object
+        expect(
+            await swapDataRepository.update(newSwapData, [
+                'chains.dstL0ChainId',
+            ])
+        ).toMatchObject(expected);
+        // And it is updated in the database
+        expect(
+            await swapDataRepository.model.findOne({
+                swapId: newSwapData.swapId,
+            })
+        ).toMatchObject(expected);
     });
 
     it('[Ok] Filters out txid list to return only discovered ones', async () => {
@@ -255,5 +226,81 @@ describe('[Backend][Database] SwapData repository', () => {
         expect(
             await swapDataRepository.getDiscoveredSwapInitiatedTxids(txidList)
         ).toEqual(txidList.slice(0, 15));
+    });
+
+    describe('Save swap data', () => {
+        it('[Ok] Saves swap data', async () => {
+            const newSwapData = buildFakeSwapData();
+            // Make sure that the generated object does not exist
+            expect(
+                await swapDataRepository.model.findOne({
+                    swapId: newSwapData.swapId,
+                })
+            ).toBeFalsy();
+            // Save the generated object, it should be returned
+            expect(await swapDataRepository.save(newSwapData)).toMatchObject(
+                newSwapData
+            );
+            // Check that the object was created
+            expect(
+                await swapDataRepository.model.findOne({
+                    swapId: newSwapData.swapId,
+                })
+            ).toMatchObject(newSwapData);
+        });
+
+        it("[Ok] Returns undefined when there's a duplicate", async () => {
+            const newSwapData = buildFakeSwapData();
+            // Make sure that the generated object does not exist
+            expect(
+                await swapDataRepository.model.findOne({
+                    swapId: newSwapData.swapId,
+                })
+            ).toBeFalsy();
+            // Save the object
+            await swapDataRepository.save(newSwapData);
+            // The following attempt should return undefined
+            expect(await swapDataRepository.save(newSwapData)).toBeUndefined();
+            // And not create another copy of the object
+            expect(
+                await swapDataRepository.model.count({
+                    swapId: newSwapData.swapId,
+                })
+            ).toEqual(1);
+        });
+
+        it('[Fail] Re-throws an error for any other error', async () => {
+            await expect(
+                swapDataRepository.save({} as any)
+            ).rejects.toThrowError(Error.ValidationError);
+        });
+    });
+
+    it('[Ok] Returns a "get waiting for completions on dst chain" cursor', async () => {
+        // Make 10 (timestamp = 91..100) swap datas match the filter
+        await swapDataRepository.model.updateMany(
+            {
+                'user.receiver': PLACEHOLDER,
+                'status.swapInitiatedTimestamp': { $gt: 90 },
+            },
+            {
+                $set: {
+                    'chains.dstChainId': 100500,
+                    'status.swapContinueTxid': 'aaa',
+                },
+            }
+        );
+
+        // Get the cursor
+        const cursor =
+            await swapDataRepository.getWaitingForCompletionsOnDstChainCursor(
+                100500
+            );
+        // Check its class
+        expect(cursor.constructor.name).toEqual('QueryCursor'); // because mongoose does not export this class, at least in type definitions
+        // And count the objects to make sure the filter is correct
+        let count = 0;
+        while (await cursor.next()) count++;
+        expect(count).toEqual(10);
     });
 });
