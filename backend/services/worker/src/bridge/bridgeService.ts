@@ -1,9 +1,30 @@
-import { getBlockchainRepository } from '@cashmere-monorepo/backend-blockchain/src/repositories/blockchain.repository';
+import {
+    CHAIN_IDS,
+    getBlockchainRepository,
+} from '@cashmere-monorepo/backend-blockchain';
 import { logger } from '@cashmere-monorepo/backend-core';
-import { getSwapDataRepository } from '@cashmere-monorepo/backend-database';
-import { getLastBlockRepository } from '@cashmere-monorepo/backend-database/src/repositories/lastBlock.repository';
+import {
+    getLastBlockRepository,
+    getSwapDataRepository,
+} from '@cashmere-monorepo/backend-database';
+import { try as inlineTry } from 'radash';
 import { buildBridgeBlockScanner } from './bridgeBlockScanner';
 import { buildEventHandler } from './eventHandler';
+
+/**
+ * Scan every blockchain for the bridge
+ */
+export const scanEveryBlockchain = async () => {
+    logger.debug('Will scan every blockchain for the bridge');
+    // Run the scanner on each chain
+    for (const chainId of CHAIN_IDS) {
+        logger.debug({ chainId }, 'Will scan this chain for the bridge');
+        // Build our bridge service
+        const bridgeService = await buildBridgeService(parseInt(chainId));
+        // Then perform the scan
+        await inlineTry(bridgeService.processBridgeOnChain)();
+    }
+};
 
 /**
  * Build the bridge repository for the given chain
@@ -14,7 +35,7 @@ export const buildBridgeService = async (chainId: number) => {
     const eventHandler = await buildEventHandler(chainId);
 
     // Get our bridge block scanner
-    const blockScanner = await buildBridgeBlockScanner(chainId, eventHandler);
+    const blockScanner = await buildBridgeBlockScanner(chainId);
 
     // Fetch some repo we will use every where
     const lastBlockRepository = await getLastBlockRepository();
@@ -25,7 +46,6 @@ export const buildBridgeService = async (chainId: number) => {
 
     /**
      * Check all the pending tx status for this chain
-     * TODO: Port the logic
      */
     const checkAllTxStatus = async () => {
         logger.debug({ chainId }, 'Checking all the pending tx status');
@@ -97,6 +117,7 @@ export const buildBridgeService = async (chainId: number) => {
      */
     const processBridgeOnChain = async () => {
         // TODO: Execution mutex for this chain with dynamo db
+        // TODO: Just use the mutex call
 
         // Get the latest block explored for the given chain
         const lastBlockIterated = await lastBlockRepository.getForChainAndType(

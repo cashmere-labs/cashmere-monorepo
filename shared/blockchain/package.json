@@ -10,8 +10,8 @@
     },
     "devDependencies": {
         "@types/node": "^18.16.16",
-        "sst": "2.11.14",
-        "vitest": "^0.31.4"
+        "sst": "2.11.18",
+        "vitest": "^0.32.0"
     },
     "dependencies": {
         "viem": "^1.0.0"

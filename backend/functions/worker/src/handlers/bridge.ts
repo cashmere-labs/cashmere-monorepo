@@ -1,13 +1,17 @@
-import { logger } from '@cashmere-monorepo/backend-core/logger/logger';
+import { logger, useLogger } from '@cashmere-monorepo/backend-core';
+import { scanEveryBlockchain } from '@cashmere-monorepo/backend-service-worker/src';
 
 /**
  * The handler for our bridge cron. Run every minutes accross all the chains
  * @param event
  */
 export const handler = async () => {
+    useLogger();
     logger.info('New bridge event handler');
-    // Ensure we
-    // TODO: Ensure we don't have parallel execution of the bridge event's
+
+    // Run the scanner on each chain
+    scanEveryBlockchain();
 };
 
 // TODO: For better parallelism, event queue per chain?
+//  Like scheduled event bridges? Like that we got messaging + scheduling per chain?
