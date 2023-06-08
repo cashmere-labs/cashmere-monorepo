@@ -1,13 +1,18 @@
-import { QueryCommandOutput } from '@aws-sdk/client-dynamodb';
+import {
+    $Command,
+    BatchWriteItemCommand,
+    PutItemCommand,
+    QueryCommand,
+    QueryCommandOutput,
+} from '@aws-sdk/client-dynamodb';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 
 describe('[Services][Websocket] DynamoDB repository', () => {
     // Mocks
-    const putItem = vi.fn();
-    const batchWriteItem = vi.fn();
-    const query = vi.fn(
-        ({ KeyConditionExpression }) => `query: ${KeyConditionExpression}`
-    );
+    const send = vi.fn((command: $Command<any, any, any>) => {
+        if (command.constructor.name === 'QueryCommand')
+            return `query: ${command.input.KeyConditionExpression}`;
+    });
 
     // Tested functions
     let saveNewConnection: (
@@ -28,12 +33,13 @@ describe('[Services][Websocket] DynamoDB repository', () => {
     beforeAll(async () => {
         // Mock dynamodb
         vi.doMock('@aws-sdk/client-dynamodb', () => ({
-            DynamoDB: class {
+            DynamoDBClient: class {
                 constructor() {}
-                putItem = putItem;
-                batchWriteItem = batchWriteItem;
-                query = query;
+                send = send;
             },
+            PutItemCommand,
+            BatchWriteItemCommand,
+            QueryCommand,
         }));
         // Mock sst table
         vi.doMock('sst/node/table', () => ({
@@ -60,31 +66,35 @@ describe('[Services][Websocket] DynamoDB repository', () => {
     it('[Ok] Saves new connections', async () => {
         await saveNewConnection('123', 'abc');
         // Verify dynamo call
-        expect(putItem).toBeCalledWith({
-            TableName: 'WebSocketDynamo',
-            Item: {
-                id: { S: '123' },
-                room: { S: 'default' },
-            },
-        });
+        expect(send.mock.calls[0][0].input).toMatchObject(
+            new PutItemCommand({
+                TableName: 'WebSocketDynamo',
+                Item: {
+                    id: { S: '123' },
+                    room: { S: 'default' },
+                },
+            }).input
+        );
     });
 
     it('[Ok] Deletes connections', async () => {
         await deleteConnections('123', ['abc']);
         // Verify dynamo call
-        expect(batchWriteItem).toBeCalledWith({
-            RequestItems: {
-                WebSocketDynamo: [
-                    {
-                        DeleteRequest: {
-                            Key: {
-                                id: { S: '123' },
+        expect(send.mock.calls[0][0].input).toMatchObject(
+            new BatchWriteItemCommand({
+                RequestItems: {
+                    WebSocketDynamo: [
+                        {
+                            DeleteRequest: {
+                                Key: {
+                                    id: { S: '123' },
+                                },
                             },
                         },
-                    },
-                ],
-            },
-        });
+                    ],
+                },
+            }).input
+        );
     });
 
     it('[Ok] Retrieves connections for a given room', async () => {
@@ -93,13 +103,15 @@ describe('[Services][Websocket] DynamoDB repository', () => {
             'query: room = :roomId'
         );
         // Verify dynamo call
-        expect(query).toBeCalledWith({
-            TableName: 'WebSocketDynamo',
-            ExpressionAttributeValues: {
-                ':roomId': { S: 'abc' },
-            },
-            KeyConditionExpression: 'room = :roomId',
-        });
+        expect(send.mock.calls[0][0].input).toMatchObject(
+            new QueryCommand({
+                TableName: 'WebSocketDynamo',
+                ExpressionAttributeValues: {
+                    ':roomId': { S: 'abc' },
+                },
+                KeyConditionExpression: 'room = :roomId',
+            }).input
+        );
     });
 
     it('[Ok] Retrieves rooms for a given connection', async () => {
@@ -108,13 +120,15 @@ describe('[Services][Websocket] DynamoDB repository', () => {
             'query: id = :id'
         );
         // Verify dynamo call
-        expect(query).toBeCalledWith({
-            TableName: 'WebSocketDynamo',
-            IndexName: 'idIndex',
-            ExpressionAttributeValues: {
-                ':id': { S: '123' },
-            },
-            KeyConditionExpression: 'id = :id',
-        });
+        expect(send.mock.calls[0][0].input).toMatchObject(
+            new QueryCommand({
+                TableName: 'WebSocketDynamo',
+                IndexName: 'idIndex',
+                ExpressionAttributeValues: {
+                    ':id': { S: '123' },
+                },
+                KeyConditionExpression: 'id = :id',
+            }).input
+        );
     });
 });
