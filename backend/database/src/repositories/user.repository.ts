@@ -32,6 +32,8 @@ const buildUserRepository = (connection: Connection) => {
     const model = connection.model('User', UserSchema);
     // Return all the function needed to interact with the user model
     return {
+        // Include the model in the repo object, needed for tests
+        model,
         /**
          * Get a user object by its address, create if not found
          * @param address
