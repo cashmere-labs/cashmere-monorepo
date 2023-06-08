@@ -172,6 +172,7 @@ export const buildEventHandler = async (chainId: number) => {
         );
 
         // TODO: The add swap data was also increasing stat's
+        // TODO: Handle duplicates
         // Save the swap data in our database and return the fresh data
         return await swapDataRepository.save(swapData);
     };
