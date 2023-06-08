@@ -11,7 +11,10 @@ export type AssetRepository = {
     tokenDecimal: (address: string) => Promise<number>;
 };
 
-// Get the asset repository for the given chain
+/**
+ * Get the asset repository on the given chain
+ * @param chainId
+ */
 export const getAssetRepository = (chainId: number): AssetRepository => {
     // Get the config and client
     const { config, client } = getNetworkConfigAndClient(chainId);

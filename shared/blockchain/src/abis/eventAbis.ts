@@ -1,5 +1,6 @@
 // Direct cross chain swap initiated event ABI, to be lighter on execution
 import { Log } from 'viem';
+import { MaybeAbiEventName } from 'viem/dist/types/types/contract';
 
 export const crossChainSwapInitiatedEventABI = {
     type: 'event',
@@ -73,8 +74,9 @@ export type CrossChainSwapInitiatedLogType = Log<
     bigint,
     number,
     typeof crossChainSwapInitiatedEventABI,
+    undefined,
     [typeof crossChainSwapInitiatedEventABI],
-    'CrossChainSwapInitiated'
+    MaybeAbiEventName<typeof crossChainSwapInitiatedEventABI>
 >;
 
 // Direct cross chain swap performed event ABI, to be lighter on execution
@@ -126,8 +128,9 @@ export type CrossChainSwapPerformedLogType = Log<
     bigint,
     number,
     typeof crossChainSwapPerformedEventABI,
+    undefined,
     [typeof crossChainSwapPerformedEventABI],
-    'CrossChainSwapPerformed'
+    MaybeAbiEventName<typeof crossChainSwapPerformedEventABI>
 >;
 
 // Direct cross chain swap continued event ABI, to be lighter on execution
@@ -149,8 +152,9 @@ export type SwapContinuedLogType = Log<
     bigint,
     number,
     typeof swapContinuedEventABI,
+    undefined,
     [typeof swapContinuedEventABI],
-    'SwapContinued'
+    MaybeAbiEventName<typeof swapContinuedEventABI>
 >;
 
 // Bridge swap message received event, required to extract swap id
@@ -188,6 +192,7 @@ export type SwapMessageReceivedLogType = Log<
     bigint,
     number,
     typeof swapMessageReceivedEventABI,
+    undefined,
     [typeof swapMessageReceivedEventABI],
-    'SwapMessageReceived'
+    MaybeAbiEventName<typeof swapMessageReceivedEventABI>
 >;

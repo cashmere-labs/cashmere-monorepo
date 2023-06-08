@@ -1,10 +1,13 @@
 import { getOrSetFromCache } from '@cashmere-monorepo/backend-core';
 import {
     assetRouterABI,
+    crossChainSwapInitiatedEventABI,
+    CrossChainSwapInitiatedLogType,
     getNetworkConfigAndClient,
     iAssetV2ABI,
 } from '@cashmere-monorepo/shared-blockchain';
-import { Address, Hex, getAddress, pad } from 'viem';
+import { Address, getAddress, Hex, pad } from 'viem';
+import { BlockRange } from '../types';
 
 // Generic types for our asset router repository
 export type AssetRouterRepository = {
@@ -23,9 +26,7 @@ export type AssetRouterRepository = {
 };
 
 // Get the asset router repository for the given chain
-export const getAssetRouterRepository = (
-    chainId: number
-): AssetRouterRepository => {
+export const getAssetRouterRepository = (chainId: number) => {
     // Get the config and client
     const { config, client } = getNetworkConfigAndClient(chainId);
 
@@ -37,7 +38,10 @@ export const getAssetRouterRepository = (
         params,
     });
 
-    // Generic function to get a pool
+    /**
+     * Get the pool token asset for the given pool id
+     * @param poolId
+     */
     const getPool = (poolId: number) =>
         getOrSetFromCache(
             {
@@ -54,7 +58,10 @@ export const getAssetRouterRepository = (
         );
 
     return {
-        // Quote the swaps via our asset router
+        /**
+         * Quote a swap from the given params
+         * @param params
+         */
         quoteSwaps: async (params: {
             lwsAssetId: number;
             hgsAssetId: number;
@@ -131,7 +138,11 @@ export const getAssetRouterRepository = (
                 haircut: haircut,
             };
         },
-        // Get the pool assets
+
+        /**
+         * Get the pool token asset for the given pool id
+         * @param poolId
+         */
         getPoolTokenAsset: async (poolId: number): Promise<Address> => {
             const pool = await getPool(poolId);
 
@@ -148,5 +159,18 @@ export const getAssetRouterRepository = (
                     })
             );
         },
+
+        /**
+         * Get all the swap initiated event's
+         * @param range
+         */
+        getSwapInitiatedEvents: (
+            range: BlockRange
+        ): Promise<CrossChainSwapInitiatedLogType[]> =>
+            client.getLogs({
+                address: config.getContractAddress('assetRouter'),
+                event: crossChainSwapInitiatedEventABI,
+                ...range,
+            }),
     };
 };

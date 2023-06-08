@@ -7,13 +7,13 @@
         "typecheck": "tsc -noEmit"
     },
     "devDependencies": {
-        "@types/node": "^18.16.14",
-        "json-schema-to-ts": "^2.9.0",
-        "sst": "2.10.2",
-        "vitest": "^0.31.1"
+        "@types/node": "^18.16.16",
+        "json-schema-to-ts": "^2.9.1",
+        "sst": "2.11.18",
+        "vitest": "^0.32.0"
     },
     "dependencies": {
-        "@sinclair/typebox": "^0.28.11",
-        "viem": "^0.3.36"
+        "@sinclair/typebox": "^0.28.14",
+        "viem": "^1.0.0"
     }
 }

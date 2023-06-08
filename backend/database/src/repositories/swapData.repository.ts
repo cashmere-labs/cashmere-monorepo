@@ -144,6 +144,36 @@ const buildSwapDataRepository = (connection: Connection) => {
                 .filter((sd) => sd.status.swapInitiatedTxid !== undefined) // filter out undefined entries
                 .map((sd) => sd.status.swapInitiatedTxid as Hash);
         },
+
+        /**
+         * Add a new swap data in our repository
+         */
+        async save(
+            swapData: SwapDataDbDto
+        ): Promise<SwapDataDbDto | undefined> {
+            // Save the swap data
+            try {
+                return await model.create(swapData);
+            } catch (e) {
+                // If we have a duplicate key error, we return undefined
+                if ((e as any).code === 11000) return undefined;
+                // Otherwise, throw an error
+                throw e;
+            }
+        },
+
+        /**
+         * Get all the swap data that need to be checked for completion
+         */
+        async getWaitingForCompletionsOnDstChainCursor(chainId: number) {
+            return model
+                .find({
+                    'chains.dstChainId': chainId,
+                    'status.swapContinueTxid': { $ne: null },
+                    'status.swapContinueConfirmed': null,
+                })
+                .cursor();
+        },
     };
 };
 

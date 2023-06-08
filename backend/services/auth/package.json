@@ -12,12 +12,12 @@
         "@cashmere-monorepo/backend-core": "workspace:^",
         "@cashmere-monorepo/backend-database": "workspace:^",
         "argon2": "^0.30.3",
-        "fast-jwt": "^3.0.0",
+        "fast-jwt": "^3.1.0",
         "pbkdf2-password-hash": "^3.1.0",
-        "viem": "^0.3.36"
+        "viem": "^1.0.0"
     },
     "devDependencies": {
-        "@types/node": "^18.16.14",
+        "@types/node": "^18.16.16",
         "@vitest/coverage-c8": "^0.31.1",
         "@vitest/ui": "^0.31.1",
         "clear-module": "^4.1.2",

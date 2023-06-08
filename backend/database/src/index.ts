@@ -1,3 +1,3 @@
-export * from './dto/swapData';
+export * from './dto';
 export * from './repositories';
 export * from './schema';

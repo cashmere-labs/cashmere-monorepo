@@ -9,15 +9,15 @@
         "typecheck": "tsc -noEmit"
     },
     "dependencies": {
-        "@aws-sdk/client-dynamodb": "^3.338.0",
+        "@aws-sdk/client-dynamodb": "^3.348.0",
         "@cashmere-monorepo/backend-core": "workspace:^",
-        "viem": "^0.3.36"
+        "viem": "^1.0.0"
     },
     "devDependencies": {
-        "@types/aws-lambda": "^8.10.115",
-        "@types/node": "^18.16.14",
+        "@types/aws-lambda": "^8.10.116",
+        "@types/node": "^18.16.16",
         "@vitest/coverage-c8": "^0.31.1",
-        "sst": "2.10.2",
-        "vitest": "^0.31.1"
+        "sst": "2.11.18",
+        "vitest": "^0.32.0"
     }
 }

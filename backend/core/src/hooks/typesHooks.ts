@@ -1,4 +1,4 @@
-import { TSchema } from '@sinclair/typebox';
+import { Static, TSchema } from '@sinclair/typebox';
 import { TypeCompiler } from '@sinclair/typebox/compiler';
 import { Context, useEvent } from 'sst/context';
 import { validateTypeOrThrow } from '../contracts';
@@ -9,7 +9,7 @@ import { validateTypeOrThrow } from '../contracts';
 export const useTypedEvent = <T extends TSchema>(
     schema: T,
     type: 'api' | 'ws' | 'sqs'
-) => {
+): Static<T> => {
     // Build our event type compiler
     const eventTypeCompiler = TypeCompiler.Compile(schema);
 
