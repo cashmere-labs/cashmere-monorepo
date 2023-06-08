@@ -1,0 +1,18 @@
+{
+    "name": "@cashmere-monorepo/backend-function-worker",
+    "version": "0.0.0",
+    "scripts": {
+        "typecheck": "tsc -noEmit"
+    },
+    "dependencies": {
+        "@cashmere-monorepo/backend-core": "workspace:^",
+        "@cashmere-monorepo/backend-service-worker": "workspace:^",
+        "@cashmere-monorepo/shared-contract-worker": "workspace:^"
+    },
+    "devDependencies": {
+        "@types/aws-lambda": "^8.10.116",
+        "@types/node": "^18.16.16",
+        "sst": "2.11.18",
+        "vitest": "^0.32.0"
+    }
+}

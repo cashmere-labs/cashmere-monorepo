@@ -1,11 +1,9 @@
 // Params to get or set a value from our dynamoDbCache
-import { DynamoDB } from '@aws-sdk/client-dynamodb';
+import { GetItemCommand, UpdateItemCommand } from '@aws-sdk/client-dynamodb';
 import { createHash } from 'node:crypto';
 import { Table } from 'sst/node/table';
 import { logger } from '../logger/logger';
-
-// Access to our dynamoDB
-const dynamoDbClient = new DynamoDB({ region: process.env.AWS_REGION });
+import { dynamoDbClient } from '../utils';
 
 // Default expiration from our dynamoDbCache, 10minutes
 const defaultTtl = 10 * 60 * 1000;
@@ -25,10 +23,11 @@ export const getFromCache = async <T>(
     try {
         logger.debug({ key }, 'Trying to fetch a value from the cache');
         // Get the item from our dynamo db
-        const dynamoItem = await dynamoDbClient.getItem({
+        const getItemCommand = new GetItemCommand({
             TableName: Table.CachingDynamo.tableName,
             Key: { id: { S: key } },
         });
+        const dynamoItem = await dynamoDbClient.send(getItemCommand);
         // If no item found, return undefined
         if (!dynamoItem?.Item?.value?.S) {
             return undefined;
@@ -56,7 +55,7 @@ export const setInCache = async (
 ) => {
     try {
         logger.debug({ key, value, ttl }, 'Setting a new value in the cache');
-        await dynamoDbClient.updateItem({
+        const updateItemCommand = new UpdateItemCommand({
             TableName: Table.CachingDynamo.tableName,
             Key: { id: { S: key } },
             AttributeUpdates: {
@@ -71,6 +70,7 @@ export const setInCache = async (
             },
             ReturnValues: 'NONE',
         });
+        await dynamoDbClient.send(updateItemCommand);
     } catch (error) {
         logger.error(error, 'Unable to set the new value in the cache');
         throw error;
@@ -83,7 +83,7 @@ export const setInCache = async (
 export const updateCacheTtlInDb = async (key: string, ttl: number) => {
     try {
         logger.info({ key, ttl }, 'Updating a cached value TTL');
-        await dynamoDbClient.updateItem({
+        const updateItemCommand = new UpdateItemCommand({
             TableName: Table.CachingDynamo.tableName,
             Key: { id: { S: key } },
             AttributeUpdates: {
@@ -94,6 +94,7 @@ export const updateCacheTtlInDb = async (key: string, ttl: number) => {
             },
             ReturnValues: 'NONE',
         });
+        await dynamoDbClient.send(updateItemCommand);
     } catch (error) {
         logger.error(
             error,
@@ -117,7 +118,7 @@ export type GetOrSetFromCacheParams = {
 export const getOrSetFromCache = async <T>(
     params: GetOrSetFromCacheParams,
     valueAccessor: () => Promise<T>
-) => {
+): Promise<T> => {
     // Build our key hash
     let keyHash: string;
     if (typeof params.key === 'string') {
@@ -139,7 +140,7 @@ export const getOrSetFromCache = async <T>(
             await updateCacheTtlInDb(keyHash, neverExpireProlongationTtl);
         }
         // Return the current value
-        return currentCacheEntry.value;
+        return currentCacheEntry.value as T;
     }
 
     // Otherwise, fetch the new value and set it in the cache

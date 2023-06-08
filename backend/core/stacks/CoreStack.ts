@@ -30,12 +30,23 @@ export function CoreStack({ stack }: StackContext) {
         primaryIndex: { partitionKey: 'id' },
     });
 
+    // Build our dynamo db table for the execution lock operation
+    const mutexTable = new Table(stack, 'MutexDynamo', {
+        fields: {
+            executionKey: 'string',
+            ttl: 'number',
+        },
+        timeToLiveAttribute: 'ttl',
+        primaryIndex: { partitionKey: 'executionKey' },
+    });
+
     // Add the api url and dynamo db table to our stack output
     stack.addOutputs({
         ApiEndpoint: api.url,
         CachingTableId: cachingTable.id,
+        MutexTableId: mutexTable.id,
     });
 
     // Return our api and dynamo db table
-    return { api, getDomainPath, cachingTable };
+    return { api, getDomainPath, cachingTable, mutexTable };
 }

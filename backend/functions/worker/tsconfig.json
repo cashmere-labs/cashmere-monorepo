@@ -1,0 +1,24 @@
+{
+    "extends": "@tsconfig/node18/tsconfig.json",
+    "compilerOptions": {
+        "composite": true,
+        "incremental": true,
+        "module": "esnext",
+        "baseUrl": ".",
+        "rootDir": ".",
+        "paths": {
+            "@cashmere-monorepo/backend-core/*": ["../../core/*"],
+            "@cashmere-monorepo/backend-service-worker/*": [
+                "../../services/worker/*"
+            ],
+            "@cashmere-monorepo/shared-contract-worker/*": [
+                "../../../shared/contracts/worker/*"
+            ]
+        }
+    },
+    "references": [
+        { "path": "../../core/tsconfig.json" },
+        { "path": "../../services/worker/tsconfig.json" },
+        { "path": "../../../shared/contracts/worker/tsconfig.json" }
+    ]
+}

@@ -41,7 +41,9 @@ const buildSwapDataRepository = (connection: Connection) => {
     const model = connection.model('SwapData', SwapDataSchema);
     // Return all the function needed to interact with the swap data
     return {
-        // Get all the swap data progress for a given address
+        /**
+         * Get all the swap data progress for a given address
+         */
         async getByReceiver(
             receiver: string,
             filters: Omit<FilterQuery<SwapDataDocument>, 'receiver'> = {},
@@ -71,20 +73,14 @@ const buildSwapDataRepository = (connection: Connection) => {
         },
 
         /**
-         * Retrieves the SwapData associated with the provided swapId and optionally srcChainId
+         * Retrieves the SwapData associated with the provided swapId
          * from the database.
          *
          * @param swapId A string representing the swapId to retrieve SwapData for.
-         * @param srcChainId An optional number representing the srcChainId to retrieve SwapData for.
          * @returns A Promise that resolves to the retrieved SwapData object.
          */
-        async getSwapData(
-            swapId: string,
-            srcChainId?: number
-        ): Promise<SwapDataDbDto | null> {
-            const filter: FilterQuery<SwapDataDocument> = { swapId };
-            if (srcChainId) filter.srcChainId = srcChainId;
-            return await model.findOne(filter);
+        async get(swapId: string): Promise<SwapDataDbDto | null> {
+            return model.findOne({ swapId });
         },
 
         /**
@@ -92,25 +88,20 @@ const buildSwapDataRepository = (connection: Connection) => {
          * If fields are not specified, updates all the fields.
          *
          * @param swapData An object containing the swap data to update.
-         * @param fields An array of field names to update. By default, updates all fields.
+         * @param fields An array of dot separated field names to update.
          * @returns A Promise that resolves to the updated SwapData object.
          */
-        async updateSwapData(
+        async update(
             swapData: SwapDataDbDto,
-            fields: NestedKeyOf<SwapDataDbDto>[] = Object.keys(
-                SwapDataSchema.paths
-            ) as NestedKeyOf<SwapDataDbDto>[]
+            fields: NestedKeyOf<SwapDataDbDto>[]
         ): Promise<SwapDataDbDto | null> {
             const data: Record<string, unknown> = {};
             fields.forEach((key) => {
                 const value = get(swapData, key as string);
                 set(data, key as string, value);
             });
-            return await model.findOneAndUpdate(
-                {
-                    srcChainId: swapData.chains.srcChainId,
-                    swapId: swapData.swapId,
-                },
+            return model.findOneAndUpdate(
+                { swapId: swapData.swapId },
                 { $set: data },
                 { new: true }
             );
@@ -135,6 +126,36 @@ const buildSwapDataRepository = (connection: Connection) => {
             return swapData
                 .filter((sd) => sd.status.swapInitiatedTxid !== undefined) // filter out undefined entries
                 .map((sd) => sd.status.swapInitiatedTxid as Hash);
+        },
+
+        /**
+         * Add a new swap data in our repository
+         */
+        async save(
+            swapData: SwapDataDbDto
+        ): Promise<SwapDataDbDto | undefined> {
+            // Save the swap data
+            try {
+                return await model.create(swapData);
+            } catch (e) {
+                // If we have a duplicate key error, we return undefined
+                if ((e as any).code === 11000) return undefined;
+                // Otherwise, throw an error
+                throw e;
+            }
+        },
+
+        /**
+         * Get all the swap data that need to be checked for completion
+         */
+        async getWaitingForCompletionsOnDstChainCursor(chainId: number) {
+            return model
+                .find({
+                    'chains.dstChainId': chainId,
+                    'status.swapContinueTxid': { $ne: null },
+                    'status.swapContinueConfirmed': null,
+                })
+                .cursor();
         },
     };
 };

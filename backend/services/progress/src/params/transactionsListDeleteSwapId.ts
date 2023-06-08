@@ -22,7 +22,7 @@ export async function deleteTransactionsListBySwapId(
     const receiver = getAddress(account);
 
     const swapDataRepository = await getSwapDataRepository();
-    const swapData = await swapDataRepository.getSwapData(swapId);
+    const swapData = await swapDataRepository.get(swapId);
 
     if (
         !swapId ||
@@ -34,9 +34,7 @@ export async function deleteTransactionsListBySwapId(
     }
 
     swapData.status.progressHidden = true;
-    await swapDataRepository.updateSwapData(swapData, [
-        'status.progressHidden',
-    ]);
+    await swapDataRepository.update(swapData, ['status.progressHidden']);
 
     return { message: 'Transaction deleted successfully.' };
 }

@@ -1,0 +1,27 @@
+{
+    "name": "@cashmere-monorepo/backend-service-worker",
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "test": "sst bind vitest run",
+        "test:watch": "sst bind vitest watch",
+        "typecheck": "tsc -noEmit"
+    },
+    "dependencies": {
+        "@aws-sdk/client-sqs": "^3.348.0",
+        "@cashmere-monorepo/backend-blockchain": "workspace:^",
+        "@cashmere-monorepo/backend-core": "workspace:^",
+        "@cashmere-monorepo/backend-database": "workspace:^",
+        "luxon": "^3.3.0",
+        "radash": "^10.8.1",
+        "viem": "^1.0.0",
+        "vitest": "^0.32.0"
+    },
+    "devDependencies": {
+        "@types/aws-lambda": "^8.10.116",
+        "@types/luxon": "^3.3.0",
+        "@types/node": "^18.16.16",
+        "sst": "2.11.18",
+        "vitest": "^0.31.1"
+    }
+}
