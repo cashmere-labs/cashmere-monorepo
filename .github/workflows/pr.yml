@@ -69,6 +69,3 @@ jobs:
               run: pnpm run deploy:pr
             - name: '🧪 Run tests'
               run: pnpm nx run-many --target=test --all --parallel=2
-            - name: '🔥 Remove from AWS'
-              if: steps.aws_deploy.outcome == 'success'
-              run: pnpm remove
