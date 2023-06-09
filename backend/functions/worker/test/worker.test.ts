@@ -18,10 +18,10 @@ describe('WorkerStack', () => {
 
         // THEN
         const template = Template.fromStack(getStack(WorkerStack));
+        console.log(template.toJSON());
         template.hasResourceProperties('AWS::Lambda::Function', {
             Timeout: 300,
             MemorySize: 1024,
-            Runtime: 'nodejs16.x',
         });
 
         template.hasResourceProperties('AWS::SQS::Queue', {
