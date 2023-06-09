@@ -3,7 +3,9 @@
     "version": "0.0.0",
     "scripts": {
         "typecheck": "tsc -noEmit",
-        "test:ui": "vitest --ui"
+        "test": "sst bind \"vitest run --coverage --no-threads\"",
+        "test:watch": "sst bind \"vitest watch --coverage --no-threads\"",
+        "test:ui": "sst bind \"vitest watch --ui --coverage --no-threads\""
     },
     "dependencies": {
         "@cashmere-monorepo/backend-core": "workspace:^",
