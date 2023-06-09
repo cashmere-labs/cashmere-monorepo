@@ -16,6 +16,10 @@ defaults:
     run:
         shell: bash
 
+permissions:
+    id-token: write # This is required for requesting the JWT
+    contents: read # This is required for actions/checkout
+
 jobs:
     build-and-test:
         name: 🏗 Build Project & 🧪 Run Tests
@@ -29,6 +33,12 @@ jobs:
                   fetch-depth: 0
             - uses: nrwl/nx-set-shas@v3
             - uses: pnpm/action-setup@v2.2.3
+            - name: '👥 Configure AWS Credentials'
+              uses: aws-actions/configure-aws-credentials@v2
+              with:
+                  role-to-assume: arn:aws:iam::748733882600:role/github_test_runner
+                  role-session-name: github_test_runner
+                  aws-region: us-east-1
             - name: Setup Node.js
               id: setup-node
               uses: actions/setup-node@v3
@@ -54,10 +64,5 @@ jobs:
               run: pnpm run lint:check
             - name: '💄 Check format'
               run: pnpm format:check
-            - name: '👥 Configure AWS Credentials'
-              uses: aws-actions/configure-aws-credentials@v2
-              with:
-                  role-to-assume: arn:aws:iam::748733882600:role/github_test_runner
-                  aws-region: us-east-1
             - name: '🧪 Run tests'
               run: pnpm nx run-many --target=test --all --parallel=2
