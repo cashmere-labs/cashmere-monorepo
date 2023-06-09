@@ -68,4 +68,7 @@ jobs:
               id: aws_deploy
               run: pnpm run deploy:pr
             - name: '🧪 Run tests'
-              run: pnpm nx run-many --target=test --all --parallel=2
+              run: sst bind "vitest run --coverage --no-threads"
+            - name: '📈 Report Coverage'
+              if: always() # Also generate the report if tests are failing
+              uses: davelosert/vitest-coverage-report-action@v1
