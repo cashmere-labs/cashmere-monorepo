@@ -13,6 +13,7 @@ export default {
             profile: 'monorepo-swarmion-dev',
             name: 'cashmere-monorepo',
             region: 'us-east-1',
+            stage: process.env.CI ? 'github-actions' : undefined,
         };
     },
     stacks(app) {

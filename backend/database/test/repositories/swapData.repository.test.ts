@@ -1,7 +1,6 @@
-import { faker } from '@faker-js/faker';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose, { Error, Model } from 'mongoose';
-import { Address, Hash, Hex } from 'viem';
+import { Address, Hash } from 'viem';
 import {
     afterAll,
     afterEach,
@@ -17,36 +16,39 @@ import {
     SwapDataRepository,
     getSwapDataRepository,
 } from '../../src';
+import {
+    fakerEthereumAddress,
+    fakerHexadecimalString,
+    fakerInt,
+    fakerNumericString,
+    fakerResetCache,
+} from './_utils';
 
-const PLACEHOLDER = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
+const PLACEHOLDER: Address = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 
 const buildFakeSwapData = (i = 0) => ({
-    swapId: faker.string.hexadecimal({ length: 64 }) as Hex,
+    swapId: fakerHexadecimalString(64),
     chains: {
-        srcChainId: faker.number.int({ min: 1, max: 256 }),
-        dstChainId: faker.number.int({ min: 1, max: 256 }),
-        srcL0ChainId: faker.number.int({ min: 1, max: 256 }),
-        dstL0ChainId: faker.number.int({ min: 1, max: 256 }),
+        srcChainId: fakerInt(1, 255),
+        dstChainId: fakerInt(1, 255),
+        srcL0ChainId: fakerInt(1, 255),
+        dstL0ChainId: fakerInt(1, 255),
     },
     path: {
-        lwsPoolId: faker.number.int({ min: 1, max: 256 }),
-        hgsPoolId: faker.number.int({ min: 1, max: 256 }),
-        hgsAmount: faker.string.numeric({ length: 10 }),
-        dstToken: faker.finance.ethereumAddress() as Address,
-        minHgsAmount: faker.string.numeric({ length: 10 }),
+        lwsPoolId: fakerInt(1, 255),
+        hgsPoolId: fakerInt(1, 255),
+        hgsAmount: fakerNumericString(10),
+        dstToken: fakerEthereumAddress(),
+        minHgsAmount: fakerNumericString(10),
         fee: '0',
     },
     user: {
-        receiver: (i < 15
-            ? PLACEHOLDER
-            : faker.finance.ethereumAddress()) as Address,
-        signature: faker.string.hexadecimal({ length: 64 }) as Hex,
+        receiver: i < 15 ? PLACEHOLDER : fakerEthereumAddress(),
+        signature: fakerHexadecimalString(64),
     },
     status: {
         swapInitiatedTimestamp: 100 - i, // for correct sorting
-        swapInitiatedTxid: faker.string.hexadecimal({
-            length: 64,
-        }) as Hex,
+        swapInitiatedTxid: fakerHexadecimalString(64),
     },
     progress: {},
 });
@@ -73,6 +75,8 @@ describe('[Backend][Database] SwapData repository', () => {
     });
 
     beforeEach(async () => {
+        // Reset faker duplicates cache
+        fakerResetCache();
         // Generate some swap data
         swapDataFixture = Array.from({ length: 30 }, (_, i) =>
             buildFakeSwapData(i)
@@ -221,11 +225,7 @@ describe('[Backend][Database] SwapData repository', () => {
         const txidList = swapDataFixture
             .slice(0, 15)
             .map((sd) => sd.status.swapInitiatedTxid as Hash)
-            .concat(
-                new Array(15).map(
-                    () => faker.string.hexadecimal({ length: 64 }) as Hex
-                )
-            );
+            .concat(new Array(15).map(() => fakerHexadecimalString(64)));
         // Returns only the txids that are in the database
         expect(
             await swapDataRepository.getDiscoveredSwapInitiatedTxids(txidList)

@@ -1,9 +1,7 @@
-import { faker } from '@faker-js/faker';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose, { Model } from 'mongoose';
 import {
     afterAll,
-    afterEach,
     beforeAll,
     beforeEach,
     describe,
@@ -16,6 +14,7 @@ import {
     LastBlockRepository,
     getLastBlockRepository,
 } from '../../src';
+import { fakerInt, fakerResetCache } from './_utils';
 
 describe('[Backend][Database] Last block repository', () => {
     let lastBlockRepo: LastBlockRepository;
@@ -39,19 +38,18 @@ describe('[Backend][Database] Last block repository', () => {
     });
 
     beforeEach(async () => {
+        // Clear the collection before each test
+        await model.deleteMany({});
+        // Reset faker duplicates cache
+        fakerResetCache();
         // Generate some users
         lastBlockFixture = Array.from({ length: 30 }, (_, i) => ({
-            chainId: faker.number.int({ min: 1, max: 255 }),
+            chainId: fakerInt(1, 255),
             type: i < 15 ? 'bridge' : 'supervisor',
-            blockNumber: faker.number.int({ min: 1, max: 255 }),
+            blockNumber: fakerInt(1, 255),
         }));
         // Insert the generated swap data into the database
         await model.insertMany(lastBlockFixture);
-    });
-
-    afterEach(async () => {
-        // Clear the collection after each test
-        await model.deleteMany({});
     });
 
     afterAll(async () => {

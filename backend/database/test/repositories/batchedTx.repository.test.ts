@@ -1,7 +1,5 @@
-import { faker } from '@faker-js/faker';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose, { Model } from 'mongoose';
-import { Address, Hex } from 'viem';
 import {
     afterAll,
     afterEach,
@@ -17,13 +15,20 @@ import {
     BatchedTxRepository,
     getBatchedTxRepository,
 } from '../../src';
+import {
+    fakerEthereumAddress,
+    fakerHexadecimalString,
+    fakerInt,
+    fakerResetCache,
+    fakerUuid,
+} from './_utils';
 
 const buildFakeBatchedTx = (i = 0) => ({
-    chainId: faker.number.int({ min: 1, max: 255 }),
-    priority: faker.number.int({ min: 1, max: 255 }),
-    target: faker.finance.ethereumAddress() as Address,
-    data: faker.string.hexadecimal({ length: 64 }) as Hex,
-    securityHash: faker.string.uuid(),
+    chainId: fakerInt(1, 255),
+    priority: fakerInt(1, 255),
+    target: fakerEthereumAddress(),
+    data: fakerHexadecimalString(64),
+    securityHash: fakerUuid(),
     status:
         i < 15
             ? {
@@ -31,7 +36,7 @@ const buildFakeBatchedTx = (i = 0) => ({
               }
             : {
                   type: 'sent' as 'sent',
-                  hash: faker.string.hexadecimal({ length: 64 }) as Hex,
+                  hash: fakerHexadecimalString(64),
               },
 });
 
@@ -57,6 +62,8 @@ describe('[Backend][Database] Batched tx repository', () => {
     });
 
     beforeEach(async () => {
+        // Reset faker duplicates cache
+        fakerResetCache();
         // Generate some users
         batchedTxFixture = Array.from({ length: 30 }, (_, i) =>
             buildFakeBatchedTx(i)

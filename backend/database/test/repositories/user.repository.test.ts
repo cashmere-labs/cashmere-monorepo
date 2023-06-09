@@ -1,7 +1,5 @@
-import { faker } from '@faker-js/faker';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose, { Model } from 'mongoose';
-import { Address, Hex } from 'viem';
 import {
     afterAll,
     afterEach,
@@ -13,6 +11,11 @@ import {
     vi,
 } from 'vitest';
 import { UserDbDto, UserRepository, getUserRepository } from '../../src';
+import {
+    fakerEthereumAddress,
+    fakerHexadecimalString,
+    fakerResetCache,
+} from './_utils';
 
 describe('[Backend][Database] User repository', () => {
     let userRepository: UserRepository;
@@ -36,13 +39,12 @@ describe('[Backend][Database] User repository', () => {
     });
 
     beforeEach(async () => {
+        // Reset faker duplicates cache
+        fakerResetCache();
         // Generate some users
         userFixture = Array.from({ length: 30 }, (_, i) => ({
-            address: faker.finance.ethereumAddress() as Address,
-            refreshTokenHash:
-                i < 15
-                    ? (faker.string.hexadecimal({ length: 64 }) as Hex)
-                    : undefined,
+            address: fakerEthereumAddress(),
+            refreshTokenHash: i < 15 ? fakerHexadecimalString(64) : undefined,
         }));
         // Insert the generated swap data into the database
         await model.insertMany(userFixture);

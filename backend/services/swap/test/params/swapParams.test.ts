@@ -7,7 +7,15 @@ import { InvalidArgumentsError } from '@cashmere-monorepo/backend-core';
 import { SwapDataDbDto } from '@cashmere-monorepo/backend-database';
 import { DateTime } from 'luxon';
 import { Address } from 'viem';
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+    afterEach,
+    beforeAll,
+    beforeEach,
+    describe,
+    expect,
+    it,
+    vi,
+} from 'vitest';
 import { StartSwapTxArgs, SwapParamsArgs, SwapParamsResponse } from '../../src';
 
 describe('[Swap][Unit] Swap params', () => {
@@ -137,6 +145,11 @@ describe('[Swap][Unit] Swap params', () => {
         getContractAddressThrows = false;
     });
 
+    afterEach(() => {
+        // Reset time mock
+        vi.useRealTimers();
+    });
+
     describe('getLwsAmount', () => {
         it('[Ok] Retrieves LWS amount via uniswap', async () => {
             expect(await getLwsAmount(true, 10n, 1, '0x', '0x')).toEqual(20n);
@@ -187,8 +200,8 @@ describe('[Swap][Unit] Swap params', () => {
 
     it('[Ok] buildPlaceholderSwapData', async () => {
         // Freeze time to get the same swapInitiatedTimestamp
-        const date = new Date(2000, 1, 1, 19);
-        vi.setSystemTime(date);
+        vi.useFakeTimers();
+        vi.setSystemTime(new Date());
 
         expect(
             await buildPlaceholderSwapData(
@@ -272,8 +285,8 @@ describe('[Swap][Unit] Swap params', () => {
 
         it('[Ok] Generates correct response', async () => {
             // Freeze time to get the same swapInitiatedTimestamp
-            const date = new Date(2000, 1, 1, 19);
-            vi.setSystemTime(date);
+            vi.useFakeTimers();
+            vi.setSystemTime(new Date());
 
             expect(
                 await getSwapParams({
