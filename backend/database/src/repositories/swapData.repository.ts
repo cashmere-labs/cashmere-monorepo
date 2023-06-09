@@ -1,4 +1,4 @@
-import { get, set } from 'lodash';
+import { get } from 'lodash';
 import { Connection, FilterQuery } from 'mongoose';
 import { Address, Hash } from 'viem';
 import { SwapDataDbDto } from '../dto/swapData';
@@ -43,20 +43,27 @@ const buildSwapDataRepository = (connection: Connection) => {
     return {
         /**
          * Get all the swap data progress for a given address
+         * @param receiver
+         * @param filters Additional filters to apply to the query
+         * @param page The page number to retrieve (zero-based), if not provided, all the results are returned
          */
         async getByReceiver(
             receiver: string,
             filters: Omit<FilterQuery<SwapDataDocument>, 'receiver'> = {},
             page?: number // zero-based
         ): Promise<{ count: number; items: SwapDataDbDto[] }> {
-            const count = await model
-                .find({ receiver, ...filters })
-                .countDocuments();
-            let cursor = model.find({ receiver, ...filters });
-            if (page !== undefined) cursor = cursor.skip(10 * page).limit(10);
+            // Create the query
+            let query = model.find({ 'user.receiver': receiver, ...filters });
+            // Clone the query and save total documents count
+            const count = await query.clone().count();
+            // If pagination is requested, add it to the query
+            if (page !== undefined) query = query.skip(10 * page).limit(10);
+            // Execute the query and return the result
             return {
                 count,
-                items: await cursor.sort({ swapInitiatedTimestamp: -1 }).exec(),
+                items: await query
+                    .sort({ 'status.swapInitiatedTimestamp': -1 })
+                    .exec(),
             };
         },
 
@@ -67,8 +74,11 @@ const buildSwapDataRepository = (connection: Connection) => {
          */
         async hideAllSwapIds(address: Address) {
             await model.updateMany(
-                { receiver: address, swapContinueConfirmed: true },
-                { $set: { progressHidden: true } }
+                {
+                    'user.receiver': address,
+                    'status.swapContinueConfirmed': true,
+                },
+                { $set: { 'status.progressHidden': true } }
             );
         },
 
@@ -97,8 +107,7 @@ const buildSwapDataRepository = (connection: Connection) => {
         ): Promise<SwapDataDbDto | null> {
             const data: Record<string, unknown> = {};
             fields.forEach((key) => {
-                const value = get(swapData, key as string);
-                set(data, key as string, value);
+                data[key] = get(swapData, key as string);
             });
             return model.findOneAndUpdate(
                 { swapId: swapData.swapId },

@@ -26,3 +26,5 @@ node_modules
 
 # Turbo repo build
 .turbo
+
+coverage

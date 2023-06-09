@@ -6,7 +6,7 @@ import {
 import {
     getAccessVerifier,
     getRefreshVerifier,
-} from '@cashmere-monorepo/backend-service-auth/src/tokens/jwt';
+} from '@cashmere-monorepo/backend-service-auth/src/utils/jwt';
 import {
     APIGatewayAuthorizerResult,
     APIGatewayTokenAuthorizerEvent,

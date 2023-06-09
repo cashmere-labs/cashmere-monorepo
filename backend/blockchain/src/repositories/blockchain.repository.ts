@@ -1,9 +1,10 @@
-import { getOrSetFromCache } from '@cashmere-monorepo/backend-core/cache/dynamoDbCache';
+import { getOrSetFromCache } from '@cashmere-monorepo/backend-core';
 import {
+    POLYGON_ZK_TESTNET_CHAIN_ID,
     findTransport,
     getNetworkConfigAndClient,
 } from '@cashmere-monorepo/shared-blockchain';
-import { POLYGON_ZK_TESTNET_CHAIN_ID } from '@cashmere-monorepo/shared-blockchain/chain/chain.constants';
+import 'abitype'; // fix getBlockchainRepository type inference error
 import { Hex, createWalletClient, parseGwei } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 

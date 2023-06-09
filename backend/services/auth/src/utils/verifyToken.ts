@@ -18,7 +18,7 @@ export async function verifyRefreshTokenAgainstDb(
 
     // Verify the token against the hash, the function may throw an error if the hash is malformed, so catch that
     try {
-        return pbkdf2Compare(token, dbUser.refreshTokenHash);
+        return await pbkdf2Compare(token, dbUser.refreshTokenHash);
     } catch (e) {
         return false;
     }

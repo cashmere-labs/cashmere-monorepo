@@ -3,6 +3,9 @@
     "version": "0.0.0",
     "type": "module",
     "scripts": {
+        "test": "sst bind \"vitest run --coverage --no-threads\"",
+        "test:watch": "sst bind \"vitest watch --coverage --no-threads\"",
+        "test:ui": "sst bind \"vitest watch --ui --coverage --no-threads\"",
         "typecheck": "tsc -noEmit"
     },
     "dependencies": {
@@ -13,6 +16,7 @@
     "devDependencies": {
         "@types/aws-lambda": "^8.10.116",
         "@types/node": "^18.16.16",
+        "@vitest/coverage-v8": "^0.32.0",
         "sst": "2.11.18",
         "vitest": "^0.32.0"
     }

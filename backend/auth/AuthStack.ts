@@ -16,7 +16,7 @@ import {
     use,
 } from 'sst/constructs';
 
-const path = './backend/functions/auth/src';
+const path = './backend/auth/src';
 
 /**
  * Build our authentication stack
