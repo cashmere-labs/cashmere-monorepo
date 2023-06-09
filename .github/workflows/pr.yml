@@ -54,7 +54,7 @@ jobs:
               run: pnpm run lint:check
             - name: '💄 Check format'
               run: pnpm format:check
-            - name: "👥 Configure AWS Credentials"
+            - name: '👥 Configure AWS Credentials'
               uses: aws-actions/configure-aws-credentials@v2
               with:
                   role-to-assume: arn:aws:iam::748733882600:role/github_test_runner
