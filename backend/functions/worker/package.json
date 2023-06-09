@@ -2,7 +2,9 @@
     "name": "@cashmere-monorepo/backend-function-worker",
     "version": "0.0.0",
     "scripts": {
-        "typecheck": "tsc -noEmit"
+        "typecheck": "tsc -noEmit",
+        "test": "sst bind vitest run --no-threads",
+        "test:watch": "sst bind vitest watch --no-threads"
     },
     "dependencies": {
         "@cashmere-monorepo/backend-core": "workspace:^",

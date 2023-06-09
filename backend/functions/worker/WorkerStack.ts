@@ -8,6 +8,7 @@ export function WorkerStack({ stack }: StackContext) {
     stack.setDefaultFunctionProps({
         timeout: '5 minutes',
         memorySize: '1 GB',
+        runtime: 'nodejs18.x',
     });
 
     // Build the TX Sender sqs queue's
