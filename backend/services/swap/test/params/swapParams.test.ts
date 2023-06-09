@@ -174,7 +174,7 @@ describe('[Swap][Unit] Swap params', () => {
         expect(
             buildSwapTxArgs('0xSRC', 10n, '1', '2', '0xDST', 1, 20n)
         ).toEqual({
-            srcToken: '0xSRCfail',
+            srcToken: '0xSRC',
             srcAmount: '10',
             lwsPoolId: '1',
             hgsPoolId: '2',

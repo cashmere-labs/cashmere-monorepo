@@ -68,6 +68,9 @@ importers:
       '@types/node':
         specifier: ^18.16.16
         version: 18.16.16
+      '@vitest/coverage-v8':
+        specifier: ^0.32.0
+        version: 0.32.0(vitest@0.32.0)
       '@vitest/ui':
         specifier: ^0.31.1
         version: 0.31.1(vitest@0.32.0)

@@ -15,6 +15,7 @@
     "devDependencies": {
         "@types/aws-lambda": "^8.10.116",
         "@types/node": "^18.16.16",
+        "@vitest/coverage-v8": "^0.32.0",
         "@vitest/ui": "^0.31.1",
         "sst": "2.11.18",
         "vitest": "^0.32.0"
