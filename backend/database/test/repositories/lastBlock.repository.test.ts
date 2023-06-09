@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import mongoose from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import {
     afterAll,
     afterEach,
@@ -21,6 +21,7 @@ describe('[Backend][Database] Last block repository', () => {
     let lastBlockRepo: LastBlockRepository;
     let lastBlockFixture: LastBlockDbDto[];
     let mongod: MongoMemoryServer;
+    let model: Model<LastBlockDbDto>;
 
     beforeAll(async () => {
         // Start an in-memory MongoDB server
@@ -32,6 +33,9 @@ describe('[Backend][Database] Last block repository', () => {
 
         // Get the repository, also connects to the database
         lastBlockRepo = await getLastBlockRepository();
+
+        // Get the model from mongoose registry
+        model = mongoose.model('LastBlock');
     });
 
     beforeEach(async () => {
@@ -42,12 +46,12 @@ describe('[Backend][Database] Last block repository', () => {
             blockNumber: faker.number.int({ min: 1, max: 255 }),
         }));
         // Insert the generated swap data into the database
-        await lastBlockRepo.model.insertMany(lastBlockFixture);
+        await model.insertMany(lastBlockFixture);
     });
 
     afterEach(async () => {
         // Clear the collection after each test
-        await lastBlockRepo.model.deleteMany({});
+        await model.deleteMany({});
     });
 
     afterAll(async () => {
@@ -75,7 +79,7 @@ describe('[Backend][Database] Last block repository', () => {
             100500
         );
         expect(
-            await lastBlockRepo.model.findOne({
+            await model.findOne({
                 chainId: record.chainId,
                 type: record.type,
             })
@@ -84,14 +88,14 @@ describe('[Backend][Database] Last block repository', () => {
 
     it('[Ok] Inserts a record on update if it does not exist', async () => {
         expect(
-            await lastBlockRepo.model.findOne({
+            await model.findOne({
                 chainId: 100500,
                 type: 'supervisor',
             })
         ).toBeFalsy();
         await lastBlockRepo.updateForChainAndType(100500, 'supervisor', 100500);
         expect(
-            await lastBlockRepo.model.findOne({
+            await model.findOne({
                 chainId: 100500,
                 type: 'supervisor',
             })

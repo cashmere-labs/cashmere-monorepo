@@ -41,9 +41,12 @@ const buildSwapDataRepository = (connection: Connection) => {
     const model = connection.model('SwapData', SwapDataSchema);
     // Return all the function needed to interact with the swap data
     return {
-        // Include the model in the repo object, needed for tests
-        model,
-        // Get all the swap data progress for a given address
+        /**
+         * Get all the swap data progress for a given address
+         * @param receiver
+         * @param filters Additional filters to apply to the query
+         * @param page The page number to retrieve (zero-based), if not provided, all the results are returned
+         */
         async getByReceiver(
             receiver: string,
             filters: Omit<FilterQuery<SwapDataDocument>, 'receiver'> = {},

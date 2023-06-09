@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import mongoose, { Error } from 'mongoose';
+import mongoose, { Error, Model } from 'mongoose';
 import { Address, Hash, Hex } from 'viem';
 import {
     afterAll,
@@ -55,6 +55,7 @@ describe('[Backend][Database] SwapData repository', () => {
     let swapDataRepository: SwapDataRepository;
     let swapDataFixture: SwapDataDbDto[];
     let mongod: MongoMemoryServer;
+    let model: Model<SwapDataDbDto>;
 
     beforeAll(async () => {
         // Start an in-memory MongoDB server
@@ -66,6 +67,9 @@ describe('[Backend][Database] SwapData repository', () => {
 
         // Get the repository, also connects to the database
         swapDataRepository = await getSwapDataRepository();
+
+        // Get the model from mongoose registry
+        model = mongoose.model('SwapData');
     });
 
     beforeEach(async () => {
@@ -74,12 +78,12 @@ describe('[Backend][Database] SwapData repository', () => {
             buildFakeSwapData(i)
         );
         // Insert the generated swap data into the database
-        await swapDataRepository.model.insertMany(swapDataFixture);
+        await model.insertMany(swapDataFixture);
     });
 
     afterEach(async () => {
         // Clear the collection after each test
-        await swapDataRepository.model.deleteMany({});
+        await model.deleteMany({});
     });
 
     afterAll(async () => {
@@ -138,7 +142,7 @@ describe('[Backend][Database] SwapData repository', () => {
 
     it('[Ok] Hides all progress data for a user', async () => {
         // Make 10 (timestamp = 91..100) swap datas match the hide filter
-        await swapDataRepository.model.updateMany(
+        await model.updateMany(
             {
                 'user.receiver': PLACEHOLDER,
                 'status.swapInitiatedTimestamp': { $gt: 90 },
@@ -149,7 +153,7 @@ describe('[Backend][Database] SwapData repository', () => {
         await swapDataRepository.hideAllSwapIds(PLACEHOLDER);
         // Make sure that these 10 items are hidden
         expect(
-            await swapDataRepository.model
+            await model
                 .find({
                     'user.receiver': PLACEHOLDER,
                     'status.progressHidden': true,
@@ -158,7 +162,7 @@ describe('[Backend][Database] SwapData repository', () => {
         ).toEqual(10);
         // And remaining 5 are untouched
         expect(
-            await swapDataRepository.model
+            await model
                 .find({
                     'user.receiver': PLACEHOLDER,
                     'status.progressHidden': null,
@@ -206,7 +210,7 @@ describe('[Backend][Database] SwapData repository', () => {
         ).toMatchObject(expected);
         // And it is updated in the database
         expect(
-            await swapDataRepository.model.findOne({
+            await model.findOne({
                 swapId: newSwapData.swapId,
             })
         ).toMatchObject(expected);
@@ -233,7 +237,7 @@ describe('[Backend][Database] SwapData repository', () => {
             const newSwapData = buildFakeSwapData();
             // Make sure that the generated object does not exist
             expect(
-                await swapDataRepository.model.findOne({
+                await model.findOne({
                     swapId: newSwapData.swapId,
                 })
             ).toBeFalsy();
@@ -243,7 +247,7 @@ describe('[Backend][Database] SwapData repository', () => {
             );
             // Check that the object was created
             expect(
-                await swapDataRepository.model.findOne({
+                await model.findOne({
                     swapId: newSwapData.swapId,
                 })
             ).toMatchObject(newSwapData);
@@ -253,7 +257,7 @@ describe('[Backend][Database] SwapData repository', () => {
             const newSwapData = buildFakeSwapData();
             // Make sure that the generated object does not exist
             expect(
-                await swapDataRepository.model.findOne({
+                await model.findOne({
                     swapId: newSwapData.swapId,
                 })
             ).toBeFalsy();
@@ -263,7 +267,7 @@ describe('[Backend][Database] SwapData repository', () => {
             expect(await swapDataRepository.save(newSwapData)).toBeUndefined();
             // And not create another copy of the object
             expect(
-                await swapDataRepository.model.count({
+                await model.count({
                     swapId: newSwapData.swapId,
                 })
             ).toEqual(1);
@@ -278,7 +282,7 @@ describe('[Backend][Database] SwapData repository', () => {
 
     it('[Ok] Returns a "get waiting for completions on dst chain" cursor', async () => {
         // Make 10 (timestamp = 91..100) swap datas match the filter
-        await swapDataRepository.model.updateMany(
+        await model.updateMany(
             {
                 'user.receiver': PLACEHOLDER,
                 'status.swapInitiatedTimestamp': { $gt: 90 },

@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import mongoose from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { Address, Hex } from 'viem';
 import {
     afterAll,
@@ -39,6 +39,7 @@ describe('[Backend][Database] Batched tx repository', () => {
     let batchedTxRepo: BatchedTxRepository;
     let batchedTxFixture: BatchedTxDbDto[];
     let mongod: MongoMemoryServer;
+    let model: Model<BatchedTxDbDto>;
 
     beforeAll(async () => {
         // Start an in-memory MongoDB server
@@ -50,6 +51,9 @@ describe('[Backend][Database] Batched tx repository', () => {
 
         // Get the repository, also connects to the database
         batchedTxRepo = await getBatchedTxRepository();
+
+        // Get the model from mongoose registry
+        model = mongoose.model('BatchedTx');
     });
 
     beforeEach(async () => {
@@ -58,12 +62,12 @@ describe('[Backend][Database] Batched tx repository', () => {
             buildFakeBatchedTx(i)
         );
         // Insert the generated swap data into the database
-        await batchedTxRepo.model.insertMany(batchedTxFixture);
+        await model.insertMany(batchedTxFixture);
     });
 
     afterEach(async () => {
         // Clear the collection after each test
-        await batchedTxRepo.model.deleteMany({});
+        await model.deleteMany({});
     });
 
     afterAll(async () => {
@@ -95,7 +99,7 @@ describe('[Backend][Database] Batched tx repository', () => {
         await batchedTxRepo.create(fakeTx);
         // It should've been saved with status = queued
         expect(
-            await batchedTxRepo.model.findOne({
+            await model.findOne({
                 securityHash: fakeTx.securityHash,
             })
         ).toMatchObject({
@@ -106,7 +110,7 @@ describe('[Backend][Database] Batched tx repository', () => {
 
     it('[Ok] Retrieves pending txs for a chain', async () => {
         // Set chain ids
-        await batchedTxRepo.model.updateMany({}, { $set: { chainId: 42 } });
+        await model.updateMany({}, { $set: { chainId: 42 } });
         // Check the count of items returned by the tested method
         expect(await batchedTxRepo.getPendingTxForChain(42)).toHaveLength(15);
     });

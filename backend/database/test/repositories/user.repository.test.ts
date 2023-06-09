@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import mongoose from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { Address, Hex } from 'viem';
 import {
     afterAll,
@@ -18,6 +18,7 @@ describe('[Backend][Database] User repository', () => {
     let userRepository: UserRepository;
     let userFixture: UserDbDto[];
     let mongod: MongoMemoryServer;
+    let model: Model<UserDbDto>;
 
     beforeAll(async () => {
         // Start an in-memory MongoDB server
@@ -29,6 +30,9 @@ describe('[Backend][Database] User repository', () => {
 
         // Get the repository, also connects to the database
         userRepository = await getUserRepository();
+
+        // Get the model from mongoose registry
+        model = mongoose.model('User');
     });
 
     beforeEach(async () => {
@@ -41,12 +45,12 @@ describe('[Backend][Database] User repository', () => {
                     : undefined,
         }));
         // Insert the generated swap data into the database
-        await userRepository.model.insertMany(userFixture);
+        await model.insertMany(userFixture);
     });
 
     afterEach(async () => {
         // Clear the collection after each test
-        await userRepository.model.deleteMany({});
+        await model.deleteMany({});
     });
 
     afterAll(async () => {
@@ -68,13 +72,13 @@ describe('[Backend][Database] User repository', () => {
             // This address is guaranteed to not exist in the database
             const address = '0xabcd';
             // And it indeed does not exist
-            expect(await userRepository.model.exists({ address })).toBeFalsy();
+            expect(await model.exists({ address })).toBeFalsy();
             // But when we try to get it
             expect(await userRepository.getByAddress(address)).toMatchObject({
                 address,
             });
             // It is created
-            expect(await userRepository.model.exists({ address })).toBeTruthy();
+            expect(await model.exists({ address })).toBeTruthy();
         });
     });
 
@@ -86,15 +90,13 @@ describe('[Backend][Database] User repository', () => {
             const { address } = user;
             // Make sure that the refresh token hash is not set
             expect(
-                (await userRepository.model.findOne({ address }))!
-                    .refreshTokenHash
+                (await model.findOne({ address }))!.refreshTokenHash
             ).toBeFalsy();
             // Update the refresh token hash
             await userRepository.updateRefreshTokenHash(address, '0x1234');
             // Make sure that the refresh token hash was set
             expect(
-                (await userRepository.model.findOne({ address }))!
-                    .refreshTokenHash
+                (await model.findOne({ address }))!.refreshTokenHash
             ).toEqual('0x1234');
         });
 
@@ -102,13 +104,12 @@ describe('[Backend][Database] User repository', () => {
             // This address is guaranteed to not exist in the database
             const address = '0xabcd';
             // And it indeed does not exist
-            expect(await userRepository.model.exists({ address })).toBeFalsy();
+            expect(await model.exists({ address })).toBeFalsy();
             // Update the refresh token hash
             await userRepository.updateRefreshTokenHash(address, '0x1234');
             // Make sure that the user was created and refresh token hash was set
             expect(
-                (await userRepository.model.findOne({ address }))!
-                    .refreshTokenHash
+                (await model.findOne({ address }))!.refreshTokenHash
             ).toEqual('0x1234');
         });
     });
