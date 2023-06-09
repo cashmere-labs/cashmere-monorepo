@@ -1,6 +1,5 @@
 import { HydratedDocument, Schema } from 'mongoose';
 import { LastBlockDbDto, UserDbDto } from '../dto';
-import { SwapDataSchema } from './swapData.schema';
 
 // Define the user schema
 export const LastBlockSchema = new Schema<LastBlockDbDto>({
@@ -10,7 +9,7 @@ export const LastBlockSchema = new Schema<LastBlockDbDto>({
 });
 
 // Add unique index on swap id and src chain id
-SwapDataSchema.index({ chainId: 1, type: 1 }, { unique: true });
+LastBlockSchema.index({ chainId: 1, type: 1 }, { unique: true });
 
 // The type for a user document
 export type LastBlockDocument = HydratedDocument<UserDbDto>;
