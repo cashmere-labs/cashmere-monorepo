@@ -10,7 +10,7 @@ export const handler = async () => {
     logger.info('New bridge event handler');
 
     // Run the scanner on each chain
-    scanEveryBlockchain();
+    await scanEveryBlockchain();
 };
 
 // TODO: For better parallelism, event queue per chain?

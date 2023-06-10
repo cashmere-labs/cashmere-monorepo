@@ -3,7 +3,9 @@ import {
     getAggregatorRepository,
     getAssetRepository,
     getAssetRouterRepository,
+    getBridgeRepository,
     l0ChainIdToConfigMapViem,
+    NATIVE_PLACEHOLDER,
     SwapMessageReceivedLogType,
     SwapPayload,
 } from '@cashmere-monorepo/backend-blockchain';
@@ -14,10 +16,14 @@ import {
     SwapDataDbDto,
 } from '@cashmere-monorepo/backend-database';
 import { createHash } from 'node:crypto';
-import { Address, formatEther } from 'viem';
+import { Address, formatEther, Hex } from 'viem';
 import { createBatchedTx } from '../batchedTx';
 import { NewBatchedTx } from '../batchedTx/types';
-import { buildSwapDataDbDto } from '../utils';
+import {
+    buildSwapDataDbDto,
+    buildSwapDataDbDtoFromLogs,
+    placeholderTxId,
+} from '../utils';
 
 /**
  * Build our event handler
@@ -25,6 +31,7 @@ import { buildSwapDataDbDto } from '../utils';
  */
 export const buildEventHandler = async (chainId: number) => {
     const aggregatorRepository = getAggregatorRepository(chainId);
+    const bridgeRepository = getBridgeRepository(chainId);
     const swapDataRepository = await getSwapDataRepository();
 
     /**
@@ -57,6 +64,53 @@ export const buildEventHandler = async (chainId: number) => {
             hgsTokenSymbol: await dstAssetRepo.tokenSymbol(hgsToken),
             dstTokenSymbol: await dstAssetRepo.tokenSymbol(dstToken),
         };
+    };
+
+    /**
+     * Rebuild the swap data from the given swap id
+     * @param swapId
+     * @param srcChainId layer 0 src chain id
+     */
+    const rebuildSwapDataFromId = async (
+        swapId: Hex,
+        srcChainId: number
+    ): Promise<SwapDataDbDto> => {
+        // Get the swap message received, and decode the event
+        const swapMessage = await bridgeRepository.getReceivedSwap(
+            swapId,
+            srcChainId
+        );
+        const decodedPayload = SwapPayload.decode(swapMessage.payload);
+
+        // Get the token metadata
+        const tokenMetadata = await getTokenDataByPoolIdsForProgress(
+            l0ChainIdToConfigMapViem[srcChainId],
+            chainId, // Current chain id
+            NATIVE_PLACEHOLDER,
+            decodedPayload.lwsPoolId,
+            decodedPayload.hgsPoolId,
+            decodedPayload.dstToken
+        );
+
+        // Build our swap data object and return it
+        return buildSwapDataDbDto(
+            decodedPayload,
+            {
+                id: swapMessage.id,
+                amount: swapMessage.amount,
+                fee: swapMessage.fee,
+                srcChainId: l0ChainIdToConfigMapViem[srcChainId],
+                dstChainId: chainId,
+                initiatedTxHash: placeholderTxId,
+                performedTxHash: placeholderTxId,
+            },
+            tokenMetadata,
+            // TODO: Is amount message the right thing's for src amount?
+            // TODO: args.amount is used in hgs amount on the event created swap data
+            // TODO: And the start amount value is the one present in the initial tx
+            swapMessage.amount,
+            true
+        );
     };
 
     /**
@@ -162,7 +216,7 @@ export const buildEventHandler = async (chainId: number) => {
         );
 
         // Build the swap data db dto
-        const swapData = buildSwapDataDbDto(
+        const swapData = buildSwapDataDbDtoFromLogs(
             chainId,
             payload,
             log,
@@ -194,15 +248,36 @@ export const buildEventHandler = async (chainId: number) => {
         }
         // Try to retrieve the swap data for the given log
         const swapId = log.args._message?.id;
-        if (!swapId) {
+        const swapSrcChainId = log.args._message?.srcChainId;
+        if (!swapId || !swapSrcChainId) {
             throw new Error(
                 `No swap id founded for continuation in the log tx:${log.transactionHash} index:${log.logIndex}`
             );
         }
-        const swapData = await swapDataRepository.get(swapId);
+        let swapData = await swapDataRepository.get(swapId);
         if (!swapData) {
-            // TODO: For now only handle the one existing, otherwise we should try to rebuild it
-            throw new Error(`The swap ${swapId} isn't known, aborting`);
+            logger.info(
+                {
+                    chainId,
+                    swapId,
+                    log,
+                },
+                "The swap data wasn't found locally, rebuilding it from blockchain"
+            );
+            // Try to rebuild the swap data from local data
+            let newSwapData: SwapDataDbDto | undefined =
+                await rebuildSwapDataFromId(swapId, swapSrcChainId);
+            logger.debug(
+                { chainId, swapId, newSwapData },
+                'Rebuilt the swap data from on-chain data'
+            );
+            // Save it in db
+            newSwapData = await swapDataRepository.save(newSwapData);
+            // If it was a fail, throw an error
+            if (!newSwapData)
+                throw new Error(`The swap ${swapId} isn't known, aborting`);
+            // Otherwise, replace the previous undefined one
+            swapData = newSwapData;
         }
 
         // If we don't want to process it, skip it

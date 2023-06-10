@@ -2,9 +2,10 @@ import { getOrSetFromCache } from '@cashmere-monorepo/backend-core';
 import {
     bridgeABI,
     getNetworkConfigAndClient,
+    networkConfigs,
     swapMessageReceivedEventABI,
 } from '@cashmere-monorepo/shared-blockchain';
-import { encodeAbiParameters } from 'viem';
+import { Hex, encodeAbiParameters } from 'viem';
 import { BlockRange } from '../types';
 
 // Get the asset repository for the given chain
@@ -60,6 +61,19 @@ export const getBridgeRepository = (chainId: number) => {
                 address: config.getContractAddress('bridge'),
                 event: swapMessageReceivedEventABI,
                 ...range,
+            }),
+
+        /**
+         * Get the swap message received event for the given swap id
+         * @param swapId
+         * @param srcChainId
+         */
+        getReceivedSwap: (swapId: Hex, srcChainId: number) =>
+            client.readContract({
+                address: config.getContractAddress('bridge'),
+                abi: bridgeABI,
+                functionName: 'getReceivedSwaps',
+                args: [networkConfigs[srcChainId].l0ChainId, swapId],
             }),
     };
 };

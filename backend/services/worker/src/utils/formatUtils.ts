@@ -6,11 +6,12 @@ import {
 } from '@cashmere-monorepo/backend-blockchain';
 import { SwapDataTokenMetadata } from '@cashmere-monorepo/backend-blockchain/src/repositories/progress.repository';
 import { SwapDataDbDto } from '@cashmere-monorepo/backend-database';
+import { Hex } from 'viem';
 
 /**
  * Build the swap data db dto
  */
-export const buildSwapDataDbDto = (
+export const buildSwapDataDbDtoFromLogs = (
     srcChainId: number,
     payload: SwapPayload,
     log: CrossChainSwapInitiatedLogType,
@@ -31,23 +32,58 @@ export const buildSwapDataDbDto = (
     }
 
     // Build the swap data db dto
+    return buildSwapDataDbDto(
+        payload,
+        {
+            id: args.id,
+            srcChainId,
+            dstChainId: args.dstChainId,
+            amount: args.amount,
+            fee: args.fee,
+            initiatedTxHash: log.transactionHash ?? undefined,
+        },
+        tokenMetadata,
+        srcAmount,
+        skipProcessing
+    );
+};
+
+/**
+ * Build the swap data db dto
+ */
+export const buildSwapDataDbDto = (
+    payload: SwapPayload,
+    params: {
+        id: Hex;
+        srcChainId: number;
+        dstChainId: number;
+        amount: bigint;
+        fee: bigint;
+        initiatedTxHash?: Hex;
+        performedTxHash?: Hex;
+    },
+    tokenMetadata: SwapDataTokenMetadata,
+    srcAmount: bigint,
+    skipProcessing: boolean
+): SwapDataDbDto => {
+    // Build the swap data db dto
     return {
-        swapId: args.id,
+        swapId: params.id,
         // Info about our chains
         chains: {
-            srcChainId,
-            dstChainId: l0ChainIdToConfigMapViem[args?.dstChainId],
-            srcL0ChainId: networkConfigs[srcChainId].l0ChainId,
-            dstL0ChainId: args?.dstChainId,
+            srcChainId: params.srcChainId,
+            dstChainId: l0ChainIdToConfigMapViem[params.dstChainId],
+            srcL0ChainId: networkConfigs[params.dstChainId].l0ChainId,
+            dstL0ChainId: params.dstChainId,
         },
         // Info about the paths
         path: {
             lwsPoolId: payload.lwsPoolId,
             hgsPoolId: payload.hgsPoolId,
-            hgsAmount: args.amount.toString(),
+            hgsAmount: params.amount.toString(),
             dstToken: payload.dstToken,
             minHgsAmount: payload.minHgsAmount.toString(),
-            fee: args.fee.toString(),
+            fee: params.fee.toString(),
         },
         // Info about the receiver
         user: {
@@ -57,12 +93,22 @@ export const buildSwapDataDbDto = (
         // Info about the status
         status: {
             swapInitiatedTimestamp: Date.now(),
-            swapInitiatedTxid: log.transactionHash ?? undefined,
-            l0Link: `tx/${log.transactionHash}`,
+            swapInitiatedTxid: params?.initiatedTxHash ?? undefined,
+            l0Link: params.initiatedTxHash
+                ? `tx/${params.initiatedTxHash}`
+                : undefined,
+            swapPerformedTxid: params.performedTxHash ?? undefined,
         },
         // Info about the progress
-        progress: tokenMetadata,
+        progress: {
+            srcAmount: srcAmount.toString(),
+            ...tokenMetadata,
+        },
         // Do we skip the processing ?
         skipProcessing,
     };
 };
+
+// Placeholder tx id
+export const placeholderTxId =
+    '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';

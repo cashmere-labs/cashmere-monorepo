@@ -14,7 +14,7 @@ import { buildEventHandler } from './eventHandler';
 export const buildBridgeBlockScanner = async (chainId: number) => {
     const eventHandler = await buildEventHandler(chainId);
 
-    // Fetch some repo we will use every where
+    // Fetch some repo we will use everywhere
     const blockchainRepository = getBlockchainRepository(chainId);
     const assetRouterRepository = getAssetRouterRepository(chainId);
     const bridgeRepository = getBridgeRepository(chainId);
