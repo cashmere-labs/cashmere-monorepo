@@ -1,4 +1,10 @@
-import { Api, ApiDomainProps, StackContext, Table } from 'sst/constructs';
+import {
+    Api,
+    ApiDomainProps,
+    Config,
+    StackContext,
+    Table,
+} from 'sst/constructs';
 
 export function CoreStack({ stack }: StackContext) {
     // Build our initial API that's linked to our route53 domain
@@ -39,6 +45,9 @@ export function CoreStack({ stack }: StackContext) {
         timeToLiveAttribute: 'ttl',
         primaryIndex: { partitionKey: 'executionKey' },
     });
+
+    // Declare our secret variable for the private key
+    new Config.Secret(stack, 'PRIVATE_KEY');
 
     // Add the api url and dynamo db table to our stack output
     stack.addOutputs({
