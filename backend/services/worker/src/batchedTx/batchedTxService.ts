@@ -1,7 +1,8 @@
+import { getMultiCallRepository } from '@cashmere-monorepo/backend-blockchain';
 import { getBlockchainRepository } from '@cashmere-monorepo/backend-blockchain/src/repositories/blockchain.repository';
 import { logger, runInMutex } from '@cashmere-monorepo/backend-core';
 import { getBatchedTxRepository } from '@cashmere-monorepo/backend-database';
-import { sift } from 'radash';
+import { pick } from 'radash';
 import { NewBatchedTx } from './types';
 
 /**
@@ -39,6 +40,10 @@ export const buildBatchedTxService = async () => {
      */
     const sendBatchedTx = async (chainId: number) =>
         runInMutex(chainId, async () => {
+            // Get multicall and blockchain repository
+            const blockchainRepository = getBlockchainRepository(chainId);
+            const multiCallRepository = getMultiCallRepository(chainId);
+
             // Get the txs to send
             const txs = await batchedTxRepository.getPendingTxForChain(chainId);
 
@@ -51,67 +56,62 @@ export const buildBatchedTxService = async () => {
                 return;
             }
 
-            // Get our blockchain client for the chain
-            const blockchainRepository = getBlockchainRepository(chainId);
+            // Prepare every tx's
+            const txByPriority = txs
+                // Sort every tx by priority (highest first)
+                .sort((a, b) => b.priority - a.priority);
 
             // Get additional gas data for the given chain
             const gasFeesParam = await blockchainRepository.getGasFeesParam();
 
-            // Get our account & private key here
-            const { account, privateClient } =
-                blockchainRepository.buildPrivateClient(
-                    process.env.PRIVATE_KEY as string
+            // Send them
+            const callValues = txByPriority.map((tx) =>
+                pick(tx, ['target', 'data'])
+            );
+            const { txHash, successIdx, failedIdx } =
+                await multiCallRepository.sendBatchedTx(
+                    callValues,
+                    gasFeesParam
                 );
-
-            // Prepare every tx's
-            const txWithAdditionnalDataPromises = txs
-                // Sort every tx by priority (highest first)
-                .sort((a, b) => b.priority - a.priority)
-                // Then map them with the additional data we need (gas price)
-                .map(async (tx) => {
-                    try {
-                        // Estimate the gas for our tx
-                        const gasEstimation =
-                            await blockchainRepository.client.estimateGas({
-                                // Tx data
-                                to: tx.target,
-                                data: tx.data,
-                                // Account
-                                account,
-                                // gas fees param
-                                ...gasFeesParam,
-                            });
-
-                        // Increase the estimation by 20%
-                        const gasLimit = (gasEstimation * 120n) / 100n;
-
-                        // TODO: Also simulate the tx there?
-
-                        // Returned a formatted tx ready to be called
-                        return {
-                            to: tx.target,
-                            data: tx.data,
-                            ...gasFeesParam,
-                            gasLimit,
-                        };
-                    } catch (err) {
-                        logger.warn(
-                            { err, chainId, tx },
-                            'An error occurred while getting the gas price for a tx'
-                        );
-                        return undefined;
-                    }
-                });
-
-            // Wait for all tx's to be prepared
-            const txWithAdditionnalData = sift(
-                await Promise.all(txWithAdditionnalDataPromises)
+            logger.info(
+                {
+                    chainId,
+                    txHash,
+                    successIdx,
+                    failedIdx,
+                },
+                'Successfully sent batched txs'
             );
 
-            // TODO: Don't use the viem wrapper, and directly build our call data
-
-            // TODO: Send the txs
-            // TODO: Update each tx's calldata
+            // Get all the tx handled & failed
+            const txSentIds = txByPriority
+                .filter((_, index) => successIdx.includes(index))
+                .map((tx) => tx._id);
+            const txFailedIds = txByPriority
+                .filter((_, index) => failedIdx.includes(index))
+                .map((tx) => tx._id);
+            // Update them
+            if (txSentIds.length > 0) {
+                const updateResult = await batchedTxRepository.updateTxsStatus(
+                    txSentIds,
+                    'sent',
+                    txHash
+                );
+                logger.debug(
+                    { chainId, txCount: txSentIds.length, updateResult },
+                    'Has successfully updated the sent tx'
+                );
+            }
+            if (txFailedIds.length > 0) {
+                const updateResult = await batchedTxRepository.updateTxsStatus(
+                    txFailedIds,
+                    'failed'
+                );
+                logger.debug(
+                    { chainId, txCount: txFailedIds.length, updateResult },
+                    'Has successfully updated the failed tx'
+                );
+            }
         });
 
     // Return our service

@@ -25,5 +25,5 @@ export const BatchedTxSchema = new Schema<BatchedTxDbDto>({
     },
 });
 
-// The type for a user document
+// The type for a batched document
 export type BatchedTxSchemaDocument = HydratedDocument<BatchedTxDbDto>;

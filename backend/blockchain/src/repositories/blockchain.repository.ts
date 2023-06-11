@@ -1,12 +1,11 @@
 import { getOrSetFromCache } from '@cashmere-monorepo/backend-core';
 import {
     POLYGON_ZK_TESTNET_CHAIN_ID,
-    findTransport,
     getNetworkConfigAndClient,
 } from '@cashmere-monorepo/shared-blockchain';
 import 'abitype'; // fix getBlockchainRepository type inference error
-import { Hex, createWalletClient, parseGwei } from 'viem';
-import { privateKeyToAccount } from 'viem/accounts';
+import { Hex, parseGwei } from 'viem';
+import { GasParam } from '../types';
 
 // Generic interface for our uniswap repository
 export type BlockchainRepository = {
@@ -45,22 +44,6 @@ export const getBlockchainRepository = (chainId: number) => {
     return {
         config,
         client,
-
-        /**
-         * Build a private client
-         * @param privateKey
-         */
-        buildPrivateClient: (privateKey: string) => {
-            const account = privateKeyToAccount(privateKey as Hex);
-
-            const privateClient = createWalletClient({
-                account,
-                chain: client.chain,
-                transport: findTransport(config.rpcUrl),
-            });
-
-            return { account, privateClient };
-        },
 
         /**
          * Get the last block for the given chain
@@ -109,7 +92,7 @@ export const getBlockchainRepository = (chainId: number) => {
         /**
          * Get the gas fees param for the given chain
          */
-        getGasFeesParam: async () =>
+        getGasFeesParam: async (): Promise<GasParam> =>
             getOrSetFromCache(
                 {
                     key: cacheParams('getGasFeesParam', {}),

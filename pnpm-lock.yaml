@@ -1,4 +1,8 @@
-lockfileVersion: '6.0'
+lockfileVersion: '6.1'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
 
 importers:
 
@@ -95,6 +99,9 @@ importers:
       '@cashmere-monorepo/shared-blockchain':
         specifier: workspace:^
         version: link:../../shared/blockchain
+      radash:
+        specifier: ^10.8.1
+        version: 10.8.1
       viem:
         specifier: ^1.0.0
         version: 1.0.0(typescript@5.1.3)
