@@ -5,7 +5,13 @@ import {
 } from '@cashmere-monorepo/shared-blockchain';
 import { sleep } from 'radash';
 import { Config } from 'sst/node/config';
-import { Address, Hex, createWalletClient, multicall3Abi } from 'viem';
+import {
+    Address,
+    Hex,
+    SimulateContractReturnType,
+    createWalletClient,
+    multicall3Abi,
+} from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { GasParam } from '../types';
 
@@ -53,27 +59,69 @@ export const getMultiCallRepository = (chainId: number) => {
         successIdx: number[];
         failedIdx: number[];
     }> => {
-        // Build the call data's
-        let callValues = callData.map((data) => ({
+        // Array of all the failed tx index
+        const failedIdx: number[] = [];
+
+        // Build the initial call data's
+        const callValues = callData.map((data) => ({
             target: data.target,
             callData: data.data,
             value: 0n,
             allowFailure,
         }));
 
-        // Try to simulate the request
+        // Perform the request, and remove every failing tx's
+        const abiType = [multicall3Abi] as const;
+        let simulationResult: SimulateContractReturnType<
+            typeof abiType,
+            'aggregate3'
+        >;
 
-        // TODO: Try catch with fallback mecanism, like simulating each tx one by one and checking which one failed
-        // TODO: Binary search to identify the failing tx?
-        const { request } = await client.simulateContract({
-            account,
-            address: multicallAddress,
-            abi: [multicall3Abi],
-            functionName: 'aggregate3',
-            args: [callValues],
-            // Put the additional gas param
-            ...gasParam,
-        });
+        try {
+            simulationResult = await client.simulateContract({
+                account,
+                address: multicallAddress,
+                abi: abiType,
+                functionName: 'aggregate3',
+                args: [callValues],
+                // Put the additional gas param
+                ...gasParam,
+            });
+        } catch (e) {
+            logger.warn(
+                {
+                    chainId,
+                    callValues,
+                    nbrOfTx: callValues.length,
+                    error: e,
+                },
+                'Unable to perform the simulation'
+            );
+            // Build our new calldata by removing the last item of the array
+            const idxRemoved = callValues.length - 1;
+            failedIdx.push(idxRemoved);
+            logger.info(
+                { chainId, idxRemoved, totalLength: callData.length },
+                'Removed an item from our array to call'
+            );
+            // Wait for 50ms to prevent rpc provider flooding
+            await sleep(50);
+            // Update our call values
+            const newCallData = callData.slice(0, idxRemoved);
+            // Get our result
+            const multicallResult = await sendBatchedTx(
+                newCallData,
+                gasParam,
+                allowFailure
+            );
+            // Add our current idx removed to the array returned
+            multicallResult.failedIdx.push(...failedIdx);
+            // And return it
+            return multicallResult;
+        }
+
+        // Extract our request
+        const request = simulationResult.request;
 
         // Perform the gas estimation, and ensure it won't exceed max wei / tx
         const gasEstimation = await client.estimateGas(request);
@@ -117,8 +165,7 @@ export const getMultiCallRepository = (chainId: number) => {
         return {
             txHash,
             successIdx,
-            // TODO: No failed tx possible yet, since we don't perform try catch mecanism
-            failedIdx: [],
+            failedIdx,
         };
     };
 
