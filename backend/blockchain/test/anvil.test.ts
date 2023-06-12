@@ -6,9 +6,17 @@ import {
 import { Anvil, createAnvil } from '@viem/anvil';
 import { TestClient, createTestClient, http } from 'viem';
 import { polygonMumbai } from 'viem/chains';
-import { afterAll, beforeAll, beforeEach, describe, it, vi } from 'vitest';
+import {
+    afterAll,
+    beforeAll,
+    beforeEach,
+    describe,
+    expect,
+    it,
+    vi,
+} from 'vitest';
 
-describe('[Backend][Blockchain] Aggregator repository', async () => {
+describe('[Backend][Blockchain] Anvil check', async () => {
     let anvil: Anvil;
     let testClient: TestClient;
 
@@ -38,17 +46,12 @@ describe('[Backend][Blockchain] Aggregator repository', async () => {
         await anvil?.stop();
     });
 
-    it('test node', async () => {
-        const { config, client } = getNetworkConfigAndClient(-1);
-        console.log(testClient, client);
-        console.log(
-            'Current block',
-            await client.getBlockNumber({ maxAge: 0 })
-        );
+    it('test block mining', async () => {
+        const { client } = getNetworkConfigAndClient(-1);
+        const currentBlock = await client.getBlockNumber({ maxAge: 0 });
         await testClient.mine({ blocks: 1 });
-        console.log(
-            'Mined one block',
-            await client.getBlockNumber({ maxAge: 0 })
+        expect(await client.getBlockNumber({ maxAge: 0 })).toEqual(
+            currentBlock + 1n
         );
     });
 });
