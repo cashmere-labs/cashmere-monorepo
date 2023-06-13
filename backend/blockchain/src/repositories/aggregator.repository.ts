@@ -74,3 +74,5 @@ export const getAggregatorRepository = (chainId: number) => {
         },
     };
 };
+
+export type AggregatorRepository = ReturnType<typeof getAggregatorRepository>;

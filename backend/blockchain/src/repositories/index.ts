@@ -1,4 +1,7 @@
-export { getAggregatorRepository } from './aggregator.repository';
+export {
+    AggregatorRepository,
+    getAggregatorRepository,
+} from './aggregator.repository';
 export { getAssetRepository } from './asset.repository';
 export { getAssetRouterRepository } from './assetRouter.repository';
 export { getBlockchainRepository } from './blockchain.repository';

@@ -31,11 +31,11 @@ describe('WorkerStack', () => {
         });
 
         template.hasResourceProperties('AWS::Events::Rule', {
-            ScheduleExpression: 'rate(2 minute)',
+            ScheduleExpression: 'rate(2 minutes)',
         });
 
         template.hasResourceProperties('AWS::Events::Rule', {
-            ScheduleExpression: 'rate(5 minute)',
+            ScheduleExpression: 'rate(5 minutes)',
         });
         template.hasOutput('TxSenderQueueUrl', {});
         template.hasOutput('TxSenderQueueId', {});
