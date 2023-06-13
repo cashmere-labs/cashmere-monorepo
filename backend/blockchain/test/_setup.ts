@@ -36,9 +36,11 @@ export let testWallet: WalletClient;
 export const TEST_CHAIN_ID = 10050;
 
 beforeAll(async () => {
+    // Get config for polygon chain
+    const polygonConfig = networkConfigs[polygonMumbai.id];
     // Start up Anvil
     anvil = createAnvil({
-        // forkUrl: polygonMumbai.rpcUrls.public.http[0],
+        forkUrl: polygonConfig.rpcUrl,
         chainId: TEST_CHAIN_ID,
     });
     await anvil.start();
