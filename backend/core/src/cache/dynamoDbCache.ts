@@ -6,7 +6,7 @@ import { logger } from '../logger/logger';
 import { dynamoDbClient } from '../utils';
 
 // Default expiration from our dynamoDbCache, 10minutes
-const defaultTtl = 10 * 60 * 1000;
+const defaultTtl = 10 * 60;
 
 // When a value shouldn't expire, we prolonged it of 24hr each time it's accessed
 const neverExpireProlongationTtl = 24 * 60 * 60;

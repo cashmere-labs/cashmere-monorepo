@@ -7,7 +7,7 @@ import { faker } from '@faker-js/faker';
 import { GetFunctionArgs, Hash, encodeFunctionData } from 'viem';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { AggregatorRepository, getAggregatorRepository } from '../../src';
-import { TEST_CHAIN_ID, testAccount, testClient } from '../_setup';
+import { TEST_CHAIN_ID, snapshotId, testAccount, testClient } from '../_setup';
 
 describe('[Backend][Blockchain] Aggregator repository', async () => {
     let aggregatorRepository: AggregatorRepository;
@@ -46,6 +46,13 @@ describe('[Backend][Blockchain] Aggregator repository', async () => {
             }),
         });
         // And verify that it was retrieved and parsed correctly
+        expect(await aggregatorRepository.getStartSwapArgs(tx)).toMatchObject({
+            functionName: 'startSwap',
+            ...startSwapParams,
+        });
+        // Remove the transaction
+        await testClient.revert({ id: snapshotId });
+        // But the args should still be cached
         expect(await aggregatorRepository.getStartSwapArgs(tx)).toMatchObject({
             functionName: 'startSwap',
             ...startSwapParams,

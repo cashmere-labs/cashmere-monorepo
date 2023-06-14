@@ -107,7 +107,7 @@ export const getAssetRouterRepository = (chainId: number) => {
                 { ...baseCallArgs, amount: params.amount },
                 { ...baseCallArgs, amount: params.minAmount },
             ];
-            const multiCallResult = await client.multicall({
+            const multiCallResult = (await client.multicall({
                 contracts: multicallParams.map((param) => ({
                     address: config.getContractAddress('assetRouter'),
                     abi: assetRouterABI,
@@ -115,7 +115,7 @@ export const getAssetRouterRepository = (chainId: number) => {
                     args: [param],
                 })),
                 allowFailure: false,
-            });
+            })) as any[][];
 
             // Extract the data's
             const potentialOutcome = multiCallResult[0]?.[0];

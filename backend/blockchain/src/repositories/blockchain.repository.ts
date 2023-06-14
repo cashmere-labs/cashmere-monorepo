@@ -8,14 +8,6 @@ import 'abitype'; // fix getBlockchainRepository type inference error
 import { Hex, createWalletClient, parseGwei } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 
-// Generic interface for our uniswap repository
-export type BlockchainRepository = {
-    getLastBlock: () => Promise<bigint>;
-    getMaxedOutScanToBlock: (range: { from: bigint; to: bigint }) => {
-        maxBlock: bigint;
-    };
-};
-
 /**
  * Get the blockchain repository for the given chain
  * @param chainId
@@ -37,7 +29,7 @@ export const getBlockchainRepository = (chainId: number) => {
         getOrSetFromCache(
             {
                 key: cacheParams('getLatestBlock', {}),
-                ttl: 30_000,
+                ttl: 30,
             },
             client.getBlock
         );
@@ -69,7 +61,7 @@ export const getBlockchainRepository = (chainId: number) => {
             getOrSetFromCache(
                 {
                     key: cacheParams('getLastSafeBlock', {}),
-                    ttl: 30_000,
+                    ttl: 30,
                 },
                 client.getBlockNumber
             ),
@@ -101,7 +93,7 @@ export const getBlockchainRepository = (chainId: number) => {
             getOrSetFromCache(
                 {
                     key: cacheParams('getTxReceipt', { txHash }),
-                    ttl: 300_000,
+                    ttl: 300,
                 },
                 () => client.getTransactionReceipt({ hash: txHash })
             ),
@@ -113,7 +105,7 @@ export const getBlockchainRepository = (chainId: number) => {
             getOrSetFromCache(
                 {
                     key: cacheParams('getGasFeesParam', {}),
-                    ttl: 30_000,
+                    ttl: 30,
                 },
                 async () => {
                     // Build additional gas param
@@ -142,3 +134,5 @@ export const getBlockchainRepository = (chainId: number) => {
             ),
     };
 };
+
+export type BlockchainRepository = ReturnType<typeof getBlockchainRepository>;

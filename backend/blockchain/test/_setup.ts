@@ -19,7 +19,17 @@ import {
 } from 'viem';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import { polygonMumbai } from 'viem/chains';
-import { afterAll, afterEach, beforeAll } from 'vitest';
+import { afterAll, afterEach, beforeAll, vi } from 'vitest';
+
+vi.mock('@cashmere-monorepo/backend-core', async () => {
+    const BackendCore = (await vi.importActual(
+        '@cashmere-monorepo/backend-core'
+    )) as any;
+    return {
+        ...BackendCore,
+        getOrSetFromCache: (_: any, fn: () => any) => fn(),
+    };
+});
 
 // Anvil instance
 export let anvil: Anvil;
@@ -34,6 +44,14 @@ export let testAccount: Account;
 // Test wallet
 export let testWallet: WalletClient;
 export const TEST_CHAIN_ID = 10050;
+// Chain definition
+export const testChain: Chain = {
+    id: TEST_CHAIN_ID,
+    name: 'Anvil',
+    network: 'anvil',
+    nativeCurrency: { ...polygonMumbai.nativeCurrency },
+    rpcUrls: { ...polygonMumbai.rpcUrls },
+};
 
 beforeAll(async () => {
     // Get config for polygon chain
@@ -45,38 +63,29 @@ beforeAll(async () => {
     });
     await anvil.start();
 
-    // Create test chain definition
-    const chain: Chain = {
-        id: TEST_CHAIN_ID,
-        name: 'Anvil',
-        network: 'anvil',
-        nativeCurrency: { ...polygonMumbai.nativeCurrency },
-        rpcUrls: { ...polygonMumbai.rpcUrls },
-    };
-
     // Create clients
     const transport = http(`http://${anvil.host}:${anvil.port}`);
     testClient = createTestClient({
-        chain,
+        chain: testChain,
         mode: 'anvil',
         transport,
     });
     anvilClient = createPublicClient({
-        chain,
+        chain: testChain,
         transport,
     });
     // Generate test account
     testAccount = privateKeyToAccount(generatePrivateKey());
     testWallet = createWalletClient({
         account: testAccount,
-        chain,
+        chain: testChain,
         transport,
     });
 
     // Add test chain to network configs
     chainIdsToNames[TEST_CHAIN_ID] = 'mumbai';
     networkConfigs[TEST_CHAIN_ID] = new BlockchainConfig(
-        chain,
+        testChain,
         `http://${anvil.host}:${anvil.port}`,
         10000
     );
