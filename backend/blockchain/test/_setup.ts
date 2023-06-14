@@ -8,6 +8,7 @@ import {
     Account,
     Chain,
     Hash,
+    Hex,
     PublicClient,
     TestClient,
     WalletClient,
@@ -30,6 +31,7 @@ export let testClient: TestClient;
 // Normal chain client
 export let anvilClient: PublicClient;
 // Test account
+export let testPrivateKey: Hex;
 export let testAccount: Account;
 // Test wallet
 export let testWallet: WalletClient;
@@ -41,17 +43,17 @@ beforeAll(async () => {
     // Start up Anvil
     anvil = createAnvil({
         forkUrl: polygonConfig.rpcUrl,
+        forkBlockNumber: 36852846n,
         chainId: TEST_CHAIN_ID,
     });
     await anvil.start();
 
     // Create test chain definition
     const chain: Chain = {
+        ...polygonMumbai,
         id: TEST_CHAIN_ID,
         name: 'Anvil',
         network: 'anvil',
-        nativeCurrency: { ...polygonMumbai.nativeCurrency },
-        rpcUrls: { ...polygonMumbai.rpcUrls },
     };
 
     // Create clients
@@ -66,7 +68,8 @@ beforeAll(async () => {
         transport,
     });
     // Generate test account
-    testAccount = privateKeyToAccount(generatePrivateKey());
+    testPrivateKey = generatePrivateKey();
+    testAccount = privateKeyToAccount(testPrivateKey);
     testWallet = createWalletClient({
         account: testAccount,
         chain,

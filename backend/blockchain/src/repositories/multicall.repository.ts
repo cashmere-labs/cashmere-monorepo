@@ -1,4 +1,4 @@
-import { logger } from '@cashmere-monorepo/backend-core/logger/logger';
+import { logger } from '@cashmere-monorepo/backend-core';
 import {
     findTransport,
     getNetworkConfigAndClient,
@@ -44,7 +44,7 @@ export const getMultiCallRepository = (chainId: number) => {
     }
 
     /**
-     * Get our function ca
+     * Send a batched tx to the multi call contract
      * @param callData
      * @param gasParam
      * @param allowFailure
@@ -59,6 +59,15 @@ export const getMultiCallRepository = (chainId: number) => {
         successIdx: number[];
         failedIdx: number[];
     }> => {
+        // If nothing to do, exit directly
+        if (callData.length === 0) {
+            throw new Error(
+                `Unable to send batched tx, no call data provided, ${
+                    callData.length
+                } : ${JSON.stringify(callData)}`
+            );
+        }
+
         // Array of all the failed tx index
         const failedIdx: number[] = [];
 
@@ -71,7 +80,7 @@ export const getMultiCallRepository = (chainId: number) => {
         }));
 
         // Perform the request, and remove every failing tx's
-        const abiType = [multicall3Abi] as const;
+        const abiType = multicall3Abi;
         let simulationResult: SimulateContractReturnType<
             typeof abiType,
             'aggregate3'
@@ -81,7 +90,7 @@ export const getMultiCallRepository = (chainId: number) => {
             simulationResult = await client.simulateContract({
                 account,
                 address: multicallAddress,
-                abi: abiType,
+                abi: multicall3Abi,
                 functionName: 'aggregate3',
                 args: [callValues],
                 // Put the additional gas param
@@ -178,3 +187,5 @@ export type MultiCallFunctionData = {
     readonly target: Address;
     readonly data: Hex;
 };
+
+export type MultiCallRepository = ReturnType<typeof getMultiCallRepository>;
