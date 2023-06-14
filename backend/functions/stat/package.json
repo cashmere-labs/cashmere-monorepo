@@ -1,0 +1,20 @@
+{
+    "name": "@cashmere-monorepo/backend-function-stat",
+    "version": "0.0.0",
+    "scripts": {
+        "typecheck": "tsc -noEmit",
+        "test": "sst bind vitest run",
+        "test:cov": "sst bind vitest run --coverage"
+    },
+    "dependencies": {
+        "@cashmere-monorepo/backend-core": "workspace:^",
+        "@cashmere-monorepo/shared-contract-stat-params": "workspace:^"
+    },
+    "devDependencies": {
+        "@types/aws-lambda": "^8.10.116",
+        "@types/node": "^18.16.16",
+        "@vitest/coverage-v8": "^0.32.0",
+        "sst": "2.11.18",
+        "vitest": "^0.32.0"
+    }
+}
