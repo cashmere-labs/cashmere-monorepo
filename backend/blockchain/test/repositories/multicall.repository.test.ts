@@ -1,18 +1,15 @@
 import { erc20ABI } from '@cashmere-monorepo/shared-blockchain';
-import { encodeFunctionData, getAddress } from 'viem';
+import { list } from 'radash';
+import { encodeFunctionData, getAddress, parseEther } from 'viem';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
-import {
-    GasParam,
-    getBlockchainRepository,
-    getMultiCallRepository,
-} from '../../src';
+import { GasParam, getMultiCallRepository } from '../../src';
 import {
     MultiCallFunctionData,
     MultiCallRepository,
 } from '../../src/repositories/multicall.repository';
 import { TEST_CHAIN_ID, testPrivateKey } from '../_setup';
 
-describe.only('[Backend][Blockchain] Multicall repository', async () => {
+describe('[Backend][Blockchain] Multicall repository', async () => {
     let multiCallRepository: MultiCallRepository;
     let gasParam: GasParam;
 
@@ -21,16 +18,21 @@ describe.only('[Backend][Blockchain] Multicall repository', async () => {
         vi.stubEnv('PRIVATE_KEY', testPrivateKey);
         // Get our repository
         multiCallRepository = getMultiCallRepository(TEST_CHAIN_ID);
-        // Get current gas param
-        const blockchainRepository = getBlockchainRepository(TEST_CHAIN_ID);
-        gasParam = await blockchainRepository.getGasFeesParam();
+        // Anvil gas param
+        gasParam = {
+            gasLimit: 30000000n,
+        };
     });
 
-    it.only('[Ok] Should be able to send single tx', async () => {
+    it('[Ok] Should be able to send single tx', async () => {
         // Build a simple call tx data
         const functionData = encodeFunctionData({
             abi: erc20ABI,
-            functionName: 'symbol',
+            functionName: 'approve',
+            args: [
+                getAddress('0x7caF754C934710D7C73bc453654552BEcA38223F'),
+                parseEther('1'),
+            ],
         });
 
         const callData: MultiCallFunctionData = {
@@ -38,6 +40,7 @@ describe.only('[Backend][Blockchain] Multicall repository', async () => {
             data: functionData,
         };
 
+        // Simple write test
         const response = await multiCallRepository.sendBatchedTx(
             [callData],
             gasParam,
@@ -51,6 +54,110 @@ describe.only('[Backend][Blockchain] Multicall repository', async () => {
         expect(response.successIdx[0]).toBe(0);
         expect(response.failedIdx.length).toBe(0);
     });
+
+    it('[Ok] Should be able to send multiple tx', async () => {
+        // Build a simple call tx data
+        const functionData = encodeFunctionData({
+            abi: erc20ABI,
+            functionName: 'approve',
+            args: [
+                getAddress('0x7caF754C934710D7C73bc453654552BEcA38223F'),
+                parseEther('1'),
+            ],
+        });
+
+        const callDatas: MultiCallFunctionData[] = list(100).map(() => ({
+            target: getAddress('0xbCeE0E1C02E91EAFaEd69eD2B1DC5199789575df'),
+            data: functionData,
+        }));
+
+        // Multiple write test
+        const response = await multiCallRepository.sendBatchedTx(
+            callDatas,
+            gasParam,
+            false
+        );
+        expect(response).toBeDefined();
+        expect(response).toHaveProperty('txHash');
+        expect(response).toHaveProperty('successIdx');
+        expect(response).toHaveProperty('failedIdx');
+        expect(response.successIdx.length).toBe(101);
+        expect(response.failedIdx.length).toBe(0);
+    });
+
+    it('[Ok] Should be able to handle a single failing tx', async () => {
+        // Build a simple call tx data
+        const functionData = encodeFunctionData({
+            abi: erc20ABI,
+            functionName: 'transfer',
+            args: [
+                getAddress('0x7caF754C934710D7C73bc453654552BEcA38223F'),
+                parseEther('10'),
+            ],
+        });
+
+        const callData: MultiCallFunctionData = {
+            target: getAddress('0xbCeE0E1C02E91EAFaEd69eD2B1DC5199789575df'),
+            data: functionData,
+        };
+
+        // Multiple write test
+        const response = await multiCallRepository.sendBatchedTx(
+            [callData],
+            gasParam,
+            false
+        );
+        expect(response).toBeDefined();
+        expect(response).toHaveProperty('successIdx');
+        expect(response).toHaveProperty('failedIdx');
+        expect(response.successIdx.length).toBe(0);
+        expect(response.failedIdx.length).toBe(1);
+    });
+
+    it('[Ok] Should be able to handle a failing inside multiple tx', async () => {
+        // Build a simple call tx data
+        const approveFunctionData = encodeFunctionData({
+            abi: erc20ABI,
+            functionName: 'approve',
+            args: [
+                getAddress('0x7caF754C934710D7C73bc453654552BEcA38223F'),
+                parseEther('1'),
+            ],
+        });
+        const failingFunctionData = encodeFunctionData({
+            abi: erc20ABI,
+            functionName: 'transfer',
+            args: [
+                getAddress('0x7caF754C934710D7C73bc453654552BEcA38223F'),
+                parseEther('10'),
+            ],
+        });
+
+        const callDatas: MultiCallFunctionData[] = [
+            approveFunctionData,
+            failingFunctionData,
+        ].map((data) => ({
+            target: getAddress('0xbCeE0E1C02E91EAFaEd69eD2B1DC5199789575df'),
+            data,
+        }));
+
+        // Multiple write test
+        const response = await multiCallRepository.sendBatchedTx(
+            callDatas,
+            gasParam,
+            false
+        );
+        expect(response).toBeDefined();
+        expect(response).toHaveProperty('txHash');
+        expect(response).toHaveProperty('successIdx');
+        expect(response).toHaveProperty('failedIdx');
+        expect(response.successIdx.length).toBe(1);
+        expect(response.successIdx[0]).toBe(0);
+        expect(response.failedIdx.length).toBe(1);
+        expect(response.failedIdx[0]).toBe(1);
+    });
+
+    describe.todo('[Ok] Should exclude tx if we go past the gas limit');
 
     it('[Fail] Should fail if no call data provided', async () => {
         // And verify that it was retrieved and parsed correctly

@@ -2,6 +2,7 @@ import { logger } from '@cashmere-monorepo/backend-core';
 import {
     findTransport,
     getNetworkConfigAndClient,
+    multicall3WriteAbi,
 } from '@cashmere-monorepo/shared-blockchain';
 import { sleep } from 'radash';
 import { Config } from 'sst/node/config';
@@ -10,7 +11,6 @@ import {
     Hex,
     SimulateContractReturnType,
     createWalletClient,
-    multicall3Abi,
 } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { GasParam } from '../types';
@@ -55,7 +55,7 @@ export const getMultiCallRepository = (chainId: number) => {
         gasParam: GasParam,
         allowFailure: boolean = false
     ): Promise<{
-        txHash: string;
+        txHash?: string; // Can be undefined if no tx was sent
         successIdx: number[];
         failedIdx: number[];
     }> => {
@@ -68,6 +68,14 @@ export const getMultiCallRepository = (chainId: number) => {
             );
         }
 
+        logger.debug(
+            {
+                chainId,
+                nbrOfTx: callData.length,
+            },
+            'Starting multicall process'
+        );
+
         // Array of all the failed tx index
         const failedIdx: number[] = [];
 
@@ -75,14 +83,12 @@ export const getMultiCallRepository = (chainId: number) => {
         const callValues = callData.map((data) => ({
             target: data.target,
             callData: data.data,
-            value: 0n,
             allowFailure,
         }));
 
         // Perform the request, and remove every failing tx's
-        const abiType = multicall3Abi;
         let simulationResult: SimulateContractReturnType<
-            typeof abiType,
+            typeof multicall3WriteAbi,
             'aggregate3'
         >;
 
@@ -90,7 +96,7 @@ export const getMultiCallRepository = (chainId: number) => {
             simulationResult = await client.simulateContract({
                 account,
                 address: multicallAddress,
-                abi: multicall3Abi,
+                abi: multicall3WriteAbi,
                 functionName: 'aggregate3',
                 args: [callValues],
                 // Put the additional gas param
@@ -117,16 +123,24 @@ export const getMultiCallRepository = (chainId: number) => {
             await sleep(50);
             // Update our call values
             const newCallData = callData.slice(0, idxRemoved);
-            // Get our result
-            const multicallResult = await sendBatchedTx(
-                newCallData,
-                gasParam,
-                allowFailure
-            );
-            // Add our current idx removed to the array returned
-            multicallResult.failedIdx.push(...failedIdx);
-            // And return it
-            return multicallResult;
+            if (newCallData.length !== 0) {
+                // Get our result
+                const multicallResult = await sendBatchedTx(
+                    newCallData,
+                    gasParam,
+                    allowFailure
+                );
+                // Add our current idx removed to the array returned
+                multicallResult.failedIdx.push(...failedIdx);
+                // And return it
+                return multicallResult;
+            } else {
+                // Otherwise, return all the failed tx
+                return {
+                    successIdx: [],
+                    failedIdx,
+                };
+            }
         }
 
         // Extract our request

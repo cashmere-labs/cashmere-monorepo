@@ -4,11 +4,11 @@ import {
     networkConfigs,
 } from '@cashmere-monorepo/shared-blockchain';
 import { Anvil, createAnvil } from '@viem/anvil';
+import * as console from 'console';
 import {
     Account,
     Chain,
     Hash,
-    Hex,
     PublicClient,
     TestClient,
     WalletClient,
@@ -18,7 +18,7 @@ import {
     http,
     parseEther,
 } from 'viem';
-import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
+import { privateKeyToAccount } from 'viem/accounts';
 import { polygonMumbai } from 'viem/chains';
 import { afterAll, afterEach, beforeAll } from 'vitest';
 
@@ -30,8 +30,9 @@ export let snapshotId: Hash;
 export let testClient: TestClient;
 // Normal chain client
 export let anvilClient: PublicClient;
-// Test account
-export let testPrivateKey: Hex;
+// Test account (private key from anvil)
+export const testPrivateKey =
+    '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80';
 export let testAccount: Account;
 // Test wallet
 export let testWallet: WalletClient;
@@ -68,8 +69,8 @@ beforeAll(async () => {
         transport,
     });
     // Generate test account
-    testPrivateKey = generatePrivateKey();
     testAccount = privateKeyToAccount(testPrivateKey);
+    console.log(`Test account address: ${testAccount.address}`);
     testWallet = createWalletClient({
         account: testAccount,
         chain,
