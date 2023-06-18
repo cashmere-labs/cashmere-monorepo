@@ -4,7 +4,6 @@ import {
     networkConfigs,
 } from '@cashmere-monorepo/shared-blockchain';
 import { Anvil, createAnvil } from '@viem/anvil';
-import * as console from 'console';
 import {
     Account,
     Chain,
@@ -37,6 +36,7 @@ export let testAccount: Account;
 // Test wallet
 export let testWallet: WalletClient;
 export const TEST_CHAIN_ID = 10050;
+export const TEST_CHAIN_ID_EMPTY_CONFIG = 10051;
 
 beforeAll(async () => {
     // Get config for polygon chain
@@ -57,6 +57,15 @@ beforeAll(async () => {
         network: 'anvil',
     };
 
+    // Create test chain definition
+    const chainNoConf: Chain = {
+        id: TEST_CHAIN_ID_EMPTY_CONFIG,
+        name: 'Anvil-empty',
+        network: 'anvil-empty',
+        nativeCurrency: polygonMumbai.nativeCurrency,
+        rpcUrls: polygonMumbai.rpcUrls,
+    };
+
     // Create clients
     const transport = http(`http://${anvil.host}:${anvil.port}`);
     testClient = createTestClient({
@@ -70,7 +79,6 @@ beforeAll(async () => {
     });
     // Generate test account
     testAccount = privateKeyToAccount(testPrivateKey);
-    console.log(`Test account address: ${testAccount.address}`);
     testWallet = createWalletClient({
         account: testAccount,
         chain,
@@ -79,8 +87,14 @@ beforeAll(async () => {
 
     // Add test chain to network configs
     chainIdsToNames[TEST_CHAIN_ID] = 'mumbai';
+    chainIdsToNames[TEST_CHAIN_ID_EMPTY_CONFIG] = 'mumbai';
     networkConfigs[TEST_CHAIN_ID] = new BlockchainConfig(
         chain,
+        `http://${anvil.host}:${anvil.port}`,
+        10000
+    );
+    networkConfigs[TEST_CHAIN_ID_EMPTY_CONFIG] = new BlockchainConfig(
+        chainNoConf,
         `http://${anvil.host}:${anvil.port}`,
         10000
     );

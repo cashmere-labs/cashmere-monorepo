@@ -146,31 +146,6 @@ export const getMultiCallRepository = (chainId: number) => {
         // Extract our request
         const request = simulationResult.request;
 
-        // Perform the gas estimation, and ensure it won't exceed max wei / tx
-        const gasEstimation = await client.estimateGas(request);
-
-        // If this call exceed the number of limit, try again with fewer tx (take only 95% of the given tx)
-        if (gasEstimation > gasParam.gasLimit) {
-            logger.info(
-                { chainId, callData, gasParam, nbrOfTx: callValues.length },
-                'Too much operation to be performed on a single tx, reducing number of tx'
-            );
-            // Take 95% of the callData
-            const reducedCallData = callData.slice(
-                0,
-                Math.floor((callData.length * 95) / 100)
-            );
-            if (reducedCallData.length === 0) {
-                throw new Error(
-                    `Unable to execute the tx from the given list, a tx has probably an infinite gas usage`
-                );
-            }
-            // Wait for 50ms to prevent rpc provider flooding
-            await sleep(50);
-            // Send back the batched tx with the reduced number of call data
-            return await sendBatchedTx(reducedCallData, gasParam, allowFailure);
-        }
-
         // If we are all good, execute the tx
         logger.info(
             {
