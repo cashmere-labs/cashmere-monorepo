@@ -1,22 +1,22 @@
 import {
     CrossChainSwapInitiatedLogType,
+    NATIVE_PLACEHOLDER,
+    SwapDataTokenMetadata,
+    SwapMessageReceivedLogType,
+    SwapPayload,
     getAggregatorRepository,
     getAssetRepository,
     getAssetRouterRepository,
     getBridgeRepository,
     l0ChainIdToConfigMapViem,
-    NATIVE_PLACEHOLDER,
-    SwapMessageReceivedLogType,
-    SwapPayload,
 } from '@cashmere-monorepo/backend-blockchain';
-import { SwapDataTokenMetadata } from '@cashmere-monorepo/backend-blockchain/src/repositories/progress.repository';
 import { logger } from '@cashmere-monorepo/backend-core';
 import {
-    getSwapDataRepository,
     SwapDataDbDto,
+    getSwapDataRepository,
 } from '@cashmere-monorepo/backend-database';
 import { createHash } from 'node:crypto';
-import { Address, formatEther, Hex } from 'viem';
+import { Address, Hex, formatEther } from 'viem';
 import { createBatchedTx } from '../batchedTx';
 import { NewBatchedTx } from '../batchedTx/types';
 import {
@@ -29,7 +29,17 @@ import {
  * Build our event handler
  * @param chainId
  */
-export const buildEventHandler = async (chainId: number) => {
+export const buildEventHandler = async (
+    chainId: number
+): Promise<{
+    handleSwapPerformedEvent: (
+        log: SwapMessageReceivedLogType
+    ) => Promise<void>;
+    sendContinueTxForSwapData: (swapData: SwapDataDbDto) => Promise<void>;
+    handleSwapInitiatedEvent: (
+        log: CrossChainSwapInitiatedLogType
+    ) => Promise<SwapDataDbDto | undefined>;
+}> => {
     const aggregatorRepository = getAggregatorRepository(chainId);
     const bridgeRepository = getBridgeRepository(chainId);
     const swapDataRepository = await getSwapDataRepository();
@@ -152,7 +162,7 @@ export const buildEventHandler = async (chainId: number) => {
      */
     const handleSwapInitiatedEvent = async (
         log: CrossChainSwapInitiatedLogType
-    ) => {
+    ): Promise<SwapDataDbDto | undefined> => {
         if (!log.args.payload || !log.args.dstChainId) {
             logger.warn(
                 { chainId, log },
@@ -237,7 +247,7 @@ export const buildEventHandler = async (chainId: number) => {
      */
     const handleSwapPerformedEvent = async (
         log: SwapMessageReceivedLogType
-    ) => {
+    ): Promise<void> => {
         // Ensure our log contain the right data
         if (!log.transactionHash) {
             logger.info(
