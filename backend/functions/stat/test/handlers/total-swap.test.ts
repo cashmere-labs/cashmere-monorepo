@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 /**
  * Health-check estimate business logic test
  */
-describe('[Stat][Endpoint] HealthCheck', () => {
+describe('[Stat][Endpoint] totalSwaps', () => {
     // The api url we will use for our call
     const baseEndpoint = `${Api.StatApiStack.url}`;
 
@@ -15,9 +15,8 @@ describe('[Stat][Endpoint] HealthCheck', () => {
     });
 
     // should be ok with good param's
-    it("[Ok] Pass with good param's", () => {
-        fetch(`${baseEndpoint}health-check`).then((res) =>
-            expect(res.status).toBe(200)
-        );
+    it("[Ok] Pass with good param's", async () => {
+        const result = await fetch(`${baseEndpoint}total-swaps`);
+        expect(result.status).toBe(200);
     });
-});
+}, 50000);

@@ -20,5 +20,11 @@ export function DatabaseStack({ stack }: StackContext) {
         MONGO_DB_NAME: stage,
     };
 
+    // Add the outputs to our stack
+    stack.addOutputs({
+        MongoDbUri: environment.MONGO_DB_URI,
+        MongoDbName: environment.MONGO_DB_NAME,
+    });
+
     return { environment };
 }

@@ -3,12 +3,15 @@
     "version": "0.0.0",
     "scripts": {
         "typecheck": "tsc -noEmit",
-        "test": "sst bind vitest run",
-        "test:cov": "sst bind vitest run --coverage"
+        "test": "sst bind \"vitest run --coverage --no-threads\"",
+        "test:watch": "sst bind \"vitest watch --coverage --no-threads\"",
+        "test:ui": "sst bind \"vitest watch --ui --coverage --no-threads\""
     },
     "dependencies": {
         "@cashmere-monorepo/backend-core": "workspace:^",
-        "@cashmere-monorepo/shared-contract-stat-params": "workspace:^"
+        "@cashmere-monorepo/backend-database": "workspace:^",
+        "@cashmere-monorepo/shared-contract-stat-params": "workspace:^",
+        "axios": "^1.4.0"
     },
     "devDependencies": {
         "@types/aws-lambda": "^8.10.116",

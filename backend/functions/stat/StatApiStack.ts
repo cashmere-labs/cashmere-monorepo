@@ -1,6 +1,10 @@
 import { ContractApiGatewayRoute } from '@cashmere-monorepo/backend-core';
 import { CoreStack } from '@cashmere-monorepo/backend-core/stacks/CoreStack';
-import { testContract } from '@cashmere-monorepo/shared-contract-stat-params';
+import {
+    listSwapContract,
+    testContract,
+    totalSwapContract,
+} from '@cashmere-monorepo/shared-contract-stat-params';
 import { Api, StackContext, use } from 'sst/constructs';
 
 const path = './backend/functions/stat/src';
@@ -18,6 +22,24 @@ export function StatApiStack({ stack }: StackContext) {
         ContractApiGatewayRoute(
             `${path}/handlers/healthCheck.handler`,
             testContract
+        )
+    );
+
+    // Add the total swaps route
+    api.addRoutes(
+        stack,
+        ContractApiGatewayRoute(
+            `${path}/handlers/totalSwaps.handler`,
+            totalSwapContract
+        )
+    );
+
+    // Add the list swaps route
+    api.addRoutes(
+        stack,
+        ContractApiGatewayRoute(
+            `${path}/handlers/listSwaps.handler`,
+            listSwapContract
         )
     );
 

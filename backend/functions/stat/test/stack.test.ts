@@ -40,5 +40,11 @@ describe('[Stack] StackParams', () => {
         template.hasResourceProperties('AWS::ApiGatewayV2::Route', {
             RouteKey: 'GET /health-check',
         });
+        template.hasResourceProperties('AWS::ApiGatewayV2::Route', {
+            RouteKey: 'GET /list-swaps',
+        });
+        template.hasResourceProperties('AWS::ApiGatewayV2::Route', {
+            RouteKey: 'GET /total-swaps',
+        });
     });
 });
