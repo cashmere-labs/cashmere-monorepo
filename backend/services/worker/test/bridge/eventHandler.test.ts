@@ -91,7 +91,13 @@ describe('[Worker][Unit] Bridge - Event handler', () => {
                         },
                     ],
                 }),
-                isContractAddress: () => true,
+                isContractAddress: () => isValidDstContractAddress,
+                encodeContinueSwapCallData: () => ({
+                    target: getAddress(
+                        '0x000000000000000000000000000000000000acab'
+                    ),
+                    data: '0xdeadbeef',
+                }),
             }),
             // Asset router mock
             getAssetRouterRepository: () => ({
@@ -131,6 +137,10 @@ describe('[Worker][Unit] Bridge - Event handler', () => {
      * After each test, restore all mocks
      */
     afterEach(() => {
+        // Reset our mock value
+        mockSwapData = true;
+        isValidDstContractAddress = true;
+        // Restore all mocks
         vi.restoreAllMocks();
     });
 
@@ -152,7 +162,30 @@ describe('[Worker][Unit] Bridge - Event handler', () => {
             expect(result).to.be.undefined;
         });
 
-        it('[Ok] - Should find swap data from db', async () => {
+        it("[Ok] - Shouldn't do anything with no tx hash", async () => {
+            // Make the call
+            // @ts-ignore
+            const result = await handleSwapInitiatedEvent({
+                blockNumber: 1n,
+                transactionIndex: 0,
+                logIndex: 0,
+                args: {
+                    payload: ('0x00010002' +
+                        '000000000000000000000000000000000000acab' +
+                        '0000000000000000000000000000000000000000000000000000000000000000' +
+                        '000000000000000000000000000000000000acab' +
+                        '00') as Hex,
+                    dstChainId: TEST_CHAIN_ID,
+                    id: '0xacab',
+                    amount: 13n,
+                    fee: 13n,
+                },
+            });
+            // Ensure it's undefined
+            expect(result).to.be.undefined;
+        });
+
+        it('[Ok] - Should be good with new swap data', async () => {
             // Make the call
             // @ts-ignore
             const result = await handleSwapInitiatedEvent({
@@ -166,14 +199,85 @@ describe('[Worker][Unit] Bridge - Event handler', () => {
                         '0000000000000000000000000000000000000000000000000000000000000000' +
                         '000000000000000000000000000000000000acab' +
                         '00') as Hex,
-                    dstChainId: 1,
+                    dstChainId: TEST_CHAIN_ID,
                     id: '0xacab',
                     amount: 13n,
                     fee: 13n,
                 },
             });
             // Ensure it's undefined
-            expect(result).to.be.undefined;
+            expect(result).toBeDefined();
+            expect(result?.swapId).toBe('0xacab');
+            expect(result?.skipProcessing).toBe(false);
+        });
+
+        it('[Ok] - Should skip processing if not the right address', async () => {
+            isValidDstContractAddress = false;
+            // Make the call
+            // @ts-ignore
+            const result = await handleSwapInitiatedEvent({
+                blockNumber: 1n,
+                transactionHash: '0x0',
+                transactionIndex: 0,
+                logIndex: 0,
+                args: {
+                    payload: ('0x00010002' +
+                        '000000000000000000000000000000000000acab' +
+                        '0000000000000000000000000000000000000000000000000000000000000000' +
+                        '000000000000000000000000000000000000acab' +
+                        '00') as Hex,
+                    dstChainId: TEST_CHAIN_ID,
+                    id: '0xacab',
+                    amount: 13n,
+                    fee: 13n,
+                },
+            });
+            // Ensure it's undefined
+            expect(result).toBeDefined();
+            expect(result?.swapId).toBe('0xacab');
+            expect(result?.skipProcessing).toBe(true);
+        });
+    });
+
+    /**
+     * Send the swap continuation tx test
+     */
+    describe('sendContinueTxForSwapData', () => {
+        it('[Ok] - Should send a continue swap tx', async () => {
+            await sendContinueTxForSwapData(mockedSwapDataDbDto);
+            // TODO: Mocked SQS queue and assert it has been called
+        });
+    });
+
+    describe('handleSwapPerformedEvent', () => {
+        it("[Ok] - Shouldn't do anything with no tx hash", async () => {
+            // Make the call
+            // @ts-ignore
+            await handleSwapPerformedEvent({
+                blockNumber: 1n,
+                transactionIndex: 0,
+                logIndex: 0,
+                args: {},
+            });
+            // TODO: Assert that no message was pushed to the queue
+        });
+
+        it('[Fail] - Should fail with invalid message', async () => {
+            // Make the call
+            // @ts-ignore
+            await expect(
+                handleSwapPerformedEvent({
+                    blockNumber: 1n,
+                    transactionHash: '0x0',
+                    transactionIndex: 0,
+                    logIndex: 0,
+                    args: {
+                        // @ts-ignore
+                        _message: {},
+                    },
+                })
+            ).to.rejects.toThrow();
+            // TODO: Assert that no message was pushed to the queue
         });
     });
 });
