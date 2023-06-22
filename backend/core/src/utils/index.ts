@@ -1,1 +1,1 @@
-export * from './clients';
+export { dynamoDbClient, sqsClient } from './clients';

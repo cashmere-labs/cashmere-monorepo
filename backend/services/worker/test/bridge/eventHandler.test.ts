@@ -6,7 +6,9 @@ import {
     SwapPayload,
 } from '@cashmere-monorepo/backend-blockchain';
 import { TEST_CHAIN_ID } from '@cashmere-monorepo/backend-blockchain/test/_setup';
+import { logger, sqsClient } from '@cashmere-monorepo/backend-core';
 import { SwapDataDbDto } from '@cashmere-monorepo/backend-database';
+import { mockClient } from 'aws-sdk-client-mock';
 import { getAddress, Hex } from 'viem';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 
@@ -46,6 +48,9 @@ describe('[Worker][Unit] Bridge - Event handler', () => {
     let mockSwapData = true;
     let isValidDstContractAddress = true;
 
+    // The mock for the batched tx
+    const sqsClientMock = mockClient(sqsClient);
+
     /**
      * The method we will test
      */
@@ -60,6 +65,12 @@ describe('[Worker][Unit] Bridge - Event handler', () => {
      * Before all tests, mock all dependencies and extract our method's
      */
     beforeAll(async () => {
+        // Mock batched tx module
+        vi.doMock('@cashmere-monorepo/backend-core', () => ({
+            sqsClient: sqsClientMock,
+            logger: logger,
+        }));
+
         // Mock the database module
         vi.doMock('@cashmere-monorepo/backend-database', () => ({
             getSwapDataRepository: () => ({
@@ -140,6 +151,8 @@ describe('[Worker][Unit] Bridge - Event handler', () => {
         // Reset our mock value
         mockSwapData = true;
         isValidDstContractAddress = true;
+        // Reset our sqs client mock
+        sqsClientMock.reset();
         // Restore all mocks
         vi.restoreAllMocks();
     });
@@ -245,7 +258,8 @@ describe('[Worker][Unit] Bridge - Event handler', () => {
     describe('sendContinueTxForSwapData', () => {
         it('[Ok] - Should send a continue swap tx', async () => {
             await sendContinueTxForSwapData(mockedSwapDataDbDto);
-            // TODO: Mocked SQS queue and assert it has been called
+            expect(sqsClientMock.call(0)).toBeDefined();
+            expect(sqsClientMock.call(1)).toBeNull();
         });
     });
 
@@ -259,7 +273,8 @@ describe('[Worker][Unit] Bridge - Event handler', () => {
                 logIndex: 0,
                 args: {},
             });
-            // TODO: Assert that no message was pushed to the queue
+            // Assert that no message was pushed to the queue
+            expect(sqsClientMock.call(0)).toBeNull();
         });
 
         it('[Fail] - Should fail with invalid message', async () => {
@@ -277,7 +292,8 @@ describe('[Worker][Unit] Bridge - Event handler', () => {
                     },
                 })
             ).to.rejects.toThrow();
-            // TODO: Assert that no message was pushed to the queue
+            // Assert that no message was pushed to the queue
+            expect(sqsClientMock.call(0)).toBeNull();
         });
     });
 });

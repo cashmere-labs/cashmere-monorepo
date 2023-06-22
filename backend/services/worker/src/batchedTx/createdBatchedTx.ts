@@ -1,5 +1,5 @@
 import { SendMessageCommand } from '@aws-sdk/client-sqs';
-import { sqsClient } from '@cashmere-monorepo/backend-core/src/utils';
+import { sqsClient } from '@cashmere-monorepo/backend-core';
 import { Queue } from 'sst/node/queue';
 import { NewBatchedTx } from './types';
 

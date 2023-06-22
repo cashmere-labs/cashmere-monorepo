@@ -5,3 +5,4 @@ export * from './hooks';
 export * from './logger/logger';
 export * from './mutex';
 export * from './types';
+export * from './utils';
