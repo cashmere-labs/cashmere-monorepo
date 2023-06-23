@@ -1,21 +1,21 @@
 import {
+    healthCheckContract,
     healthCheckEndpointResponseBodyType,
-    testContract,
 } from '../healthCheck';
 
 import { describe, expect, it } from 'vitest';
 
 describe('testContract', () => {
     it('should have the correct id', () => {
-        expect(testContract.id).toBe('test');
+        expect(healthCheckContract.id).toBe('test');
     });
 
     it('should have the correct path', () => {
-        expect(testContract.path).toBe('/api/health-check');
+        expect(healthCheckContract.path).toBe('/api/health-check');
     });
 
     it('should have the correct method', () => {
-        expect(testContract.method).toBe('GET');
+        expect(healthCheckContract.method).toBe('GET');
     });
 
     it('should have the correct response schema', () => {
@@ -23,7 +23,7 @@ describe('testContract', () => {
             properties: {
                 body: { properties },
             },
-        } = testContract.getOutputSchema();
+        } = healthCheckContract.getOutputSchema();
         expect(properties).toEqual(
             healthCheckEndpointResponseBodyType.properties
         );

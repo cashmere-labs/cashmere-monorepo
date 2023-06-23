@@ -1,8 +1,8 @@
 import { ContractApiGatewayRoute } from '@cashmere-monorepo/backend-core';
 import { CoreStack } from '@cashmere-monorepo/backend-core/stacks/CoreStack';
 import {
+    healthCheckContract,
     listSwapContract,
-    testContract,
     totalSwapContract,
 } from '@cashmere-monorepo/shared-contract-stat-params';
 import { Api, StackContext, use } from 'sst/constructs';
@@ -21,7 +21,7 @@ export function StatApiStack({ stack }: StackContext) {
         stack,
         ContractApiGatewayRoute(
             `${path}/handlers/healthCheck.handler`,
-            testContract
+            healthCheckContract
         )
     );
 

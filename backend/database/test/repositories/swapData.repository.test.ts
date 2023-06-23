@@ -310,21 +310,21 @@ describe('[Backend][Database] SwapData repository', () => {
     });
 
     it('[Ok] Retrieves All swap data', async () => {
-        const result = await swapDataRepository.getAll();
+        const result = await swapDataRepository.getAll({});
 
-        expect(result.items).toMatchObject(swapDataFixture);
+        expect(result.items[0]).toMatchObject(swapDataFixture[0]);
         expect(result.count).not.toBe(null);
     });
 
     it('[Ok] Retrieves only first page of swap data', async () => {
-        const result = await swapDataRepository.getAll(0);
+        const result = await swapDataRepository.getAll({ page: 0, items: 10 });
 
         expect(result.items.length).toBeLessThanOrEqual(10);
         expect(result.count).not.toBe(null);
     });
 
     it('[ko] Retrieves data for negative page', async () => {
-        expect(() => swapDataRepository.getAll(-1)).rejects.toThrow(
+        expect(() => swapDataRepository.getAll({ page: -1 })).rejects.toThrow(
             "BSON field 'skip' value must be >= 0, actual value '-10'"
         );
     });

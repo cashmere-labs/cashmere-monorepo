@@ -170,15 +170,20 @@ const buildSwapDataRepository = (connection: Connection) => {
         /**
          * Get all the total swap data
          */
-        async getAll(
-            page?: number // zero-based
-        ): Promise<{ count: number; items: SwapDataDbDto[] }> {
+        async getAll({
+            page = 0,
+            items = 10,
+        }: {
+            page?: number;
+            items?: number;
+        }): Promise<{ count: number; items: SwapDataDbDto[] }> {
             // Create the query
             let query = model.find({}, { _id: 0, __v: 0 });
             // Clone the query and save total documents count
             const count = await query.clone().count();
             // If pagination is requested, add it to the query
-            if (page !== undefined) query = query.skip(10 * page).limit(10);
+            if (page !== undefined)
+                query = query.skip(items * page).limit(items);
             // Execute the query and return the result
             return {
                 count,

@@ -3,10 +3,10 @@ import {
     logger,
     useLogger,
 } from '@cashmere-monorepo/backend-core';
-import { testContract } from '@cashmere-monorepo/shared-contract-stat-params';
+import { healthCheckContract } from '@cashmere-monorepo/shared-contract-stat-params';
 
 // Build our contract handler for the test contract
-const contractHandler = ContractFunctionHandler(testContract);
+const contractHandler = ContractFunctionHandler(healthCheckContract);
 
 // Export our handler
 export const handler = contractHandler(async (event) => {

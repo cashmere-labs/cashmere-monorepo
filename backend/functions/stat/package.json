@@ -10,8 +10,7 @@
     "dependencies": {
         "@cashmere-monorepo/backend-core": "workspace:^",
         "@cashmere-monorepo/backend-database": "workspace:^",
-        "@cashmere-monorepo/shared-contract-stat-params": "workspace:^",
-        "axios": "^1.4.0"
+        "@cashmere-monorepo/shared-contract-stat-params": "workspace:^"
     },
     "devDependencies": {
         "@types/aws-lambda": "^8.10.116",
