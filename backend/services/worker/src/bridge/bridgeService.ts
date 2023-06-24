@@ -7,7 +7,7 @@ import {
     getLastBlockRepository,
     getSwapDataRepository,
 } from '@cashmere-monorepo/backend-database';
-import { try as inlineTry } from 'radash';
+import { try as inlineTry, sleep } from 'radash';
 import { buildBridgeBlockScanner } from './bridgeBlockScanner';
 import { buildEventHandler } from './eventHandler';
 
@@ -165,7 +165,7 @@ export const buildBridgeService = async (chainId: number) => {
             // Update the start block
             startBlock = blockHandlingResult.lastBlockHandled;
             // Wait for 500ms before the next trigger
-            await new Promise((resolve) => setTimeout(resolve, 500));
+            await sleep(500);
         }
 
         // Once we iterated over every pending blocks, check all the tx status

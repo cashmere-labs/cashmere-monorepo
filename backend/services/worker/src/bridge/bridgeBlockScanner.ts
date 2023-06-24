@@ -1,8 +1,8 @@
 import {
     getAssetRouterRepository,
+    getBlockchainRepository,
     getBridgeRepository,
 } from '@cashmere-monorepo/backend-blockchain';
-import { getBlockchainRepository } from '@cashmere-monorepo/backend-blockchain/src/repositories/blockchain.repository';
 import { logger } from '@cashmere-monorepo/backend-core';
 import { try as inlineTry } from 'radash';
 import { buildEventHandler } from './eventHandler';
