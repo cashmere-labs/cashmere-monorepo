@@ -22,16 +22,21 @@ describe('[Worker][Unit] Bridge - Bridge block scanner', () => {
                 }),
             }),
             getAssetRouterRepository: () => ({
-                getSwapInitiatedEvents: async () => [],
+                getSwapInitiatedEvents: async () => [{}, {}],
             }),
             getBridgeRepository: () => ({
-                getSwapMessageReceivedEvents: async () => [],
+                getSwapMessageReceivedEvents: async () => [{}, {}],
             }),
         }));
 
         vi.doMock('../../src/bridge/eventHandler', () => ({
             buildEventHandler: () => ({
-                sendContinueTxForSwapData: vi.fn(),
+                handleSwapInitiatedEvent: vi
+                    .fn()
+                    .mockRejectedValueOnce(new Error('test error')),
+                handleSwapPerformedEvent: vi
+                    .fn()
+                    .mockRejectedValueOnce(new Error('test error')),
             }),
         }));
 

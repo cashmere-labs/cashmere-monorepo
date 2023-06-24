@@ -12,6 +12,7 @@ import { SwapDataDbDto } from '@cashmere-monorepo/backend-database';
 import { mockClient } from 'aws-sdk-client-mock';
 import { getAddress, Hex } from 'viem';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+import { mockedSwapDataDbDto } from '../utils/mock';
 
 type NestedKeyOf<ObjectType extends object> = {
     [Key in keyof ObjectType &
@@ -19,33 +20,6 @@ type NestedKeyOf<ObjectType extends object> = {
         ? `${Key}` | `${Key}.${NestedKeyOf<ObjectType[Key]>}`
         : `${Key}`;
 }[keyof ObjectType & (string | number)];
-
-// Mocked swap data db dto
-const mockedSwapDataDbDto = (
-    skipProcessing: boolean = false
-): SwapDataDbDto => ({
-    swapId: '0x000000000',
-    chains: {
-        srcChainId: 1,
-        dstChainId: 2,
-        srcL0ChainId: 3,
-        dstL0ChainId: 4,
-    },
-    path: {
-        lwsPoolId: 1,
-        hgsPoolId: 2,
-        hgsAmount: '0',
-        dstToken: '0x000',
-        minHgsAmount: '0',
-    },
-    user: {
-        receiver: '0x',
-        signature: '0x0',
-    },
-    status: {},
-    progress: {},
-    skipProcessing,
-});
 
 const mockedSwapMessagePayload = ('0x00010002' +
     '000000000000000000000000000000000000acab' +
@@ -88,7 +62,9 @@ describe('[Worker][Unit] Bridge - Event handler', () => {
                 // TODO: Mocked input for the initial swap data
                 get: async (id: string): Promise<SwapDataDbDto | undefined> =>
                     mockSwapData
-                        ? mockedSwapDataDbDto(swapDataSkipProcessing)
+                        ? mockedSwapDataDbDto({
+                              skipProcessing: swapDataSkipProcessing,
+                          })
                         : undefined,
                 save: async (
                     swapData: SwapDataDbDto

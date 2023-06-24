@@ -1,7 +1,21 @@
 import { TEST_CHAIN_ID } from '@cashmere-monorepo/backend-blockchain/test/_setup';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+import { mockedSwapDataDbDto } from '../utils/mock';
+
+// Get the swap data waiting for completion
+async function* swapDataCursorGenerator() {
+    let i = 0;
+    while (i < 3) {
+        const continueTxId = i === 2 ? '0xdeadbeef' : undefined;
+        i++;
+        yield mockedSwapDataDbDto({ swapContinueTxid: continueTxId });
+    }
+}
 
 describe('[Worker][Unit] Bridge - Bridge service', () => {
+    let checkAllTxTxExist = false;
+    let checkAllTxStatus = 'success';
+
     // The method we will test
     let scanEveryBlockchain: () => Promise<void>;
 
@@ -14,6 +28,7 @@ describe('[Worker][Unit] Bridge - Bridge service', () => {
     const handleNewBlockMock = vi.fn(async (range: { to: bigint }) => ({
         lastBlockHandled: range.to,
     }));
+    const sendContinueSwapDataMock = vi.fn();
 
     /**
      * Before all tests, mock all dependencies and extract our method's
@@ -23,6 +38,13 @@ describe('[Worker][Unit] Bridge - Bridge service', () => {
         vi.doMock('@cashmere-monorepo/backend-blockchain', () => ({
             getBlockchainRepository: () => ({
                 getLastBlockNumber: async () => 100n,
+                getTransactionReceipt: async () =>
+                    checkAllTxTxExist
+                        ? {
+                              blockNumber: 13n,
+                              status: checkAllTxStatus,
+                          }
+                        : undefined,
             }),
             CHAIN_IDS: [TEST_CHAIN_ID],
         }));
@@ -35,14 +57,15 @@ describe('[Worker][Unit] Bridge - Bridge service', () => {
             }),
             getSwapDataRepository: () => ({
                 // TODO: Cursor mocking?
-                getWaitingForCompletionsOnDstChainCursor: async () => [],
+                getWaitingForCompletionsOnDstChainCursor: async () =>
+                    swapDataCursorGenerator(),
                 update: updateSwapDataMock,
             }),
         }));
 
         vi.doMock('../../src/bridge/eventHandler', () => ({
             buildEventHandler: () => ({
-                sendContinueTxForSwapData: vi.fn(),
+                sendContinueTxForSwapData: sendContinueSwapDataMock,
             }),
         }));
         vi.doMock('../../src/bridge/bridgeBlockScanner', () => ({
@@ -61,6 +84,8 @@ describe('[Worker][Unit] Bridge - Bridge service', () => {
      */
     afterEach(() => {
         returnLastBlock = true;
+        checkAllTxTxExist = false;
+        checkAllTxStatus = 'success';
         // Restore all mocks
         vi.restoreAllMocks();
     });
@@ -88,5 +113,30 @@ describe('[Worker][Unit] Bridge - Bridge service', () => {
         await scanEveryBlockchain();
         // Ensure the handle new block has been called
         expect(handleNewBlockMock).toHaveBeenCalledOnce();
+    });
+
+    /**
+     * Handle new block tests
+     */
+    it('[OK] Check All - shouldnt do anything if tx found with wrong status', async () => {
+        checkAllTxTxExist = true;
+
+        await scanEveryBlockchain();
+        // Ensure the handle new block has been called
+        expect(handleNewBlockMock).toHaveBeenCalledOnce();
+    });
+
+    /**
+     * Handle new block tests
+     */
+    it('[OK] Check All - should resend if tx found with wrong status', async () => {
+        checkAllTxTxExist = true;
+        checkAllTxStatus = 'reverted';
+
+        await scanEveryBlockchain();
+        // Ensure the handle new block has been called
+        expect(handleNewBlockMock).toHaveBeenCalledOnce();
+        // Ensure the resent tx method has been called
+        expect(sendContinueSwapDataMock).toHaveBeenCalledOnce();
     });
 });

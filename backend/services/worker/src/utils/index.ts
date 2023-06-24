@@ -1,1 +1,5 @@
-export * from './formatUtils';
+export {
+    buildSwapDataDbDto,
+    buildSwapDataDbDtoFromLogs,
+    placeholderTxId,
+} from './formatUtils';
