@@ -1,5 +1,7 @@
-import { getMultiCallRepository } from '@cashmere-monorepo/backend-blockchain';
-import { getBlockchainRepository } from '@cashmere-monorepo/backend-blockchain/src/repositories/blockchain.repository';
+import {
+    getBlockchainRepository,
+    getMultiCallRepository,
+} from '@cashmere-monorepo/backend-blockchain';
 import { logger, runInMutex } from '@cashmere-monorepo/backend-core';
 import { getBatchedTxRepository } from '@cashmere-monorepo/backend-database';
 import { pick } from 'radash';

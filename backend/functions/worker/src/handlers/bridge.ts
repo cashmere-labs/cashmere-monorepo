@@ -1,4 +1,5 @@
 import { logger } from '@cashmere-monorepo/backend-core';
+import { scanEveryBlockchain } from '@cashmere-monorepo/backend-service-worker/src';
 import { Handler } from 'sst/context';
 
 /**
@@ -9,7 +10,7 @@ export const handler = Handler<'sqs', never, void>('sqs', async () => {
     logger.info('New bridge event handler');
 
     // Run the scanner on each chain
-    // await scanEveryBlockchain();
+    await scanEveryBlockchain();
 });
 
 // TODO: For better parallelism, event queue per chain?
