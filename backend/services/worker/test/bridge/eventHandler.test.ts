@@ -1,6 +1,7 @@
 import {
     CrossChainSwapInitiatedLogType,
     l0ChainIdToConfigMapViem,
+    NATIVE_PLACEHOLDER,
     networkConfigs,
     SwapMessageReceivedLogType,
     SwapPayload,
@@ -20,7 +21,9 @@ type NestedKeyOf<ObjectType extends object> = {
 }[keyof ObjectType & (string | number)];
 
 // Mocked swap data db dto
-const mockedSwapDataDbDto: SwapDataDbDto = {
+const mockedSwapDataDbDto = (
+    skipProcessing: boolean = false
+): SwapDataDbDto => ({
     swapId: '0x000000000',
     chains: {
         srcChainId: 1,
@@ -41,12 +44,20 @@ const mockedSwapDataDbDto: SwapDataDbDto = {
     },
     status: {},
     progress: {},
-};
+    skipProcessing,
+});
+
+const mockedSwapMessagePayload = ('0x00010002' +
+    '000000000000000000000000000000000000acab' +
+    '0000000000000000000000000000000000000000000000000000000000000000' +
+    '000000000000000000000000000000000000acab' +
+    '00') as Hex;
 
 describe('[Worker][Unit] Bridge - Event handler', () => {
     // Do we mock the swap data
     let mockSwapData = true;
     let isValidDstContractAddress = true;
+    let swapDataSkipProcessing = false;
 
     // The mock for the batched tx
     const sqsClientMock = mockClient(sqsClient);
@@ -76,7 +87,9 @@ describe('[Worker][Unit] Bridge - Event handler', () => {
             getSwapDataRepository: () => ({
                 // TODO: Mocked input for the initial swap data
                 get: async (id: string): Promise<SwapDataDbDto | undefined> =>
-                    mockSwapData ? mockedSwapDataDbDto : undefined,
+                    mockSwapData
+                        ? mockedSwapDataDbDto(swapDataSkipProcessing)
+                        : undefined,
                 save: async (
                     swapData: SwapDataDbDto
                 ): Promise<SwapDataDbDto | undefined> => swapData,
@@ -121,13 +134,22 @@ describe('[Worker][Unit] Bridge - Event handler', () => {
                 tokenDecimal: () => 18,
             }),
             // Bridge mock
-            getBridgeRepository: () => vi.fn(),
+            getBridgeRepository: () => ({
+                getReceivedSwap: async () => ({
+                    id: '0x0000000',
+                    amount: 1n,
+                    fee: 2n,
+                    payload: mockedSwapMessagePayload,
+                }),
+            }),
             // Swap payload
             SwapPayload: SwapPayload,
             // Chain id mapping mock
-            l0ChainIdToConfigMapViem: l0ChainIdToConfigMapViem,
+            l0ChainIdToConfigMapViem,
             // network configs mock
-            networkConfigs: networkConfigs,
+            networkConfigs,
+            // Native placeholder
+            NATIVE_PLACEHOLDER,
         }));
 
         // TODO: Do the mock's required
@@ -151,6 +173,7 @@ describe('[Worker][Unit] Bridge - Event handler', () => {
         // Reset our mock value
         mockSwapData = true;
         isValidDstContractAddress = true;
+        swapDataSkipProcessing = false;
         // Reset our sqs client mock
         sqsClientMock.reset();
         // Restore all mocks
@@ -183,11 +206,7 @@ describe('[Worker][Unit] Bridge - Event handler', () => {
                 transactionIndex: 0,
                 logIndex: 0,
                 args: {
-                    payload: ('0x00010002' +
-                        '000000000000000000000000000000000000acab' +
-                        '0000000000000000000000000000000000000000000000000000000000000000' +
-                        '000000000000000000000000000000000000acab' +
-                        '00') as Hex,
+                    payload: mockedSwapMessagePayload,
                     dstChainId: TEST_CHAIN_ID,
                     id: '0xacab',
                     amount: 13n,
@@ -257,7 +276,7 @@ describe('[Worker][Unit] Bridge - Event handler', () => {
      */
     describe('sendContinueTxForSwapData', () => {
         it('[Ok] - Should send a continue swap tx', async () => {
-            await sendContinueTxForSwapData(mockedSwapDataDbDto);
+            await sendContinueTxForSwapData(mockedSwapDataDbDto());
             expect(sqsClientMock.call(0)).toBeDefined();
             expect(sqsClientMock.call(1)).toBeNull();
         });
@@ -292,8 +311,109 @@ describe('[Worker][Unit] Bridge - Event handler', () => {
                     },
                 })
             ).to.rejects.toThrow();
+            // Make the call
+            // @ts-ignore
+            await expect(
+                handleSwapPerformedEvent({
+                    blockNumber: 1n,
+                    transactionHash: '0x0',
+                    transactionIndex: 0,
+                    logIndex: 0,
+                    args: {
+                        // @ts-ignore
+                        _message: {
+                            id: '0xdeadbeef',
+                        },
+                    },
+                })
+            ).to.rejects.toThrow();
             // Assert that no message was pushed to the queue
             expect(sqsClientMock.call(0)).toBeNull();
+        });
+
+        it('[Ok] - Should be good with existing swap', async () => {
+            // Make the call
+            // @ts-ignore
+            await handleSwapPerformedEvent({
+                blockNumber: 1n,
+                transactionIndex: 0,
+                transactionHash: '0x0',
+                logIndex: 0,
+                args: {
+                    _message: {
+                        id: '0xdeadbeef',
+                        srcChainId: TEST_CHAIN_ID,
+                        srcPoolId: 1,
+                        dstPoolId: 2,
+                        amount: 1n,
+                        fee: 2n,
+                        vouchers: 3n,
+                        optimalDstBandwidth: 3n,
+                        receiver: '0xdeadbeef',
+                        payload: '0xdeadbeef',
+                    },
+                },
+            });
+            // Assert that no message was pushed to the queue
+            expect(sqsClientMock.call(0)).toBeDefined();
+            expect(sqsClientMock.call(1)).toBeNull();
+        });
+
+        it('[Ok] - Should not send anything if skip processing was skipped', async () => {
+            swapDataSkipProcessing = true;
+            // Make the call
+            // @ts-ignore
+            await handleSwapPerformedEvent({
+                blockNumber: 1n,
+                transactionIndex: 0,
+                transactionHash: '0x0',
+                logIndex: 0,
+                args: {
+                    _message: {
+                        id: '0xdeadbeef',
+                        srcChainId: TEST_CHAIN_ID,
+                        srcPoolId: 1,
+                        dstPoolId: 2,
+                        amount: 1n,
+                        fee: 2n,
+                        vouchers: 3n,
+                        optimalDstBandwidth: 3n,
+                        receiver: '0xdeadbeef',
+                        payload: '0xdeadbeef',
+                    },
+                },
+            });
+            // Assert that no message was pushed to the queue
+            expect(sqsClientMock.call(0)).toBeNull();
+        });
+
+        it('[Ok] - Should be good with non saved swap', async () => {
+            mockSwapData = false;
+            // Make the call
+            // @ts-ignore
+            await handleSwapPerformedEvent({
+                blockNumber: 1n,
+                transactionIndex: 0,
+                transactionHash: '0x0',
+                logIndex: 0,
+                args: {
+                    _message: {
+                        id: '0xdeadbeef',
+                        srcChainId: TEST_CHAIN_ID,
+                        srcPoolId: 1,
+                        dstPoolId: 2,
+                        amount: 1n,
+                        fee: 2n,
+                        vouchers: 3n,
+                        optimalDstBandwidth: 3n,
+                        receiver: '0xdeadbeef',
+                        payload: '0xdeadbeef',
+                    },
+                },
+            });
+            // Assert that no message was pushed to the queue
+            expect(sqsClientMock.call(0)).toBeDefined();
+            expect(sqsClientMock.call(1)).toBeNull();
         });
     });
 });
