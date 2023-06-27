@@ -19,6 +19,6 @@
         "async-mutex": "^0.4.0",
         "pino": "^8.14.1",
         "pino-lambda": "^4.2.1",
-        "radash": "^10.9.0"
+        "radash": "^11.0.0"
     }
 }

@@ -19,7 +19,7 @@
     "devDependencies": {
         "@types/node": "^18.16.18",
         "@vitest/coverage-v8": "^0.32.2",
-        "@vitest/ui": "^0.31.4",
+        "@vitest/ui": "^0.32.2",
         "clear-module": "^4.1.2",
         "vitest": "^0.32.2"
     }

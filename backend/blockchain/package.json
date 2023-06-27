@@ -9,7 +9,7 @@
     "dependencies": {
         "@cashmere-monorepo/backend-core": "workspace:^",
         "@cashmere-monorepo/shared-blockchain": "workspace:^",
-        "radash": "^10.9.0",
+        "radash": "^11.0.0",
         "viem": "^1.1.8"
     },
     "devDependencies": {

@@ -10,7 +10,7 @@
         "@cashmere-monorepo/backend-service-progress": "workspace:^",
         "@cashmere-monorepo/backend-service-websocket": "workspace:^",
         "@cashmere-monorepo/shared-contract-progress": "workspace:^",
-        "viem": "^0.3.50"
+        "viem": "^1.1.8"
     },
     "devDependencies": {
         "@types/aws-lambda": "^8.10.119",
