@@ -162,21 +162,19 @@ describe('[Worker][Unit] Bridge - Event handler', () => {
     describe('handleSwapInitiatedEvent', () => {
         it("[Ok] - Shouldn't do anything with empty logs", async () => {
             // Make the call
-            // @ts-ignore
             const result = await handleSwapInitiatedEvent({
                 blockNumber: 1n,
                 transactionHash: '0x0',
                 transactionIndex: 0,
                 logIndex: 0,
                 args: {},
-            });
+            } as unknown as CrossChainSwapInitiatedLogType);
             // Ensure it's undefined
             expect(result).to.be.undefined;
         });
 
         it("[Ok] - Shouldn't do anything with no tx hash", async () => {
             // Make the call
-            // @ts-ignore
             const result = await handleSwapInitiatedEvent({
                 blockNumber: 1n,
                 transactionIndex: 0,
@@ -188,14 +186,13 @@ describe('[Worker][Unit] Bridge - Event handler', () => {
                     amount: 13n,
                     fee: 13n,
                 },
-            });
+            } as unknown as CrossChainSwapInitiatedLogType);
             // Ensure it's undefined
             expect(result).to.be.undefined;
         });
 
         it('[Ok] - Should be good with new swap data', async () => {
             // Make the call
-            // @ts-ignore
             const result = await handleSwapInitiatedEvent({
                 blockNumber: 1n,
                 transactionHash: '0x0',
@@ -212,7 +209,7 @@ describe('[Worker][Unit] Bridge - Event handler', () => {
                     amount: 13n,
                     fee: 13n,
                 },
-            });
+            } as unknown as CrossChainSwapInitiatedLogType);
             // Ensure it's undefined
             expect(result).toBeDefined();
             expect(result?.swapId).toBe('0xacab');
@@ -222,7 +219,6 @@ describe('[Worker][Unit] Bridge - Event handler', () => {
         it('[Ok] - Should skip processing if not the right address', async () => {
             isValidDstContractAddress = false;
             // Make the call
-            // @ts-ignore
             const result = await handleSwapInitiatedEvent({
                 blockNumber: 1n,
                 transactionHash: '0x0',
@@ -239,7 +235,7 @@ describe('[Worker][Unit] Bridge - Event handler', () => {
                     amount: 13n,
                     fee: 13n,
                 },
-            });
+            } as unknown as CrossChainSwapInitiatedLogType);
             // Ensure it's undefined
             expect(result).toBeDefined();
             expect(result?.swapId).toBe('0xacab');
@@ -261,20 +257,18 @@ describe('[Worker][Unit] Bridge - Event handler', () => {
     describe('handleSwapPerformedEvent', () => {
         it("[Ok] - Shouldn't do anything with no tx hash", async () => {
             // Make the call
-            // @ts-ignore
             await handleSwapPerformedEvent({
                 blockNumber: 1n,
                 transactionIndex: 0,
                 logIndex: 0,
                 args: {},
-            });
+            } as unknown as SwapMessageReceivedLogType);
             // Assert that no message was pushed to the queue
             expect(sqsClientMock.call(0)).toBeNull();
         });
 
         it('[Fail] - Should fail with invalid message', async () => {
             // Make the call
-            // @ts-ignore
             await expect(
                 handleSwapPerformedEvent({
                     blockNumber: 1n,
@@ -288,7 +282,6 @@ describe('[Worker][Unit] Bridge - Event handler', () => {
                 })
             ).to.rejects.toThrow();
             // Make the call
-            // @ts-ignore
             await expect(
                 handleSwapPerformedEvent({
                     blockNumber: 1n,
@@ -309,7 +302,6 @@ describe('[Worker][Unit] Bridge - Event handler', () => {
 
         it('[Ok] - Should be good with existing swap', async () => {
             // Make the call
-            // @ts-ignore
             await handleSwapPerformedEvent({
                 blockNumber: 1n,
                 transactionIndex: 0,
@@ -329,7 +321,7 @@ describe('[Worker][Unit] Bridge - Event handler', () => {
                         payload: '0xdeadbeef',
                     },
                 },
-            });
+            } as unknown as SwapMessageReceivedLogType);
             // Assert that no message was pushed to the queue
             expect(sqsClientMock.call(0)).toBeDefined();
             expect(sqsClientMock.call(1)).toBeNull();
@@ -338,7 +330,6 @@ describe('[Worker][Unit] Bridge - Event handler', () => {
         it('[Ok] - Should not send anything if skip processing was skipped', async () => {
             swapDataSkipProcessing = true;
             // Make the call
-            // @ts-ignore
             await handleSwapPerformedEvent({
                 blockNumber: 1n,
                 transactionIndex: 0,
@@ -358,7 +349,7 @@ describe('[Worker][Unit] Bridge - Event handler', () => {
                         payload: '0xdeadbeef',
                     },
                 },
-            });
+            } as unknown as SwapMessageReceivedLogType);
             // Assert that no message was pushed to the queue
             expect(sqsClientMock.call(0)).toBeNull();
         });
@@ -366,7 +357,6 @@ describe('[Worker][Unit] Bridge - Event handler', () => {
         it('[Ok] - Should be good with non saved swap', async () => {
             mockSwapData = false;
             // Make the call
-            // @ts-ignore
             await handleSwapPerformedEvent({
                 blockNumber: 1n,
                 transactionIndex: 0,
@@ -386,7 +376,7 @@ describe('[Worker][Unit] Bridge - Event handler', () => {
                         payload: '0xdeadbeef',
                     },
                 },
-            });
+            } as unknown as SwapMessageReceivedLogType);
             // Assert that no message was pushed to the queue
             expect(sqsClientMock.call(0)).toBeDefined();
             expect(sqsClientMock.call(1)).toBeNull();
