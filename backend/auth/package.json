@@ -13,11 +13,11 @@
         "@cashmere-monorepo/shared-contract-auth": "workspace:^"
     },
     "devDependencies": {
-        "@types/aws-lambda": "^8.10.116",
-        "@types/node": "^18.16.16",
-        "@vitest/coverage-v8": "^0.32.0",
-        "@vitest/ui": "^0.31.1",
+        "@types/aws-lambda": "^8.10.119",
+        "@types/node": "^18.16.18",
+        "@vitest/coverage-v8": "^0.32.2",
+        "@vitest/ui": "^0.31.4",
         "sst": "2.17.5",
-        "vitest": "^0.32.0"
+        "vitest": "^0.32.2"
     }
 }
