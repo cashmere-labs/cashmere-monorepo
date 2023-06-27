@@ -1,1 +1,1 @@
-export * from './bridgeService';
+export { scanEveryBlockchain } from './bridgeService';

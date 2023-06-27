@@ -17,7 +17,7 @@ import {
     http,
     parseEther,
 } from 'viem';
-import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
+import { privateKeyToAccount } from 'viem/accounts';
 import { polygonMumbai } from 'viem/chains';
 import { afterAll, afterEach, beforeAll } from 'vitest';
 
@@ -29,11 +29,14 @@ export let snapshotId: Hash;
 export let testClient: TestClient;
 // Normal chain client
 export let anvilClient: PublicClient;
-// Test account
+// Test account (private key from anvil)
+export const testPrivateKey =
+    '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80';
 export let testAccount: Account;
 // Test wallet
 export let testWallet: WalletClient;
 export const TEST_CHAIN_ID = 10050;
+export const TEST_CHAIN_ID_EMPTY_CONFIG = 10051;
 
 beforeAll(async () => {
     // Get config for polygon chain
@@ -41,17 +44,26 @@ beforeAll(async () => {
     // Start up Anvil
     anvil = createAnvil({
         forkUrl: polygonConfig.rpcUrl,
+        forkBlockNumber: 36852846n,
         chainId: TEST_CHAIN_ID,
     });
     await anvil.start();
 
     // Create test chain definition
     const chain: Chain = {
+        ...polygonMumbai,
         id: TEST_CHAIN_ID,
         name: 'Anvil',
         network: 'anvil',
-        nativeCurrency: { ...polygonMumbai.nativeCurrency },
-        rpcUrls: { ...polygonMumbai.rpcUrls },
+    };
+
+    // Create test chain definition
+    const chainNoConf: Chain = {
+        id: TEST_CHAIN_ID_EMPTY_CONFIG,
+        name: 'Anvil-empty',
+        network: 'anvil-empty',
+        nativeCurrency: polygonMumbai.nativeCurrency,
+        rpcUrls: polygonMumbai.rpcUrls,
     };
 
     // Create clients
@@ -66,7 +78,7 @@ beforeAll(async () => {
         transport,
     });
     // Generate test account
-    testAccount = privateKeyToAccount(generatePrivateKey());
+    testAccount = privateKeyToAccount(testPrivateKey);
     testWallet = createWalletClient({
         account: testAccount,
         chain,
@@ -75,8 +87,14 @@ beforeAll(async () => {
 
     // Add test chain to network configs
     chainIdsToNames[TEST_CHAIN_ID] = 'mumbai';
+    chainIdsToNames[TEST_CHAIN_ID_EMPTY_CONFIG] = 'mumbai';
     networkConfigs[TEST_CHAIN_ID] = new BlockchainConfig(
         chain,
+        `http://${anvil.host}:${anvil.port}`,
+        10000
+    );
+    networkConfigs[TEST_CHAIN_ID_EMPTY_CONFIG] = new BlockchainConfig(
+        chainNoConf,
         `http://${anvil.host}:${anvil.port}`,
         10000
     );

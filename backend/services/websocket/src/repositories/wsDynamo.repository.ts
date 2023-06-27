@@ -5,7 +5,6 @@ import {
 } from '@aws-sdk/client-dynamodb';
 import { dynamoDbClient } from '@cashmere-monorepo/backend-core/src/utils';
 import { Table } from 'sst/node/table';
-import { defaultRoomId } from '../session';
 
 /**
  * Save a new connection in our dynamo db table
@@ -18,7 +17,7 @@ export const saveNewConnection = async (connectionId: string, roomId: string) =>
             TableName: Table.WebSocketDynamo.tableName,
             Item: {
                 id: { S: connectionId },
-                room: { S: defaultRoomId },
+                room: { S: roomId },
             },
         })
     );

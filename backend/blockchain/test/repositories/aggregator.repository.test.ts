@@ -48,7 +48,16 @@ describe('[Backend][Blockchain] Aggregator repository', async () => {
         // And verify that it was retrieved and parsed correctly
         expect(await aggregatorRepository.getStartSwapArgs(tx)).toMatchObject({
             functionName: 'startSwap',
-            ...startSwapParams,
+            ...{
+                ...startSwapParams,
+                args: [
+                    {
+                        ...startSwapParams.args[0],
+                        srcAmount: '1',
+                        minHgsAmount: '5',
+                    },
+                ],
+            },
         });
     });
 

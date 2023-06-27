@@ -1,2 +1,2 @@
-export * from './batchedTxService';
-export * from './createdBatchedTx';
+export { buildBatchedTxService } from './batchedTxService';
+export { createBatchedTx } from './createdBatchedTx';

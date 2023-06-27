@@ -1,4 +1,4 @@
-import { Connection } from 'mongoose';
+import { Connection, ObjectId } from 'mongoose';
 import { BatchedTxDbDto } from '../dto';
 import { BatchedTxSchema } from '../schema';
 import { getMongooseConnection } from '../utils/connection';
@@ -31,7 +31,10 @@ export const getBatchedTxRepository =
  */
 const buildBatchedTxRepository = (connection: Connection) => {
     // Get our user model
-    const model = connection.model('BatchedTx', BatchedTxSchema);
+    const model = connection.model<BatchedTxDbDto>(
+        'BatchedTx',
+        BatchedTxSchema
+    );
     // Return all the function needed to interact with the batched tx model
     return {
         /**
@@ -48,7 +51,7 @@ const buildBatchedTxRepository = (connection: Connection) => {
         /**
          * Create a new batched tx
          */
-        async create(batchedTx: Omit<BatchedTxDbDto, 'status'>) {
+        async create(batchedTx: Omit<BatchedTxDbDto, 'status' | '_id'>) {
             await model.create({
                 ...batchedTx,
                 status: { type: 'queued' },
@@ -59,11 +62,34 @@ const buildBatchedTxRepository = (connection: Connection) => {
          * Get the txs to send for a given chain
          * @param chainId
          */
-        async getPendingTxForChain(chainId: number) {
+        getPendingTxForChain(
+            chainId: number
+        ): Promise<(BatchedTxDbDto & { _id: ObjectId })[]> {
             return model.find({
                 chainId,
                 'status.type': 'queued',
             });
+        },
+
+        /**
+         * Update the status of multiple batched txs
+         */
+        updateTxsStatus(
+            txIds: ObjectId[],
+            newStatus: 'sent' | 'failed',
+            txHash?: string
+        ) {
+            return model.updateMany(
+                {
+                    _id: { $in: txIds },
+                },
+                {
+                    $set: {
+                        'status.type': newStatus,
+                        'status.hash': txHash,
+                    },
+                }
+            );
         },
     };
 };

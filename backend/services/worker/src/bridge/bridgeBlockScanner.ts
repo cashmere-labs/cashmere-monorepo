@@ -1,8 +1,8 @@
 import {
     getAssetRouterRepository,
+    getBlockchainRepository,
     getBridgeRepository,
 } from '@cashmere-monorepo/backend-blockchain';
-import { getBlockchainRepository } from '@cashmere-monorepo/backend-blockchain/src/repositories/blockchain.repository';
 import { logger } from '@cashmere-monorepo/backend-core';
 import { try as inlineTry } from 'radash';
 import { buildEventHandler } from './eventHandler';
@@ -14,7 +14,7 @@ import { buildEventHandler } from './eventHandler';
 export const buildBridgeBlockScanner = async (chainId: number) => {
     const eventHandler = await buildEventHandler(chainId);
 
-    // Fetch some repo we will use every where
+    // Fetch some repo we will use everywhere
     const blockchainRepository = getBlockchainRepository(chainId);
     const assetRouterRepository = getAssetRouterRepository(chainId);
     const bridgeRepository = getBridgeRepository(chainId);
