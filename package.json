@@ -10,7 +10,6 @@
         "dev": "pnpm package && sst dev",
         "build": "pnpm package && nx run-many --target=build --all --parallel=4 && sst build",
         "deploy": "pnpm package && pnpm build && sst deploy",
-        "deploy:pr": "sst deploy",
         "remove": "sst remove",
         "console": "sst console",
         "test": "pnpm run lint:check && pnpm run format:check && sst bind \"vitest run --coverage --no-threads\"",

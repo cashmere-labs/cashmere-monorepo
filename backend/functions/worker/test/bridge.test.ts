@@ -19,10 +19,20 @@ describe('bridgeHandler', () => {
     });
 
     it('should log a message and execute the bridge event handler', async () => {
+        vi.stubEnv('STAGE', 'prod');
         vi.mocked(scanEveryBlockchain).mockResolvedValue(undefined);
 
         await handler();
 
-        expect(scanEveryBlockchain).toHaveBeenCalled();
+        expect(scanEveryBlockchain).toHaveBeenCalledOnce();
+    });
+
+    it('shouldnt do anything if not in prod', async () => {
+        vi.stubEnv('STAGE', 'test');
+        vi.mocked(scanEveryBlockchain).mockResolvedValue(undefined);
+
+        await handler();
+
+        expect(scanEveryBlockchain).not.toHaveBeenCalledOnce();
     });
 });
