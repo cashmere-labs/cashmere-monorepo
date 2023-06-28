@@ -1,14 +1,18 @@
 import { buildSstApiGatewayContract } from '@cashmere-monorepo/shared-contract-core';
 import { Type } from '@sinclair/typebox';
 
-// The schema for the request query parameters
-export const transactionsListQueryParamsType = Type.Object({
+/**
+ * Typebox schema for the transactions list query params
+ */
+const transactionsListQueryParamsType = Type.Object({
     account: Type.String(),
     type: Type.Optional(Type.Union([Type.Literal('complete')])),
     page: Type.Optional(Type.Number()),
 });
 
-// Typebox schema for the SwapDataDbDto
+/**
+ * Typebox schema for the transactions list response
+ */
 const SwapDataResponseDtoType = Type.Object({
     swapId: Type.String(),
     chains: Type.Object({
@@ -50,13 +54,17 @@ const SwapDataResponseDtoType = Type.Object({
     skipProcessing: Type.Optional(Type.Boolean()),
 });
 
-// Typebox schema for the response body
-export const transactionsListResponseBodyType = Type.Object({
+/**
+ * Typebox schema for the transactions list response
+ */
+const transactionsListResponseBodyType = Type.Object({
     count: Type.Number(),
     items: Type.Array(SwapDataResponseDtoType),
 });
 
-// SST API Gateway contract
+/**
+ * Contract for the transactions list
+ */
 export const transactionsListContract = buildSstApiGatewayContract({
     id: 'transactions-list',
     path: '/api/transactionsList',

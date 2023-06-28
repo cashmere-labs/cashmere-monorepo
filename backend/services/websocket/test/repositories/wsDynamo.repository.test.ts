@@ -71,7 +71,7 @@ describe('[Services][Websocket] DynamoDB repository', () => {
                 TableName: 'WebSocketDynamo',
                 Item: {
                     id: { S: '123' },
-                    room: { S: 'default' },
+                    room: { S: 'abc' },
                 },
             }).input
         );

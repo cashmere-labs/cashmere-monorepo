@@ -1,9 +1,6 @@
-import { ContractApiGatewayRoute } from '@cashmere-monorepo/backend-core';
+import { MultiContractsApiGatewayRoute } from '@cashmere-monorepo/backend-core/contracts/MultiContractApiGatewayRoute';
 import { CoreStack } from '@cashmere-monorepo/backend-core/stacks/CoreStack';
-import {
-    estimateSwapContract,
-    swapParamsContract,
-} from '@cashmere-monorepo/shared-contract-swap-params';
+import { swapParamsApiContracts } from '@cashmere-monorepo/shared-contract-swap-params';
 import { Api, StackContext, use } from 'sst/constructs';
 
 const path = './backend/functions/swap-params/src';
@@ -16,20 +13,14 @@ export function SwapParamsStack({ stack }: StackContext) {
     });
 
     // Add the contract routes
-    api.addRoutes(
-        stack,
-        ContractApiGatewayRoute(
-            `${path}/handlers/estimate-swap-params.handler`,
-            estimateSwapContract
-        )
-    );
-    api.addRoutes(
-        stack,
-        ContractApiGatewayRoute(
-            `${path}/handlers/get-swap-params.handler`,
-            swapParamsContract
-        )
-    );
+    MultiContractsApiGatewayRoute(stack, api, swapParamsApiContracts, {
+        estimateSwapContract: {
+            handler: `${path}/handlers/estimate-swap-params.handler`,
+        },
+        swapParamsContract: {
+            handler: `${path}/handlers/get-swap-params.handler`,
+        },
+    });
 
     // Add the outputs to our stack
     stack.addOutputs({

@@ -4,14 +4,17 @@ import {
 } from '@cashmere-monorepo/shared-contract-core';
 import { Type } from '@sinclair/typebox';
 
-// The schema for the response body
-export const refreshResponseBodyType = Type.Object({
+/**
+ * Typebox schema for the response body
+ */
+const refreshResponseBodyType = Type.Object({
     accessToken: Type.String(),
     refreshToken: Type.String(),
 });
 
-// Get the api path into account when building the contract
-// TODO : Maybe an export of the whole API routes contracts, with path? Used by front & back
+/**
+ * Contract for the refresh endpoint
+ */
 export const refreshContract = buildSstApiGatewayContract({
     id: 'auth-refresh',
     path: '/auth/refresh',

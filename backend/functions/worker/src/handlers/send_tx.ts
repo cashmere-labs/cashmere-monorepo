@@ -1,10 +1,6 @@
-import {
-    logger,
-    useLogger,
-    validateTypeOrThrow,
-} from '@cashmere-monorepo/backend-core';
+import { logger, validateTypeOrThrow } from '@cashmere-monorepo/backend-core';
 import { buildBatchedTxService } from '@cashmere-monorepo/backend-service-worker';
-import { getSendTxQueueTypeCompiler } from '@cashmere-monorepo/shared-contract-worker/src/sendTx';
+import { getSendTxQueueTypeCompiler } from '@cashmere-monorepo/shared-contract-worker';
 import { SQSBatchResponse, SQSEvent } from 'aws-lambda';
 import { Handler } from 'sst/context';
 
@@ -20,7 +16,6 @@ export const handler = Handler(
     'sqs',
     async (event: SQSEvent): Promise<SQSBatchResponse> => {
         // Setup our logger
-        useLogger();
         logger.info('Send TX handler');
 
         // Get our batched tx service

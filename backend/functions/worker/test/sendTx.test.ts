@@ -4,7 +4,7 @@ import {
     validateTypeOrThrow,
 } from '@cashmere-monorepo/backend-core';
 import { buildBatchedTxService } from '@cashmere-monorepo/backend-service-worker';
-import { getSendTxQueueTypeCompiler } from '@cashmere-monorepo/shared-contract-worker/src/sendTx';
+import { getSendTxQueueTypeCompiler } from '@cashmere-monorepo/shared-contract-worker';
 import { SQSEvent } from 'aws-lambda';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { handler } from '../src/handlers/send_tx';

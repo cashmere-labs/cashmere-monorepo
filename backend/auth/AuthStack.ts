@@ -1,11 +1,6 @@
-import { ContractApiGatewayRoute } from '@cashmere-monorepo/backend-core/contracts';
+import { MultiContractsApiGatewayRoute } from '@cashmere-monorepo/backend-core/contracts/MultiContractApiGatewayRoute';
 import { CoreStack } from '@cashmere-monorepo/backend-core/stacks/CoreStack';
-import {
-    loginContract,
-    logoutContract,
-    nonceContract,
-    refreshContract,
-} from '@cashmere-monorepo/shared-contract-auth';
+import { loginApiContracts } from '@cashmere-monorepo/shared-contract-auth';
 import {
     Api,
     ApiAuthorizer,
@@ -44,43 +39,26 @@ export function AuthStack({ stack }: StackContext) {
     });
 
     // Add the contract routes
-    api.addRoutes(
-        stack,
-        ContractApiGatewayRoute(
-            `${path}/handlers/login-auth.handler`,
-            loginContract
-        )
-    );
-    api.addRoutes(
-        stack,
-        ContractApiGatewayRoute(
-            `${path}/handlers/logout-auth.handler`,
-            logoutContract,
-            undefined,
-            {
+    MultiContractsApiGatewayRoute(stack, api, loginApiContracts, {
+        loginContract: {
+            handler: `${path}/handlers/login-auth.handler`,
+        },
+        logoutContract: {
+            handler: `${path}/handlers/logout-auth.handler`,
+            routeProps: {
                 authorizer: 'accessTokenAuthorizer',
-            }
-        )
-    );
-    api.addRoutes(
-        stack,
-        ContractApiGatewayRoute(
-            `${path}/handlers/nonce-auth.handler`,
-            nonceContract
-        )
-    );
-    api.addRoutes(
-        stack,
-        ContractApiGatewayRoute(
-            `${path}/handlers/refresh-auth.handler`,
-            refreshContract,
-            undefined,
-            {
+            },
+        },
+        nonceContract: {
+            handler: `${path}/handlers/nonce-auth.handler`,
+        },
+        refreshContract: {
+            handler: `${path}/handlers/refresh-auth.handler`,
+            routeProps: {
                 authorizer: 'refreshTokenAuthorizer',
-            }
-        )
-    );
-
+            },
+        },
+    });
     // Add the outputs to our stack
     stack.addOutputs({
         AuthEndpoint: api.url,

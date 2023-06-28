@@ -2,8 +2,10 @@ import { CustomType } from '@cashmere-monorepo/shared-contract-core';
 import { Type } from '@sinclair/typebox';
 import { TypeCompiler } from '@sinclair/typebox/compiler';
 
-// The type for our send tx queue
-export const sendTxQueueType = Type.Object({
+/**
+ * Typebox schema for the send tx queue
+ */
+const sendTxQueueType = Type.Object({
     chainId: Type.Number(),
     priority: Type.Number(),
     target: CustomType.Address(),

@@ -1,7 +1,9 @@
 import { CustomType } from '@cashmere-monorepo/shared-contract-core';
 import { Type } from '@sinclair/typebox';
 
-// Typebox schema for SIWE message
+/**
+ * Typebox schema for the siwe message
+ */
 export const SiweMessageType = Type.Object({
     address: CustomType.Address(),
     chainId: Type.Number(),

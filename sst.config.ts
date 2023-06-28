@@ -11,9 +11,8 @@ export default {
     config(_input) {
         return {
             profile: 'monorepo-swarmion-dev',
-            name: 'cashmere-monorepo',
+            name: 'cashmere',
             region: 'us-east-1',
-            stage: process.env.CI ? 'github-actions' : undefined,
         };
     },
     stacks(app) {
@@ -22,8 +21,8 @@ export default {
             app.setDefaultRemovalPolicy('destroy');
         }
         app.setDefaultFunctionProps({
-            // Log param's
-            logRetention: 'two_weeks',
+            // Log param's (CI is only test & dev / prod env, so keep logs for 2 weeks)
+            logRetention: process.env.CI ? 'two_weeks' : 'one_day',
             // Function generic params
             memorySize: '512 MB',
             timeout: '30 seconds',

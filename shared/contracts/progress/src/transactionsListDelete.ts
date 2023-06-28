@@ -1,16 +1,19 @@
-// transactionsListDelete.ts
 import {
     buildSstApiGatewayContract,
     CustomType,
 } from '@cashmere-monorepo/shared-contract-core';
 import { Type } from '@sinclair/typebox';
 
-// Typebox schema for the response body
-export const transactionsListDeleteResponseBodyType = Type.Object({
+/**
+ * Typebox schema for the transactions list delete response
+ */
+const transactionsListDeleteResponseBodyType = Type.Object({
     message: Type.String(),
 });
 
-// SST API Gateway contract
+/**
+ * Typebox schema for the transactions list delete query params
+ */
 export const transactionsListDeleteContract = buildSstApiGatewayContract({
     id: 'transactions-list-delete',
     path: '/api/transactionsList',

@@ -1,28 +1,30 @@
 on:
-    pull_request:
-        types: [opened, synchronize, reopened]
+    push:
+        branches:
+            - main
+            - staging
 
-# Only allow one pr at a time (since we deploy the stack each time)
+# cancel previous runs on the same PR
 concurrency:
-    group: 'unit-test'
+    group: ${{ github.ref }}
+    cancel-in-progress: true
 
-name: ⛷ PR tests
+name: 🚀 Deploy
 
 env:
     CI: true
+
+permissions:
+    id-token: write # This is required for requesting the JWT
+    contents: read # This is required for actions/checkout
 
 defaults:
     run:
         shell: bash
 
-permissions:
-    id-token: write # This is required for requesting the JWT
-    contents: read # This is required for actions/checkout
-    pull-requests: write # This is required for reporting the coverage
-
 jobs:
-    build-and-test:
-        name: 🏗 Build Project & 🧪 Run Tests
+    deploy-to-env:
+        name: 🚀 Deploy
         runs-on: ubuntu-latest
         timeout-minutes: 30
         steps:
@@ -34,15 +36,20 @@ jobs:
             - uses: nrwl/nx-set-shas@v3
             - uses: pnpm/action-setup@v2.2.3
 
+            - name: '🔧 Setup environment'
+              run: |
+                  if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+                    echo "STAGE=prod" >> $GITHUB_ENV
+                  elif [[ "${{ github.ref }}" == "refs/heads/staging" ]]; then
+                    echo "STAGE=dev" >> $GITHUB_ENV
+                  fi
+
             - name: '🔨 Setup Node.js'
               id: setup-node
               uses: actions/setup-node@v3
               with:
                   node-version-file: '.nvmrc'
                   cache: 'pnpm'
-
-            - name: '🔨 Setup Anvil (foundry)'
-              uses: foundry-rs/foundry-toolchain@v1
 
             - name: '🔨 Install dependencies'
               run: pnpm install --frozen-lockfile
@@ -59,6 +66,12 @@ jobs:
                       ${{ runner.os }}-nx-cache-${{ steps.setup-node.outputs.node-version }}-
                       ${{ runner.os }}-nx-cache-
 
+            - name: '💄 Check lint'
+              run: pnpm run lint:check
+
+            - name: '💄 Check format'
+              run: pnpm format:check
+
             - name: '👥 Configure AWS Credentials'
               uses: aws-actions/configure-aws-credentials@v2
               with:
@@ -69,19 +82,5 @@ jobs:
             - name: '🏗 Package'
               run: pnpm run build
 
-            - name: '💄 Check lint'
-              run: pnpm run lint:check
-
-            - name: '💄 Check format'
-              run: pnpm format:check
-
-            - name: '🚀 Deploy to AWS with test'
-              id: aws_deploy
-              run: pnpm sst --stage test deploy
-
-            - name: '🧪 Run tests'
-              run: pnpm sst bind "vitest run --coverage --no-threads"
-
-            - name: '📈 Report Coverage'
-              if: always() # Also generate the report if tests are failing
-              uses: davelosert/vitest-coverage-report-action@v1
+            - name: '🚀 Deploy'
+              run: pnpm sst deploy --stage $STAGE
