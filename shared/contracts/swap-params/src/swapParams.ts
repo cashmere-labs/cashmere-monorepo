@@ -1,10 +1,10 @@
 import { buildSstApiGatewayContract } from '@cashmere-monorepo/shared-contract-core';
 import { Type } from '@sinclair/typebox';
 
-// TODO: Should create generic type for chain id's, amount, token addresses, etc. (with specific type validation rules, like number etc)
-
-// The schema for the request query parameters
-export const swapParamsQueryParamsType = Type.Object({
+/**
+ * This is the query params for the swap params API.
+ */
+const swapParamsQueryParamsType = Type.Object({
     srcChainId: Type.String(),
     dstChainId: Type.String(),
     amount: Type.String(),
@@ -13,8 +13,10 @@ export const swapParamsQueryParamsType = Type.Object({
     receiver: Type.String(),
 });
 
-// Typebox schema for the response body
-export const swapParamsResponseBodyType = Type.Object({
+/**
+ * This is the response body for the swap params API.
+ */
+const swapParamsResponseBodyType = Type.Object({
     args: Type.Object({
         srcToken: Type.String(),
         srcAmount: Type.String(),
@@ -30,6 +32,9 @@ export const swapParamsResponseBodyType = Type.Object({
     swapData: Type.Any(), // TODO: Add type
 });
 
+/**
+ * This is a contract for the swap params API.
+ */
 export const swapParamsContract = buildSstApiGatewayContract({
     id: 'swap-params-params',
     path: '/params',

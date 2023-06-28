@@ -2,7 +2,7 @@ import { buildSstApiGatewayContract } from '@cashmere-monorepo/shared-contract-c
 import { Type } from '@sinclair/typebox';
 
 // The schema for the request query parameters
-export const transactionsListQueryParamsType = Type.Object({
+const transactionsListQueryParamsType = Type.Object({
     account: Type.String(),
     type: Type.Optional(Type.Union([Type.Literal('complete')])),
     page: Type.Optional(Type.Number()),
@@ -51,7 +51,7 @@ const SwapDataResponseDtoType = Type.Object({
 });
 
 // Typebox schema for the response body
-export const transactionsListResponseBodyType = Type.Object({
+const transactionsListResponseBodyType = Type.Object({
     count: Type.Number(),
     items: Type.Array(SwapDataResponseDtoType),
 });
