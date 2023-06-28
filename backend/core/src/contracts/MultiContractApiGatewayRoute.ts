@@ -1,4 +1,5 @@
 import { GenericApiGatewayContract } from '@cashmere-monorepo/shared-contract-core';
+import { omit } from 'radash';
 import { Api, Stack } from 'sst/constructs';
 import { ApiRouteProps } from 'sst/constructs/Api';
 import { FunctionProps } from 'sst/constructs/Function';
@@ -6,11 +7,9 @@ import { FunctionProps } from 'sst/constructs/Function';
 /**
  * Config for each routes
  */
-type RouteConfig<AuthorizerKeys> = {
-    handler: string;
-    additionalFunctionProps?: Omit<FunctionProps, 'handler'>;
-    additionalRouteProps?: Omit<ApiRouteProps<AuthorizerKeys>, 'function'>;
-};
+interface RouteConfig<AuthorizerKeys> extends FunctionProps {
+    routeProps?: Omit<ApiRouteProps<AuthorizerKeys>, 'function'>;
+}
 
 /**
  * Build all the contracts for the given api gateway routes
@@ -54,7 +53,7 @@ export const MultiContractsApiGatewayRoute = <
 
 /**
  * Map a single contract to a route
- * @param stage
+ * @param stack
  * @param contract
  * @param config
  */
@@ -63,20 +62,19 @@ const mapContractToRoute = <AuthorizerKeys>(
     contract: GenericApiGatewayContract,
     config: RouteConfig<AuthorizerKeys>
 ) => {
-    // Build default function name
-    const defaultFuntionName = `${stage}-${contract.method}_-_${contract.id}`;
+    // Build default function name (at mx 64 chars)
+    let defaultFuntionName = `${stage}-Api${contract.method.toUpperCase()}_${
+        contract.id
+    }`.substring(0, 64);
 
     // Return the route
     return {
         [contract.method + ' ' + contract.path]: {
             function: {
-                ...(config.additionalFunctionProps ?? []),
-                handler: config.handler,
-                functionName:
-                    config.additionalFunctionProps?.functionName ??
-                    defaultFuntionName,
+                ...(omit(config, ['additionalRouteProps']) as FunctionProps),
+                functionName: config.functionName ?? defaultFuntionName,
             },
-            ...(config.additionalRouteProps ?? []),
+            ...(config.routeProps ?? []),
         },
     };
 };

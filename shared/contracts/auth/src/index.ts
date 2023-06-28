@@ -1,4 +1,5 @@
-export * from './login';
-export * from './logout';
-export * from './nonce';
-export * from './refresh';
+export { loginApiContracts } from './contracts';
+export { loginContract } from './login';
+export { logoutContract } from './logout';
+export { nonceContract } from './nonce';
+export { refreshContract } from './refresh';

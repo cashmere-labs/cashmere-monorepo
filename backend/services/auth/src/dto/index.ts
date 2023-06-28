@@ -1,2 +1,2 @@
-export * from './jwtPayload';
-export * from './siweMessage';
+export { JwtPayload } from './jwtPayload';
+export { SiweMessageDto } from './siweMessage';
