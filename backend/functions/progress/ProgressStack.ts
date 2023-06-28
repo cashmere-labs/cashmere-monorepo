@@ -1,12 +1,7 @@
 import { AuthStack } from '@cashmere-monorepo/backend-auth/AuthStack';
-import { ContractApiGatewayRoute } from '@cashmere-monorepo/backend-core/contracts';
+import { MultiContractsApiGatewayRoute } from '@cashmere-monorepo/backend-core/contracts/MultiContractApiGatewayRoute';
 import { CoreStack } from '@cashmere-monorepo/backend-core/stacks/CoreStack';
-import {
-    transactionsListContract,
-    transactionsListDeleteContract,
-    transactionsListDeleteSwapIdContract,
-    undetectedTxIdsContract,
-} from '@cashmere-monorepo/shared-contract-progress';
+import { progressApiContracts } from '@cashmere-monorepo/shared-contract-progress';
 import { Api, StackContext, Table, WebSocketApi, use } from 'sst/constructs';
 
 const path = './backend/functions/progress/src';
@@ -57,37 +52,20 @@ export function ProgressStack({ stack }: StackContext) {
     });
 
     // Add the contract routes
-    httpApi.addRoutes(
-        stack,
-        ContractApiGatewayRoute(
-            `${path}/handlers/http/transactionsList.handler`,
-            transactionsListContract
-        )
-    );
-
-    httpApi.addRoutes(
-        stack,
-        ContractApiGatewayRoute(
-            `${path}/handlers/http/transactionsListDelete.handler`,
-            transactionsListDeleteContract
-        )
-    );
-
-    httpApi.addRoutes(
-        stack,
-        ContractApiGatewayRoute(
-            `${path}/handlers/http/transactionsListDeleteSwapId.handler`,
-            transactionsListDeleteSwapIdContract
-        )
-    );
-
-    httpApi.addRoutes(
-        stack,
-        ContractApiGatewayRoute(
-            `${path}/handlers/http/undetectedTxIds.handler`,
-            undetectedTxIdsContract
-        )
-    );
+    MultiContractsApiGatewayRoute(stack, httpApi, progressApiContracts, {
+        transactionsListContract: {
+            handler: `${path}/handlers/http/transactionsList.handler`,
+        },
+        transactionsListDeleteContract: {
+            handler: `${path}/handlers/http/transactionsListDelete.handler`,
+        },
+        transactionsListDeleteSwapIdContract: {
+            handler: `${path}/handlers/http/transactionsListDeleteSwapId.handler`,
+        },
+        undetectedTxIdsContract: {
+            handler: `${path}/handlers/http/undetectedTxIds.handler`,
+        },
+    });
 
     // Add the outputs to our stack
     stack.addOutputs({

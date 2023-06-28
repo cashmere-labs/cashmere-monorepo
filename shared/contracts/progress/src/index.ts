@@ -1,4 +1,6 @@
-export * from './transactionsList';
-export * from './transactionsListDelete';
-export * from './transactionsListDeleteSwapId';
-export * from './undetectedTxIds';
+export { transactionsListContract } from './transactionsList';
+export { transactionsListDeleteContract } from './transactionsListDelete';
+export { transactionsListDeleteSwapIdContract } from './transactionsListDeleteSwapId';
+export { undetectedTxIdsContract } from './undetectedTxIds';
+
+export { progressApiContracts } from './contracts';

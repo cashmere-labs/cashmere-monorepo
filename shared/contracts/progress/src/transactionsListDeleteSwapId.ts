@@ -4,17 +4,23 @@ import {
 } from '@cashmere-monorepo/shared-contract-core';
 import { Type } from '@sinclair/typebox';
 
-// The schema for the request path parameters
-export const transactionsListDeleteSwapIdParamsType = Type.Object({
+/**
+ * Typebox schema for the transactions list delete query params
+ */
+const transactionsListDeleteSwapIdParamsType = Type.Object({
     swapId: CustomType.Hex(),
 });
 
-// Typebox schema for the response body
-export const transactionsListDeleteSwapIdResponseBodyType = Type.Object({
+/**
+ * Typebox schema for the transactions list delete response
+ */
+const transactionsListDeleteSwapIdResponseBodyType = Type.Object({
     message: Type.String(),
 });
 
-// SST API Gateway contract
+/**
+ * Typebox schema for the transactions list delete query params
+ */
 export const transactionsListDeleteSwapIdContract = buildSstApiGatewayContract({
     id: 'transactions-list-delete-swap-id',
     path: '/api/transactionsList/:swapId',
