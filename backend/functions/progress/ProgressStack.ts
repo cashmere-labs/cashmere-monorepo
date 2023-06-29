@@ -1,5 +1,5 @@
 import { AuthStack } from '@cashmere-monorepo/backend-auth/AuthStack';
-import { MultiContractsApiGatewayRoute } from '@cashmere-monorepo/backend-core/contracts/MultiContractApiGatewayRoute';
+import { MultiContractsApiGatewayRoute } from '@cashmere-monorepo/backend-core';
 import { CoreStack } from '@cashmere-monorepo/backend-core/stacks/CoreStack';
 import { progressApiContracts } from '@cashmere-monorepo/shared-contract-progress';
 import { Api, StackContext, Table, WebSocketApi, use } from 'sst/constructs';

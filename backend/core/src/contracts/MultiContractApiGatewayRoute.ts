@@ -71,7 +71,7 @@ const mapContractToRoute = <AuthorizerKeys>(
     return {
         [contract.method + ' ' + contract.path]: {
             function: {
-                ...(omit(config, ['additionalRouteProps']) as FunctionProps),
+                ...(omit(config, ['routeProps']) as FunctionProps),
                 functionName: config.functionName ?? defaultFuntionName,
             },
             ...(config.routeProps ?? []),
