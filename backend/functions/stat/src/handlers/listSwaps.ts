@@ -12,10 +12,8 @@ const contractHandler = ContractFunctionHandler(listSwapContract);
 export const handler = contractHandler(async (event) => {
     if (event.queryStringParameters.page) {
         const page = parseInt(event.queryStringParameters.page || '0');
-        console.log('page ---------------', page);
 
         if (isNaN(page)) {
-            console.log('page !!!!!!!! ---------------', page);
             throw new InvalidArgumentsError('Page should be a number');
         }
         // Get our swap data repository

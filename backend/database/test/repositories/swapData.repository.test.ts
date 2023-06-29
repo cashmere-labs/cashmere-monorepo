@@ -310,7 +310,7 @@ describe('[Backend][Database] SwapData repository', () => {
     });
 
     it('[Ok] Retrieves All swap data', async () => {
-        const result = await swapDataRepository.getAll({});
+        const result = await swapDataRepository.getAll();
 
         expect(result.items[0]).toMatchObject(swapDataFixture[0]);
         expect(result.count).not.toBe(null);

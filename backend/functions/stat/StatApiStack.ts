@@ -3,6 +3,8 @@ import { CoreStack } from '@cashmere-monorepo/backend-core/stacks/CoreStack';
 import {
     healthCheckContract,
     listSwapContract,
+    statAllChainContract,
+    statByChainContract,
     totalSwapContract,
 } from '@cashmere-monorepo/shared-contract-stat-params';
 import { Api, StackContext, use } from 'sst/constructs';
@@ -40,6 +42,24 @@ export function StatApiStack({ stack }: StackContext) {
         ContractApiGatewayRoute(
             `${path}/handlers/listSwaps.handler`,
             listSwapContract
+        )
+    );
+
+    // Add the stat for all chain route
+    api.addRoutes(
+        stack,
+        ContractApiGatewayRoute(
+            `${path}/handlers/statData.handler`,
+            statAllChainContract
+        )
+    );
+
+    // Add the stat by chain route
+    api.addRoutes(
+        stack,
+        ContractApiGatewayRoute(
+            `${path}/handlers/statByChain.handler`,
+            statByChainContract
         )
     );
 
