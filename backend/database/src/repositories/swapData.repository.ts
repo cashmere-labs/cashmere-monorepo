@@ -176,7 +176,7 @@ const buildSwapDataRepository = (connection: Connection) => {
         }: {
             page?: number;
             items?: number;
-        }): Promise<{ count: number; items: SwapDataDbDto[] }> {
+        } = {}): Promise<{ count: number; items: SwapDataDbDto[] }> {
             // Create the query
             let query = model.find({}, { _id: 0, __v: 0 });
             // Clone the query and save total documents count
