@@ -67,7 +67,7 @@ const transactionsListResponseBodyType = Type.Object({
  */
 export const transactionsListContract = buildSstApiGatewayContract({
     id: 'transactions-list',
-    path: '/api/transactionsList',
+    path: '/transactionsList',
     method: 'GET',
     queryStringParamsSchema: transactionsListQueryParamsType,
     responseSchema: transactionsListResponseBodyType,

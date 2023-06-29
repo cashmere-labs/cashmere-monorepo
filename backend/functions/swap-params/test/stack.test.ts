@@ -26,15 +26,11 @@ describe('[Stack] StackParams', () => {
     /**
      * Ensure all the endpoints are deployed
      */
-    it("[Ok] All endpoint's deployed", async () => {
+    it("[Ok] All endpoint's deployed", () => {
         // Get the cloud formation template of the stack
         const stack = getStack(SwapParamsStack);
         const template = Template.fromStack(stack);
 
-        // Ensure lambda has the right config's
-        // template.hasResourceProperties('AWS::Lambda::Function', {
-        //     customDomain: use(CoreStack).getDomainPath('swap'),
-        // });
         // Ensure we got the function we go the estimate route
         template.hasResourceProperties('AWS::ApiGatewayV2::Route', {
             RouteKey: 'GET /estimate',

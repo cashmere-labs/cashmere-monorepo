@@ -66,6 +66,7 @@ describe('sendTx', () => {
                 batchedTxServiceMock
             );
 
+            // @ts-ignore
             const result = await handler(event);
             expect(useLogger).toHaveBeenCalled();
             expect(logger.info).toHaveBeenCalledWith('Send TX handler');
@@ -121,6 +122,7 @@ describe('sendTx', () => {
                 batchedTxServiceMock
             );
 
+            // @ts-ignore
             const result = await handler(event);
 
             expect(useLogger).toHaveBeenCalled();
@@ -176,6 +178,7 @@ describe('sendTx', () => {
                 batchedTxServiceMock
             );
 
+            // @ts-ignore
             const result = await handler(event);
 
             expect(useLogger).toHaveBeenCalled();

@@ -22,6 +22,7 @@ describe('bridgeHandler', () => {
         vi.stubEnv('STAGE', 'prod');
         vi.mocked(scanEveryBlockchain).mockResolvedValue(undefined);
 
+        // @ts-ignore
         await handler();
 
         expect(scanEveryBlockchain).toHaveBeenCalledOnce();
@@ -31,6 +32,7 @@ describe('bridgeHandler', () => {
         vi.stubEnv('STAGE', 'test');
         vi.mocked(scanEveryBlockchain).mockResolvedValue(undefined);
 
+        // @ts-ignore
         await handler();
 
         expect(scanEveryBlockchain).not.toHaveBeenCalledOnce();

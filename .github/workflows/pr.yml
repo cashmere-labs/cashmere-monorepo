@@ -80,7 +80,7 @@ jobs:
               run: pnpm sst --stage test deploy
 
             - name: '🧪 Run tests'
-              run: pnpm sst bind "vitest run --coverage --no-threads"
+              run: pnpm sst bind --stage test "vitest run --coverage --no-threads"
 
             - name: '📈 Report Coverage'
               if: always() # Also generate the report if tests are failing
