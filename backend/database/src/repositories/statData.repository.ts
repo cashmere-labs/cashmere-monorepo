@@ -3,13 +3,7 @@ import { get } from 'lodash';
 import { Connection } from 'mongoose';
 import { StatDataSchema } from '../schema';
 import { getMongooseConnection } from '../utils/connection';
-
-type NestedKeyOf<ObjectType extends object> = {
-    [Key in keyof ObjectType &
-        (string | number)]: ObjectType[Key] extends object
-        ? `${Key}` | `${Key}.${NestedKeyOf<ObjectType[Key]>}`
-        : `${Key}`;
-}[keyof ObjectType & (string | number)];
+import { NestedKeyOf } from './swapData.repository';
 
 /**
  * Our current user repository (can be null if not initialized yet)

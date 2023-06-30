@@ -5,7 +5,7 @@ import { SwapDataDbDto } from '../dto/swapData';
 import { SwapDataDocument, SwapDataSchema } from '../schema/swapData.schema';
 import { getMongooseConnection } from '../utils/connection';
 
-type NestedKeyOf<ObjectType extends object> = {
+export type NestedKeyOf<ObjectType extends object> = {
     [Key in keyof ObjectType &
         (string | number)]: ObjectType[Key] extends object
         ? `${Key}` | `${Key}.${NestedKeyOf<ObjectType[Key]>}`
