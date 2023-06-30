@@ -38,6 +38,10 @@ export default {
             tracing: 'disabled',
         });
 
+        app.addDefaultFunctionEnv({
+            IS_RUNNING_IN_PROD: (app.stage === 'prod').toString(),
+        });
+
         // Our core stack (main api, caching, database)
         app.stack(CoreStack);
         app.stack(DatabaseStack);

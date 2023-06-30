@@ -40,6 +40,12 @@ describe('[Stack] Worker', () => {
             ScheduleExpression: 'rate(5 minutes)',
         });
 
+        // Has all the output's we want
+        template.hasOutput('TxSenderQueueUrl', {});
+        template.hasOutput('TxSenderQueueId', {});
+        template.hasOutput('BridgeCronId', {});
+        template.hasOutput('SupervisorCronId', {});
+
         // Get the stack output
         const stackOutput = use(WorkerStack);
         expect(stackOutput).toBeDefined();

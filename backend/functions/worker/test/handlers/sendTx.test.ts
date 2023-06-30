@@ -1,32 +1,40 @@
-import {
-    logger,
-    useLogger,
-    validateTypeOrThrow,
-} from '@cashmere-monorepo/backend-core';
-import { buildBatchedTxService } from '@cashmere-monorepo/backend-service-worker';
 import { getSendTxQueueTypeCompiler } from '@cashmere-monorepo/shared-contract-worker';
 import { SQSEvent } from 'aws-lambda';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { handler } from '../src/handlers/send_tx';
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+import { handler } from '../../src/handlers/send_tx';
 
-describe('sendTx', () => {
-    vi.mock('@cashmere-monorepo/backend-core', () => ({
-        logger: {
-            info: vi.fn(),
-            warn: vi.fn(),
-        },
-        useLogger: vi.fn(),
-        validateTypeOrThrow: vi.fn(),
-    }));
+describe('[Functions][Worker] sendTx', () => {
+    let handlerToTest: typeof handler;
 
-    vi.mock('@cashmere-monorepo/backend-service-worker', () => ({
-        buildBatchedTxService: vi.fn(),
-    }));
-    vi.mock('@cashmere-monorepo/shared-contract-worker/src/sendTx', () => ({
-        getSendTxQueueTypeCompiler: vi.fn(),
-    }));
+    const validateTypeOrThrowMock = vi.fn();
 
-    beforeEach(() => {
+    const loggerInfoMock = vi.fn();
+    const loggerWarnMock = vi.fn();
+
+    const buildBatchedTxServiceMock = vi.fn();
+    const getSendTxQueueTypeCompilerMock = vi.fn();
+
+    beforeAll(async () => {
+        vi.doMock('@cashmere-monorepo/backend-core', () => ({
+            logger: {
+                info: loggerInfoMock,
+                warn: loggerWarnMock,
+            },
+            validateTypeOrThrow: validateTypeOrThrowMock,
+        }));
+
+        vi.doMock('@cashmere-monorepo/backend-service-worker', () => ({
+            buildBatchedTxService: buildBatchedTxServiceMock,
+        }));
+        vi.doMock('@cashmere-monorepo/shared-contract-worker', () => ({
+            getSendTxQueueTypeCompiler: getSendTxQueueTypeCompilerMock,
+        }));
+
+        handlerToTest = (await import('../../src/handlers/send_tx')).handler;
+    });
+
+    afterEach(() => {
+        // Reset the mocks
         vi.clearAllMocks();
     });
 
@@ -53,32 +61,29 @@ describe('sendTx', () => {
 
             const typeCompilerMock = vi.fn(() => validatedBody);
 
-            vi.mocked(getSendTxQueueTypeCompiler).mockReturnValue(
+            vi.mocked(getSendTxQueueTypeCompilerMock).mockReturnValue(
                 typeCompilerMock as unknown as ReturnType<
                     typeof getSendTxQueueTypeCompiler
                 >
             );
 
-            vi.mocked(useLogger).mockReturnValue(undefined);
-
-            vi.mocked(validateTypeOrThrow).mockReturnValue(validatedBody);
-            vi.mocked(buildBatchedTxService).mockResolvedValue(
+            vi.mocked(validateTypeOrThrowMock).mockReturnValue(validatedBody);
+            vi.mocked(buildBatchedTxServiceMock).mockResolvedValue(
                 batchedTxServiceMock
             );
 
             // @ts-ignore
-            const result = await handler(event);
-            expect(useLogger).toHaveBeenCalled();
-            expect(logger.info).toHaveBeenCalledWith('Send TX handler');
+            const result = await handlerToTest(event);
+            expect(loggerInfoMock).toHaveBeenCalledWith('Send TX handler');
 
-            expect(buildBatchedTxService).toHaveBeenCalled();
+            expect(buildBatchedTxServiceMock).toHaveBeenCalled();
             expect(batchedTxServiceMock.handleNewTx).toHaveBeenCalledWith(
                 validatedBody
             );
             expect(batchedTxServiceMock.handleNewTx).toHaveBeenCalledTimes(2);
 
             expect(batchedTxServiceMock.sendBatchedTx).toHaveBeenCalledTimes(1);
-            expect(logger.warn).not.toHaveBeenCalled();
+            expect(loggerWarnMock).not.toHaveBeenCalled();
             expect(result).toEqual({
                 batchItemFailures: [],
             });
@@ -106,32 +111,30 @@ describe('sendTx', () => {
 
             const typeCompilerMock = vi.fn(() => validatedBody);
 
-            vi.mocked(useLogger).mockReturnValue(undefined);
-            vi.mocked(validateTypeOrThrow).mockReturnValue(validatedBody);
+            vi.mocked(validateTypeOrThrowMock).mockReturnValue(validatedBody);
 
-            vi.mocked(buildBatchedTxService).mockResolvedValue(
+            vi.mocked(buildBatchedTxServiceMock).mockResolvedValue(
                 batchedTxServiceMock
             );
-            vi.mocked(getSendTxQueueTypeCompiler).mockReturnValue(
+            vi.mocked(getSendTxQueueTypeCompilerMock).mockReturnValue(
                 typeCompilerMock as unknown as ReturnType<
                     typeof getSendTxQueueTypeCompiler
                 >
             );
 
-            vi.mocked(buildBatchedTxService).mockResolvedValue(
+            vi.mocked(buildBatchedTxServiceMock).mockResolvedValue(
                 batchedTxServiceMock
             );
 
             // @ts-ignore
-            const result = await handler(event);
+            const result = await handlerToTest(event);
 
-            expect(useLogger).toHaveBeenCalled();
-            expect(logger.info).toHaveBeenCalledWith('Send TX handler');
+            expect(loggerInfoMock).toHaveBeenCalledWith('Send TX handler');
 
-            expect(buildBatchedTxService).toHaveBeenCalled();
+            expect(buildBatchedTxServiceMock).toHaveBeenCalled();
 
             // the error is handled and logged, so we are inside catch block
-            expect(logger.warn).toHaveBeenCalledWith(
+            expect(loggerWarnMock).toHaveBeenCalledWith(
                 {
                     record: { body: 'test-body', messageId: 'message-id-1' },
                     e: expect.any(Error),
@@ -162,33 +165,31 @@ describe('sendTx', () => {
 
             const typeCompilerMock = vi.fn(() => validatedBody);
 
-            vi.mocked(useLogger).mockReturnValue(undefined);
-            vi.mocked(validateTypeOrThrow).mockReturnValue(validatedBody);
+            vi.mocked(validateTypeOrThrowMock).mockReturnValue(validatedBody);
 
-            vi.mocked(buildBatchedTxService).mockResolvedValue(
+            vi.mocked(buildBatchedTxServiceMock).mockResolvedValue(
                 batchedTxServiceMock
             );
-            vi.mocked(getSendTxQueueTypeCompiler).mockReturnValue(
+            vi.mocked(getSendTxQueueTypeCompilerMock).mockReturnValue(
                 typeCompilerMock as unknown as ReturnType<
                     typeof getSendTxQueueTypeCompiler
                 >
             );
 
-            vi.mocked(buildBatchedTxService).mockResolvedValue(
+            vi.mocked(buildBatchedTxServiceMock).mockResolvedValue(
                 batchedTxServiceMock
             );
 
             // @ts-ignore
-            const result = await handler(event);
+            const result = await handlerToTest(event);
 
-            expect(useLogger).toHaveBeenCalled();
-            expect(logger.info).toHaveBeenCalledWith('Send TX handler');
+            expect(loggerInfoMock).toHaveBeenCalledWith('Send TX handler');
 
-            expect(buildBatchedTxService).toHaveBeenCalled();
+            expect(buildBatchedTxServiceMock).toHaveBeenCalled();
             expect(batchedTxServiceMock.sendBatchedTx).toHaveBeenCalledTimes(1);
 
             // the error is handled and logged, so we are inside catch block
-            expect(logger.warn).toHaveBeenCalledWith(
+            expect(loggerWarnMock).toHaveBeenCalledWith(
                 {
                     chainId: 123,
                     e: expect.any(Error),
