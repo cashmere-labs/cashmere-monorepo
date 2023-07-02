@@ -34,7 +34,7 @@ export const getFromCache = async <T>(
         }
         // Otherwise, try to parse the value
         const value = JSON.parse(dynamoItem.Item.value.S) as T;
-        const ttl = parseInt(dynamoItem.Item.ttl.N ?? '0');
+        const ttl = parseInt(dynamoItem.Item.ttl?.N ?? '0');
         return { value, ttl };
     } catch (error) {
         logger.error(

@@ -1,5 +1,2 @@
-export {
-    ContractFunctionHandler,
-    validateTypeOrThrow,
-} from './ContractFunctionHandler';
+export { ContractFunctionHandler } from './ContractFunctionHandler';
 export { MultiContractsApiGatewayRoute } from './MultiContractApiGatewayRoute';
