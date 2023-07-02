@@ -1,8 +1,8 @@
 import { buildSstApiGatewayContract } from '@cashmere-monorepo/shared-contract-core';
-import { Type } from '@sinclair/typebox';
+import { TSchema, Type } from '@sinclair/typebox';
 
 // Typebox schema for the response body
-export const listSwapsEndpointResponseType = Type.Object({
+export const listSwapsEndpointResponseType: TSchema = Type.Object({
     status: Type.String(),
     error: Type.Optional(Type.String()),
     total: Type.Optional(Type.Number()),

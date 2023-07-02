@@ -14,11 +14,11 @@ export const handler = contractHandler(async (event) => {
 
     const chainId = event.queryStringParameters.chainId;
 
-    if (!chainId || isNaN(parseInt(chainId, 10))) {
+    if (!chainId || isNaN(parseInt(chainId))) {
         throw new InvalidArgumentsError('chain id should be a number');
     }
 
-    const stats = await statDataRepository.getByChainId(1);
+    const stats = await statDataRepository.getByChainId(chainId);
     return {
         statusCode: 200,
         body: {
