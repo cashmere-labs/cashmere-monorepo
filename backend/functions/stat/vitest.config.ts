@@ -10,7 +10,7 @@ export default defineConfig({
             '@cashmere-monorepo/backend-core/contracts/MultiContractApiGatewayRoute':
                 path.resolve(
                     __dirname,
-                    '../../core/src/contracts/MultiContractApiGatewayRoute'
+                    '../../core/src/contracts/MultiContractApiGatewayRoute.ts'
                 ),
         },
     },

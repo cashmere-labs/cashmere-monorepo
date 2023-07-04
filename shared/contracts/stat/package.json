@@ -1,5 +1,5 @@
 {
-    "name": "@cashmere-monorepo/shared-contract-stat-params",
+    "name": "@cashmere-monorepo/shared-contract-stat",
     "version": "0.0.0",
     "private": true,
     "type": "module",
@@ -15,6 +15,6 @@
     },
     "dependencies": {
         "@cashmere-monorepo/shared-contract-core": "workspace:^",
-        "@sinclair/typebox": "^0.28.11"
+        "@sinclair/typebox": "^0.28.20"
     }
 }

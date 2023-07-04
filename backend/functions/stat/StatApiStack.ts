@@ -1,7 +1,7 @@
 import { MultiContractsApiGatewayRoute } from '@cashmere-monorepo/backend-core/contracts/MultiContractApiGatewayRoute';
 
 import { CoreStack } from '@cashmere-monorepo/backend-core/stacks/CoreStack';
-import { statApiContracts } from '@cashmere-monorepo/shared-contract-stat-params';
+import { statApiContracts } from '@cashmere-monorepo/shared-contract-stat';
 
 import { Api, StackContext, use } from 'sst/constructs';
 

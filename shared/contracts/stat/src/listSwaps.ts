@@ -1,8 +1,8 @@
 import { buildSstApiGatewayContract } from '@cashmere-monorepo/shared-contract-core';
-import { TSchema, Type } from '@sinclair/typebox';
+import { TObject, Type } from '@sinclair/typebox';
 
 // Typebox schema for the response body
-export const listSwapsEndpointResponseType: TSchema = Type.Object({
+export const listSwapsEndpointResponseType: TObject = Type.Object({
     status: Type.String(),
     error: Type.Optional(Type.String()),
     total: Type.Optional(Type.Number()),
@@ -10,12 +10,12 @@ export const listSwapsEndpointResponseType: TSchema = Type.Object({
 });
 
 // Typebox schema for the response body
-export const listSwapsQueryStringParamsSchema = Type.Object({
+export const listSwapsQueryStringParamsSchema: TObject = Type.Object({
     page: Type.Optional(Type.String()),
 });
 
 // SST API Gateway contract for the get list swaps endpoint
-export const listSwapContract = buildSstApiGatewayContract({
+export const listSwapContract: any = buildSstApiGatewayContract({
     id: 'list-swaps',
     path: '/list-swaps',
     method: 'GET',

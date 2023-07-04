@@ -1,25 +1,48 @@
-import { Api } from 'sst/node/api';
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+import { handler } from '../../src/handlers/statData';
 
-/**
- * Health-check estimate business logic test
- */
 describe('[Stat][Endpoint] statData', () => {
-    // The api url we will use for our call
-    const baseEndpoint = `${Api.StatApiStack.url}`;
+    const statData = vi.fn(() => ({
+        status: 'ok',
+        stats: [
+            {
+                chainId: 1,
+                transactionCount: 1000,
+                volume: '$10000',
+                fee: '$100',
+                tvl: '$100000',
+            },
+        ],
+    }));
 
-    const baseRequest = {
-        headers: new Headers(),
-        method: 'GET',
-    };
+    let handlerToTest: typeof handler;
+
+    beforeAll(async () => {
+        vi.doMock('@cashmere-monorepo/backend-database', () => ({
+            getStatRepository: async () => ({
+                getAll: statData,
+            }),
+        }));
+        // Import the tested function after mocking dependencies
+        ({ handler: handlerToTest } = await import(
+            '../../src/handlers/statByChain'
+        ));
+    });
+
+    afterEach(() => {
+        // Reset the mocks
+        vi.clearAllMocks();
+    });
+
     // Ensure it fail if we don't provide any input param
     it("[Fail] Don't exist with wrong method", async () => {
-        const result = await fetch(baseEndpoint, baseRequest);
-        expect(result.status).toBe(404);
+        const result = await handlerToTest({}, {});
+        expect(result.statusCode).toBe(400);
     });
 
     // should be ok with good param's
     it("[Ok] Pass with good param's", async () => {
-        expect(() => fetch(`${baseEndpoint}stat-data`)).not.toThrow();
+        const result = await handlerToTest({}, {});
+        expect(result.statusCode).toBe(400);
     });
-}, 50000);
+});

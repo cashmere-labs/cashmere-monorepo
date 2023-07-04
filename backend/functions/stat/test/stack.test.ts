@@ -4,10 +4,10 @@ import { App, getStack } from 'sst/constructs';
 import { initProject } from 'sst/project';
 import { beforeEach, describe, it } from 'vitest';
 import { StatApiStack } from '../StatApiStack';
-
 /**
  * Swap estimate business logic test
  */
+
 describe('[Stack] StackParams', () => {
     // The current app used to perform the test
     let app: App;
@@ -17,7 +17,7 @@ describe('[Stack] StackParams', () => {
         // Init project and deploy core stack
         await initProject({});
         app = new App({ mode: 'deploy' });
-        app.stack(CoreStack);
+        app.stack(CoreStack as any);
 
         // Deploy swap stack
         app.stack(StatApiStack);
@@ -29,7 +29,7 @@ describe('[Stack] StackParams', () => {
     it("[Ok] All endpoint's deployed", async () => {
         // Get the cloud formation template of the stack
         const stack = getStack(StatApiStack);
-        const template = Template.fromStack(stack);
+        const template = Template.fromStack(stack as any);
 
         // Ensure lambda has the right config's
         template.hasResourceProperties('AWS::Lambda::Function', {

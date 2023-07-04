@@ -1,39 +1,88 @@
-import { Api } from 'sst/node/api';
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+import { handler } from '../../src/handlers/listSwaps';
 
-/**
- * Health-check estimate business logic test
- */
 describe('[Stat][Endpoint] listSwaps', () => {
-    // The api url we will use for our call
-    const baseEndpoint = `${Api.StatApiStack.url}`;
+    const listSwaps = vi.fn(() => ({
+        total: 1,
+        swaps: [
+            {
+                id: 1,
+                srcChainId: 1,
+                dstChainId: 2,
+                srcToken: 'srcToken',
+                dstToken: 'dstToken',
+                srcAmount: '1',
+                dstAmount: '2',
+                minReceivedDst: '3',
+                fee: '4',
+                priceImpact: '5',
+                nativeFee: '6',
+                createdAt: '2021-01-01',
+            },
+        ],
+    }));
 
-    const baseRequest = {
-        headers: new Headers(),
-        method: 'GET',
-    };
+    let handlerToTest: typeof handler;
+
+    beforeAll(async () => {
+        vi.doMock('@cashmere-monorepo/backend-database', () => ({
+            getSwapDataRepository: async () => ({
+                getAll: listSwaps,
+            }),
+        }));
+
+        // Import the tested function after mocking dependencies
+        ({ handler: handlerToTest } = await import(
+            '../../src/handlers/listSwaps'
+        ));
+    });
+
+    afterEach(() => {
+        // Reset the mocks
+        vi.clearAllMocks();
+    });
+
     // Ensure it fail if we don't provide any input param
     it("[Fail] Don't exist with wrong method", async () => {
-        const result = await fetch(baseEndpoint, baseRequest);
-        expect(result.status).toBe(404);
+        const result = await handlerToTest({}, {});
+        expect(result.statusCode).toBe(400);
     });
 
     it('[Fail] Page query param is not provided', async () => {
-        const result = await fetch(`${baseEndpoint}list-swaps`, baseRequest);
-        expect(result.status).toBe(400);
+        const result = await handlerToTest(
+            {
+                queryStringParameters: {},
+            },
+            {}
+        );
+        expect(result.statusCode).toBe(400);
+        expect(JSON.parse(result.body).details).toBe('Missing page number');
     });
 
     it('[Fail] Page query should be a number', async () => {
-        const result = await fetch(
-            `${baseEndpoint}list-swaps?page=test`,
-            baseRequest
+        const result = await handlerToTest(
+            {
+                queryStringParameters: {
+                    page: 'test',
+                },
+            },
+            {}
         );
-
-        expect(result.status).toBe(400);
+        expect(result.statusCode).toBe(400);
+        expect(JSON.parse(result.body).details).toBe('Page should be a number');
     });
 
-    // should be ok with good param's
+    // // should be ok with good param's
     it("[Ok] Pass with good param's", async () => {
-        expect(() => fetch(`${baseEndpoint}list-swaps?page=1`)).not.toThrow();
+        const result = await handlerToTest(
+            {
+                queryStringParameters: {
+                    page: '1',
+                },
+            },
+            {}
+        );
+        expect(result.statusCode).toBe(200);
+        expect(JSON.parse(result.body).status).toBe('OK');
     });
-}, 50000);
+});

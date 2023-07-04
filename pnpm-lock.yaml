@@ -252,7 +252,10 @@ importers:
       '@cashmere-monorepo/backend-database':
         specifier: workspace:^
         version: link:../../database
-      '@cashmere-monorepo/shared-contract-stat-params':
+      '@cashmere-monorepo/shared-contract-core':
+        specifier: workspace:^
+        version: link:../../../shared/contracts/core
+      '@cashmere-monorepo/shared-contract-stat':
         specifier: workspace:^
         version: link:../../../shared/contracts/stat
     devDependencies:
@@ -554,12 +557,18 @@ importers:
       '@types/node':
         specifier: ^18.16.18
         version: 18.16.18
+      '@types/uuid':
+        specifier: ^9.0.2
+        version: 9.0.2
       json-schema-to-ts:
         specifier: ^2.9.1
         version: 2.9.1
       sst:
         specifier: 2.17.5
         version: 2.17.5
+      uuid:
+        specifier: ^9.0.0
+        version: 9.0.0
       vitest:
         specifier: ^0.32.2
         version: 0.32.2(@vitest/ui@0.32.2)
@@ -592,8 +601,8 @@ importers:
         specifier: workspace:^
         version: link:../core
       '@sinclair/typebox':
-        specifier: ^0.28.11
-        version: 0.28.14
+        specifier: ^0.28.20
+        version: 0.28.20
     devDependencies:
       '@types/node':
         specifier: ^18.16.14
@@ -689,6 +698,17 @@ packages:
       constructs: 10.1.156
     dev: true
 
+  /@aws-cdk/aws-apigatewayv2-alpha@2.79.1-alpha.0(aws-cdk-lib@2.84.0)(constructs@10.1.156):
+    resolution: {integrity: sha512-B5MDJjIa7DmykRxLYu1k2tnLNxllg4hwRWWgsMn+2xgXyZ0xmmdrxCXaAUx+SBiCxxpvumS3ukAGq7u5eYHvvA==}
+    engines: {node: '>= 14.15.0'}
+    peerDependencies:
+      aws-cdk-lib: 2.79.1
+      constructs: ^10.0.0
+    dependencies:
+      aws-cdk-lib: 2.84.0(constructs@10.1.156)
+      constructs: 10.1.156
+    dev: true
+
   /@aws-cdk/aws-apigatewayv2-alpha@2.84.0-alpha.0(aws-cdk-lib@2.84.0)(constructs@10.1.156):
     resolution: {integrity: sha512-Iom2VbAt9N6QXJqqjikcG6hHCaYsPIZdLy8gkMkQu/idmaQnGzZ7sNp4uRdLr4EmqtGJOSFxAM9jrGyBIEhYlw==}
     engines: {node: '>= 14.15.0'}
@@ -708,7 +728,7 @@ packages:
       aws-cdk-lib: 2.79.1
       constructs: ^10.0.0
     dependencies:
-      '@aws-cdk/aws-apigatewayv2-alpha': 2.79.1-alpha.0(aws-cdk-lib@2.79.1)(constructs@10.1.156)
+      '@aws-cdk/aws-apigatewayv2-alpha': 2.79.1-alpha.0(aws-cdk-lib@2.84.0)(constructs@10.1.156)
       aws-cdk-lib: 2.79.1(constructs@10.1.156)
       constructs: 10.1.156
     dev: true
@@ -734,7 +754,7 @@ packages:
       aws-cdk-lib: 2.79.1
       constructs: ^10.0.0
     dependencies:
-      '@aws-cdk/aws-apigatewayv2-alpha': 2.79.1-alpha.0(aws-cdk-lib@2.79.1)(constructs@10.1.156)
+      '@aws-cdk/aws-apigatewayv2-alpha': 2.79.1-alpha.0(aws-cdk-lib@2.84.0)(constructs@10.1.156)
       aws-cdk-lib: 2.79.1(constructs@10.1.156)
       constructs: 10.1.156
     dev: true
@@ -4503,10 +4523,6 @@ packages:
       '@scure/base': 1.1.1
     dev: false
 
-  /@sinclair/typebox@0.28.14:
-    resolution: {integrity: sha512-aB3ddagwMFz2cSLg0/gUt7yaUHJUKnT+rEHGdb/srtEFILB0zdL7a2mcbA7kskOCFHicAOV1POeeZdwoevFgAQ==}
-    dev: false
-
   /@sinclair/typebox@0.28.20:
     resolution: {integrity: sha512-QCF3BGfacwD+3CKhGsMeixnwOmX4AWgm61nKkNdRStyLVu0mpVFYlDSY8gVBOOED1oSwzbJauIWl/+REj8K5+w==}
     dev: false
@@ -4627,6 +4643,10 @@ packages:
 
   /@types/sinonjs__fake-timers@8.1.2:
     resolution: {integrity: sha512-9GcLXF0/v3t80caGs5p2rRfkB+a8VBGLJZVih6CNFkx8IZ994wiKKLSRs9nuFwk1HevWs/1mnUmkApGrSGsShA==}
+    dev: true
+
+  /@types/uuid@9.0.2:
+    resolution: {integrity: sha512-kNnC1GFBLuhImSnV7w4njQkUiJi0ZXUycu1rUaouPqiKlXkh77JKgdRnTAp1x5eBwcIwbtI+3otwzuIDEuDoxQ==}
     dev: true
 
   /@types/webidl-conversions@7.0.0:
@@ -9434,7 +9454,7 @@ packages:
       '@sls-next/lambda-at-edge':
         optional: true
     dependencies:
-      '@aws-cdk/aws-apigatewayv2-alpha': 2.79.1-alpha.0(aws-cdk-lib@2.79.1)(constructs@10.1.156)
+      '@aws-cdk/aws-apigatewayv2-alpha': 2.79.1-alpha.0(aws-cdk-lib@2.84.0)(constructs@10.1.156)
       '@aws-cdk/aws-apigatewayv2-authorizers-alpha': 2.79.1-alpha.0(@aws-cdk/aws-apigatewayv2-alpha@2.79.1-alpha.0)(aws-cdk-lib@2.79.1)(constructs@10.1.156)
       '@aws-cdk/aws-apigatewayv2-integrations-alpha': 2.79.1-alpha.0(@aws-cdk/aws-apigatewayv2-alpha@2.79.1-alpha.0)(aws-cdk-lib@2.79.1)(constructs@10.1.156)
       '@aws-cdk/cloud-assembly-schema': 2.79.1

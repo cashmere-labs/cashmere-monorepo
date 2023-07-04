@@ -82,6 +82,10 @@
             "name": "[backend][functions] progress"
         },
         {
+            "path": "backend/functions/stat",
+            "name": "[backend][functions] stat"
+        },
+        {
             "path": "backend/services/websocket",
             "name": "[backend][services] web socket"
         },

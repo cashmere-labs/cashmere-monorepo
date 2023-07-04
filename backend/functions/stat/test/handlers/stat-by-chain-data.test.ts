@@ -1,44 +1,62 @@
-import { Api } from 'sst/node/api';
-import { describe, expect, it } from 'vitest';
-
-/**
- * Health-check estimate business logic test
- */
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+import { handler } from '../../src/handlers/statByChain';
 describe('[Stat][Endpoint] statByChain', () => {
-    // The api url we will use for our call
-    const baseEndpoint = `${Api.StatApiStack.url}`;
+    const statByChain = vi.fn(() => ({
+        status: 'ok',
+        stats: {
+            chainId: 1,
+            transactionCount: 1000,
+            volume: '$10000',
+            fee: '$100',
+            tvl: '$100000',
+        },
+    }));
 
-    const baseRequest = {
-        headers: new Headers(),
-        method: 'GET',
-    };
-    // Ensure it fail if we don't provide any input param
-    it("[Fail] Don't exist with wrong method", async () => {
-        const result = await fetch(baseEndpoint, baseRequest);
-        expect(result.status).toBe(404);
+    let handlerToTest: typeof handler;
+
+    beforeAll(async () => {
+        vi.doMock('@cashmere-monorepo/backend-database', () => ({
+            getStatRepository: async () => ({
+                getByChainId: statByChain,
+            }),
+        }));
+        // Import the tested function after mocking dependencies
+        ({ handler: handlerToTest } = await import(
+            '../../src/handlers/statByChain'
+        ));
+    });
+
+    afterEach(() => {
+        // Reset the mocks
+        vi.clearAllMocks();
     });
 
     it('[Fail] chainId query param is not provided', async () => {
-        const result = await fetch(
-            `${baseEndpoint}/stat-by-chain`,
-            baseRequest
-        );
-        expect(result.status).toBe(400);
+        const result = await handlerToTest({}, {});
+        expect(result.statusCode).toBe(400);
     });
 
-    it.only('[Fail] chainId query should be a number', async () => {
-        const result = await fetch(
-            `${baseEndpoint}stat-by-chain?chainId=test`,
-            baseRequest
+    it('[Fail] chainId query should be a number', async () => {
+        const result = await handlerToTest(
+            {
+                chainId: 'test',
+            },
+            {}
         );
-
-        expect(result.status).toBe(400);
+        expect(result.statusCode).toBe(400);
     });
 
     // should be ok with good param's
     it("[Ok] Pass with good param's", async () => {
-        expect(() =>
-            fetch(`${baseEndpoint}stat-by-chain?chainId=1`)
-        ).not.toThrow();
+        const result = await handlerToTest(
+            {
+                queryStringParameters: {
+                    chainId: '1',
+                },
+            },
+            {}
+        );
+        console.log(result);
+        expect(result.statusCode).toBe(200);
     });
-}, 50000);
+});

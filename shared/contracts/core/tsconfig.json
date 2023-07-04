@@ -6,5 +6,6 @@
         "module": "esnext",
         "baseUrl": ".",
         "rootDir": "."
-    }
+    },
+    "exclude": ["node_modules"]
 }
