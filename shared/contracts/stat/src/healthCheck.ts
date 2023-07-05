@@ -9,7 +9,7 @@ export const healthCheckEndpointResponseBodyType: TObject = Type.Object({
 });
 
 // SST API Gateway contract for the health check endpoint
-export const healthCheckContract: any = buildSstApiGatewayContract({
+export const healthCheckContract = buildSstApiGatewayContract({
     id: 'test',
     path: '/health-check',
     method: 'GET',

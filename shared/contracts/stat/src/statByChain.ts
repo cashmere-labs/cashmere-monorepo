@@ -12,7 +12,7 @@ export const statByChainIdQueryParamsType: TObject = Type.Object({
 });
 
 // SST API Gateway contract for the get list swaps endpoint
-export const statByChainContract: any = buildSstApiGatewayContract({
+export const statByChainContract = buildSstApiGatewayContract({
     id: 'stat-data-by-chain-id',
     path: '/stat-by-chain',
     method: 'GET',

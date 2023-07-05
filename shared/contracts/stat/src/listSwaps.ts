@@ -15,7 +15,7 @@ export const listSwapsQueryStringParamsSchema: TObject = Type.Object({
 });
 
 // SST API Gateway contract for the get list swaps endpoint
-export const listSwapContract: any = buildSstApiGatewayContract({
+export const listSwapContract = buildSstApiGatewayContract({
     id: 'list-swaps',
     path: '/list-swaps',
     method: 'GET',

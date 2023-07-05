@@ -7,7 +7,7 @@ export const statAllChainEndpointResponseType: TObject = Type.Object({
 });
 
 // SST API Gateway contract for the get list swaps endpoint
-export const statAllChainContract: any = buildSstApiGatewayContract({
+export const statAllChainContract = buildSstApiGatewayContract({
     id: 'stat-data',
     path: '/stat-data',
     method: 'GET',

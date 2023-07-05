@@ -1,3 +1,4 @@
+import { APIGatewayProxyEventV2, Context } from 'aws-lambda';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { handler } from '../../src/handlers/listSwaps';
 
@@ -44,7 +45,10 @@ describe('[Stat][Endpoint] listSwaps', () => {
 
     // Ensure it fail if we don't provide any input param
     it("[Fail] Don't exist with wrong method", async () => {
-        const result = await handlerToTest({}, {});
+        const result = await handlerToTest(
+            {} as APIGatewayProxyEventV2,
+            {} as Context
+        );
         expect(result.statusCode).toBe(400);
     });
 
@@ -52,11 +56,12 @@ describe('[Stat][Endpoint] listSwaps', () => {
         const result = await handlerToTest(
             {
                 queryStringParameters: {},
-            },
-            {}
+            } as APIGatewayProxyEventV2,
+            {} as Context
         );
         expect(result.statusCode).toBe(400);
-        expect(JSON.parse(result.body).details).toBe('Missing page number');
+        if (result.body)
+            expect(JSON.parse(result.body).details).toBe('Missing page number');
     });
 
     it('[Fail] Page query should be a number', async () => {
@@ -65,11 +70,14 @@ describe('[Stat][Endpoint] listSwaps', () => {
                 queryStringParameters: {
                     page: 'test',
                 },
-            },
-            {}
+            } as unknown as APIGatewayProxyEventV2,
+            {} as Context
         );
         expect(result.statusCode).toBe(400);
-        expect(JSON.parse(result.body).details).toBe('Page should be a number');
+        if (result.body)
+            expect(JSON.parse(result.body).details).toBe(
+                'Page should be a number'
+            );
     });
 
     // // should be ok with good param's
@@ -79,10 +87,10 @@ describe('[Stat][Endpoint] listSwaps', () => {
                 queryStringParameters: {
                     page: '1',
                 },
-            },
-            {}
+            } as unknown as APIGatewayProxyEventV2,
+            {} as Context
         );
         expect(result.statusCode).toBe(200);
-        expect(JSON.parse(result.body).status).toBe('OK');
+        if (result.body) expect(JSON.parse(result.body).status).toBe('OK');
     });
 });

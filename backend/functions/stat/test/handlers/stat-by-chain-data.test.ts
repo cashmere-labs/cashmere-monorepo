@@ -1,3 +1,4 @@
+import { APIGatewayProxyEventV2, Context } from 'aws-lambda';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { handler } from '../../src/handlers/statByChain';
 describe('[Stat][Endpoint] statByChain', () => {
@@ -32,7 +33,10 @@ describe('[Stat][Endpoint] statByChain', () => {
     });
 
     it('[Fail] chainId query param is not provided', async () => {
-        const result = await handlerToTest({}, {});
+        const result = await handlerToTest(
+            {} as APIGatewayProxyEventV2,
+            {} as Context
+        );
         expect(result.statusCode).toBe(400);
     });
 
@@ -40,8 +44,8 @@ describe('[Stat][Endpoint] statByChain', () => {
         const result = await handlerToTest(
             {
                 chainId: 'test',
-            },
-            {}
+            } as unknown as APIGatewayProxyEventV2,
+            {} as Context
         );
         expect(result.statusCode).toBe(400);
     });
@@ -53,8 +57,8 @@ describe('[Stat][Endpoint] statByChain', () => {
                 queryStringParameters: {
                     chainId: '1',
                 },
-            },
-            {}
+            } as unknown as APIGatewayProxyEventV2,
+            {} as Context
         );
         console.log(result);
         expect(result.statusCode).toBe(200);

@@ -4,12 +4,13 @@ import {
     useLogger,
 } from '@cashmere-monorepo/backend-core';
 import { healthCheckContract } from '@cashmere-monorepo/shared-contract-stat';
+import { HandlerType } from './types';
 
 // Build our contract handler for the test contract
 const contractHandler = ContractFunctionHandler(healthCheckContract);
 
 // Export our handler
-export const handler: any = contractHandler(async (event) => {
+export const handler: HandlerType = contractHandler(async (event) => {
     useLogger();
 
     logger.debug('Computed response');

@@ -1,3 +1,4 @@
+import { APIGatewayProxyEventV2, Context } from 'aws-lambda';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { handler } from '../../src/handlers/totalSwaps';
 
@@ -43,7 +44,10 @@ describe('[Stat][Endpoint] totalSwaps', () => {
 
     // should be ok with good param's
     it("[Ok] Pass with good param's", async () => {
-        const result = await handlerToTest({}, {});
+        const result = await handlerToTest(
+            {} as APIGatewayProxyEventV2,
+            {} as Context
+        );
         expect(result.statusCode).toBe(200);
     });
 });
