@@ -1,4 +1,4 @@
-import { MultiContractsApiGatewayRoute } from '@cashmere-monorepo/backend-core/contracts/MultiContractApiGatewayRoute';
+import { MultiContractsApiGatewayRoute } from '@cashmere-monorepo/backend-core';
 import { CoreStack } from '@cashmere-monorepo/backend-core/stacks/CoreStack';
 import { swapParamsApiContracts } from '@cashmere-monorepo/shared-contract-swap-params';
 import { Api, StackContext, use } from 'sst/constructs';

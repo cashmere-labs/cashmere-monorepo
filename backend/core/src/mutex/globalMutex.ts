@@ -4,6 +4,7 @@ import {
     PutItemCommand,
     PutItemInput,
 } from '@aws-sdk/client-dynamodb';
+import { AwsError } from 'aws-sdk-client-mock';
 import { createHash } from 'node:crypto';
 import { try as inlineTry } from 'radash';
 import { Table } from 'sst/node/table';
@@ -33,11 +34,7 @@ export const runInMutex = async <T>(
     }
 
     // Check if we got a lock in the dynamo
-    const isLocked = await checkLockAndInsert(executionHash);
-    if (isLocked)
-        throw new Error(
-            `The key ${executionHash} is locked, unable to execute the function in the mutex context`
-        );
+    await checkLockAndInsert(executionHash);
 
     // Execute the function
     const [err, result] = await inlineTry(fn)();
@@ -56,7 +53,7 @@ export const runInMutex = async <T>(
  * Check if the given key is locked
  * @param key
  */
-const checkLockAndInsert = async (key: string): Promise<boolean> => {
+const checkLockAndInsert = async (key: string) => {
     // Build the params
     const params: PutItemInput = {
         TableName: Table.MutexDynamo.tableName,
@@ -78,11 +75,7 @@ const checkLockAndInsert = async (key: string): Promise<boolean> => {
     try {
         logger.debug(`Checking lock status for key ${key}`);
         await dynamoDbClient.send(new PutItemCommand(params));
-        return false;
-    } catch (e: any) {
-        if (e.code === 'ConditionalCheckFailedException') {
-            return true;
-        }
+    } catch (e: AwsError) {
         logger.error(e, 'error when puting the locking in base');
         throw e;
     }

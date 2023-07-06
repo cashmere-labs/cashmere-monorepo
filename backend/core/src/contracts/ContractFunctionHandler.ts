@@ -1,14 +1,11 @@
 // Build an sst function from an API Gateway contract
 import { GenericApiGatewayContract } from '@cashmere-monorepo/shared-contract-core';
-import { Static, TSchema } from '@sinclair/typebox';
-import { TypeCheck, TypeCompiler } from '@sinclair/typebox/compiler';
+import { Static } from '@sinclair/typebox';
+import { TypeCompiler } from '@sinclair/typebox/compiler';
 import { APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
 import { ApiHandler } from 'sst/node/api';
-import {
-    HttpError,
-    InternalServerError,
-    InvalidArgumentsError,
-} from '../error';
+import { HttpError, InternalServerError } from '../error';
+import { validateTypeOrThrow } from '../hooks';
 import { logger } from '../logger/logger';
 
 // Build an SST Api Gateway function handler
@@ -86,23 +83,3 @@ export const ContractFunctionHandler = <
 export type FunctionHandlerType<Contract extends GenericApiGatewayContract> = (
     event: Static<ReturnType<Contract['getInputSchema']>>
 ) => Promise<Static<ReturnType<Contract['getOutputSchema']>>>;
-
-// Validate a type from a type compiler or throw an error
-export function validateTypeOrThrow<SchemaType extends TSchema>(
-    eventTypeCompiler: TypeCheck<SchemaType>,
-    object: unknown
-): Static<SchemaType> {
-    // Ensure the request match the input
-    if (eventTypeCompiler.Check(object)) return object;
-    // Otherwise throw an error
-    const errors = [...eventTypeCompiler.Errors(object)];
-    // Build a message string
-    const messageString = `Invalid request: ${errors
-        .map(
-            (error) =>
-                `path: ${error.path}, value: ${error.value}, msg: ${error.message}`
-        )
-        .join('; ')}`;
-    // Return the message string
-    throw new InvalidArgumentsError(messageString, errors);
-}

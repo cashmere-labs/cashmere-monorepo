@@ -1,7 +1,6 @@
-import { logger } from '@cashmere-monorepo/backend-core';
-import { scanEveryBlockchain } from '@cashmere-monorepo/backend-service-worker/src';
+import { isRunningInProd, logger } from '@cashmere-monorepo/backend-core';
+import { scanEveryBlockchain } from '@cashmere-monorepo/backend-service-worker';
 import { Handler } from 'sst/context';
-import { Config } from 'sst/node/config';
 
 /**
  * The handler for our bridge cron. Run every minutes accross all the chains
@@ -11,8 +10,8 @@ export const handler = Handler<'sqs', never, void>('sqs', async () => {
     logger.info('New bridge event handler');
 
     // Run the scanner on each chain
-    if (Config.STAGE !== 'prod') {
-        logger.info('Skipping bridge scan when not in prod');
+    if (!isRunningInProd()) {
+        logger.info(`Skipping bridge scan when not in prod`);
         return;
     }
     await scanEveryBlockchain();

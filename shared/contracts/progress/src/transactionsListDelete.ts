@@ -16,7 +16,7 @@ const transactionsListDeleteResponseBodyType = Type.Object({
  */
 export const transactionsListDeleteContract = buildSstApiGatewayContract({
     id: 'transactions-list-delete',
-    path: '/api/transactionsList',
+    path: '/transactionsList',
     method: 'DELETE',
     requestContextSchema: CustomType.AuthRequestContext,
     responseSchema: transactionsListDeleteResponseBodyType,

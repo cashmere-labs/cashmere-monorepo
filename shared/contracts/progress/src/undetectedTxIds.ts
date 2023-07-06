@@ -21,7 +21,7 @@ const undetectedTxIdsResponseBodyType = Type.Array(Type.String());
  */
 export const undetectedTxIdsContract = buildSstApiGatewayContract({
     id: 'undetected-tx-ids',
-    path: '/api/getUndetectedTxIds',
+    path: '/getUndetectedTxIds',
     method: 'GET',
     queryStringParamsSchema: undetectedTxIdsQueryParamsType,
     responseSchema: undetectedTxIdsResponseBodyType,

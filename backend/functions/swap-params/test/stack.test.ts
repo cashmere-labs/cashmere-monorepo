@@ -2,7 +2,7 @@ import { CoreStack } from '@cashmere-monorepo/backend-core/stacks/CoreStack';
 import { Template } from 'aws-cdk-lib/assertions';
 import { App, getStack } from 'sst/constructs';
 import { initProject } from 'sst/project';
-import { beforeEach, describe, it } from 'vitest';
+import { beforeAll, describe, it } from 'vitest';
 import { SwapParamsStack } from '../SwapParamsStack';
 
 /**
@@ -13,7 +13,7 @@ describe('[Stack] StackParams', () => {
     let app: App;
 
     // Before each test, init project and deploy core stack
-    beforeEach(async () => {
+    beforeAll(async () => {
         // Init project and deploy core stack
         await initProject({});
         app = new App({ mode: 'deploy' });
@@ -26,15 +26,11 @@ describe('[Stack] StackParams', () => {
     /**
      * Ensure all the endpoints are deployed
      */
-    it("[Ok] All endpoint's deployed", async () => {
+    it("[Ok] All endpoint's deployed", () => {
         // Get the cloud formation template of the stack
         const stack = getStack(SwapParamsStack);
         const template = Template.fromStack(stack);
 
-        // Ensure lambda has the right config's
-        // template.hasResourceProperties('AWS::Lambda::Function', {
-        //     customDomain: use(CoreStack).getDomainPath('swap'),
-        // });
         // Ensure we got the function we go the estimate route
         template.hasResourceProperties('AWS::ApiGatewayV2::Route', {
             RouteKey: 'GET /estimate',

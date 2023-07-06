@@ -23,7 +23,7 @@ const transactionsListDeleteSwapIdResponseBodyType = Type.Object({
  */
 export const transactionsListDeleteSwapIdContract = buildSstApiGatewayContract({
     id: 'transactions-list-delete-swap-id',
-    path: '/api/transactionsList/:swapId',
+    path: '/transactionsList/:swapId',
     method: 'DELETE',
     requestContextSchema: CustomType.AuthRequestContext,
     pathParamsSchema: transactionsListDeleteSwapIdParamsType,

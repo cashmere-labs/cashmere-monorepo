@@ -53,7 +53,7 @@ export const MultiContractsApiGatewayRoute = <
 
 /**
  * Map a single contract to a route
- * @param stack
+ * @param stage
  * @param contract
  * @param config
  */
@@ -71,7 +71,7 @@ const mapContractToRoute = <AuthorizerKeys>(
     return {
         [contract.method + ' ' + contract.path]: {
             function: {
-                ...(omit(config, ['additionalRouteProps']) as FunctionProps),
+                ...(omit(config, ['routeProps']) as FunctionProps),
                 functionName: config.functionName ?? defaultFuntionName,
             },
             ...(config.routeProps ?? []),

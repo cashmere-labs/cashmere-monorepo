@@ -1,2 +1,2 @@
-export * from './loggerHooks';
-export * from './typesHooks';
+export { useLogger } from './loggerHooks';
+export { useTypedEvent, validateTypeOrThrow } from './typesHooks';
