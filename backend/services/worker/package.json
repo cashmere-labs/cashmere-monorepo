@@ -8,21 +8,21 @@
         "typecheck": "tsc -noEmit"
     },
     "dependencies": {
-        "@aws-sdk/client-sqs": "^3.360.0",
+        "@aws-sdk/client-sqs": "^3.363.0",
         "@cashmere-monorepo/backend-blockchain": "workspace:^",
         "@cashmere-monorepo/backend-core": "workspace:^",
         "@cashmere-monorepo/backend-database": "workspace:^",
         "luxon": "^3.3.0",
         "radash": "^11.0.0",
-        "viem": "^1.1.8",
-        "vitest": "^0.32.2"
+        "viem": "^1.2.9",
+        "vitest": "^0.33.0"
     },
     "devDependencies": {
         "@types/aws-lambda": "^8.10.119",
         "@types/luxon": "^3.3.0",
-        "@types/node": "^18.16.18",
-        "aws-sdk-client-mock": "^2.2.0",
-        "sst": "2.11.8",
+        "@types/node": "^18.16.19",
+        "aws-sdk-client-mock": "^3.0.0",
+        "sst": "2.19.0",
         "vitest": "^0.32.0"
     }
 }

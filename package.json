@@ -21,22 +21,22 @@
     },
     "devDependencies": {
         "@tsconfig/node18": "^2.0.1",
-        "@typescript-eslint/eslint-plugin": "^5.60.1",
-        "@typescript-eslint/parser": "^5.60.1",
-        "@vitest/coverage-istanbul": "^0.32.2",
+        "@typescript-eslint/eslint-plugin": "^5.61.0",
+        "@typescript-eslint/parser": "^5.61.0",
+        "@vitest/coverage-istanbul": "^0.33.0",
         "aws-cdk-lib": "2.84.0",
         "constructs": "10.1.156",
-        "eslint": "^8.43.0",
+        "eslint": "^8.44.0",
         "eslint-config-prettier": "^8.8.0",
         "eslint-plugin-prettier": "^4.2.1",
         "husky": "^8.0.3",
-        "lint-staged": "^13.2.2",
-        "nx": "16.4.0",
-        "prettier": "^2.8.8",
+        "lint-staged": "^13.2.3",
+        "nx": "16.5.0",
+        "prettier": "^3.0.0",
         "prettier-plugin-organize-imports": "^3.2.2",
-        "sst": "2.11.18",
-        "typescript": "^5.1.5",
-        "vitest": "^0.32.2"
+        "sst": "2.19.0",
+        "typescript": "^5.1.6",
+        "vitest": "^0.33.0"
     },
     "lint-staged": {
         "*.{js,ts,json,md}": [

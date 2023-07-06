@@ -25,7 +25,7 @@ export const MultiContractsApiGatewayRoute = <
         string,
         GenericApiGatewayContract
     >,
-    ContractsKeys extends keyof Contracts = keyof Contracts
+    ContractsKeys extends keyof Contracts = keyof Contracts,
 >(
     scope: Stack,
     api: Api,
@@ -33,20 +33,23 @@ export const MultiContractsApiGatewayRoute = <
     configs: Record<ContractsKeys, RouteConfig<AuthorizerKeys>>
 ) => {
     // Build the routes for each contracts
-    const routes = Object.entries(contracts).reduce((acc, [key, contract]) => {
-        // Find the config
-        const config = configs[key as keyof typeof configs];
-        if (!config) {
-            throw new Error(
-                `No config found for contract with id ${contract.id}`
-            );
-        }
-        // Return the route
-        return {
-            ...acc,
-            ...mapContractToRoute(scope.stage, contract, config),
-        };
-    }, {} as Record<string, ApiRouteProps<string>>);
+    const routes = Object.entries(contracts).reduce(
+        (acc, [key, contract]) => {
+            // Find the config
+            const config = configs[key as keyof typeof configs];
+            if (!config) {
+                throw new Error(
+                    `No config found for contract with id ${contract.id}`
+                );
+            }
+            // Return the route
+            return {
+                ...acc,
+                ...mapContractToRoute(scope.stage, contract, config),
+            };
+        },
+        {} as Record<string, ApiRouteProps<string>>
+    );
     // Then add each routes to the api
     api.addRoutes(scope, routes);
 };

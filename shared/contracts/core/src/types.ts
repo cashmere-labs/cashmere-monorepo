@@ -10,7 +10,7 @@ export type ApiGatewayContract<
     BodyInputProperties extends TSchema | undefined,
     HeadersSchemaProperties extends TSchema | undefined,
     RequestContextProperties extends TSchema | undefined,
-    ResponseSchema extends TSchema | undefined
+    ResponseSchema extends TSchema | undefined,
 > = {
     id: string;
     method: 'GET' | 'POST' | 'PUT' | 'DELETE';

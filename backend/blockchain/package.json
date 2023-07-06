@@ -10,16 +10,16 @@
         "@cashmere-monorepo/backend-core": "workspace:^",
         "@cashmere-monorepo/shared-blockchain": "workspace:^",
         "radash": "^11.0.0",
-        "viem": "^1.1.8"
+        "viem": "^1.2.9"
     },
     "devDependencies": {
         "@faker-js/faker": "^8.0.2",
         "@types/aws-lambda": "^8.10.119",
-        "@types/node": "^18.16.18",
+        "@types/node": "^18.16.19",
         "@types/ws": "^8.5.5",
         "@viem/anvil": "^0.0.6",
-        "abitype": "^0.8.11",
-        "sst": "2.17.5",
-        "vitest": "^0.32.2"
+        "abitype": "^0.9.0",
+        "sst": "2.19.0",
+        "vitest": "^0.33.0"
     }
 }

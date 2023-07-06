@@ -7,14 +7,14 @@
     },
     "devDependencies": {
         "@types/aws-lambda": "^8.10.119",
-        "@types/node": "^18.16.18",
-        "aws-sdk-client-mock": "^2.2.0",
-        "sst": "2.17.5",
-        "vitest": "^0.32.2"
+        "@types/node": "^18.16.19",
+        "aws-sdk-client-mock": "^3.0.0",
+        "sst": "2.19.0",
+        "vitest": "^0.33.0"
     },
     "dependencies": {
-        "@aws-sdk/client-dynamodb": "^3.360.0",
-        "@aws-sdk/client-sqs": "^3.360.0",
+        "@aws-sdk/client-dynamodb": "^3.363.0",
+        "@aws-sdk/client-sqs": "^3.363.0",
         "@cashmere-monorepo/shared-contract-core": "workspace:^",
         "@sinclair/typebox": "^0.28.20",
         "async-mutex": "^0.4.0",
