@@ -63,6 +63,7 @@ describe('[Backend][Database] SwapData repository', () => {
         // Start an in-memory MongoDB server
         mongod = await MongoMemoryServer.create();
         const uri = mongod.getUri();
+
         // Set the environment variables for the database connection
         vi.stubEnv('MONGO_DB_URI', uri);
         vi.stubEnv('MONGO_DB_NAME', 'testdb');
@@ -306,5 +307,25 @@ describe('[Backend][Database] SwapData repository', () => {
         let count = 0;
         while (await cursor.next()) count++;
         expect(count).toEqual(10);
+    });
+
+    it('[Ok] Retrieves All swap data', async () => {
+        const result = await swapDataRepository.getAll();
+
+        expect(result.items[0]).toMatchObject(swapDataFixture[0]);
+        expect(result.count).not.toBe(null);
+    });
+
+    it('[Ok] Retrieves only first page of swap data', async () => {
+        const result = await swapDataRepository.getAll({ page: 0, items: 10 });
+
+        expect(result.items.length).toBeLessThanOrEqual(10);
+        expect(result.count).not.toBe(null);
+    });
+
+    it('[ko] Retrieves data for negative page', async () => {
+        expect(() => swapDataRepository.getAll({ page: -1 })).rejects.toThrow(
+            "BSON field 'skip' value must be >= 0, actual value '-10'"
+        );
     });
 });

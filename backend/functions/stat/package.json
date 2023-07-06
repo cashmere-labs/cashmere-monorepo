@@ -1,0 +1,24 @@
+{
+    "name": "@cashmere-monorepo/backend-function-stat",
+    "version": "0.0.0",
+    "scripts": {
+        "typecheck": "tsc -noEmit",
+        "test": "sst bind \"vitest run --coverage --no-threads\"",
+        "test:watch": "sst bind \"vitest watch --coverage --no-threads\"",
+        "test:ui": "sst bind \"vitest watch --ui --coverage --no-threads\""
+    },
+    "dependencies": {
+        "@cashmere-monorepo/backend-core": "workspace:^",
+        "@cashmere-monorepo/backend-database": "workspace:^",
+        "@cashmere-monorepo/shared-contract-stat": "workspace:^",
+        "@cashmere-monorepo/shared-contract-core": "workspace:^"
+    },
+    "devDependencies": {
+        "@types/aws-lambda": "^8.10.116",
+        "@types/node": "^18.16.16",
+        "@vitest/coverage-v8": "^0.32.0",
+        "sst": "2.11.18",
+        "vite-tsconfig-paths": "^4.2.0",
+        "vitest": "^0.32.0"
+    }
+}
