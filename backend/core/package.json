@@ -8,9 +8,9 @@
     "devDependencies": {
         "@types/aws-lambda": "^8.10.119",
         "@types/node": "^18.16.19",
-        "aws-sdk-client-mock": "^2.2.0",
+        "aws-sdk-client-mock": "^3.0.0",
         "sst": "2.19.0",
-        "vitest": "^0.32.4"
+        "vitest": "^0.33.0"
     },
     "dependencies": {
         "@aws-sdk/client-dynamodb": "^3.363.0",
