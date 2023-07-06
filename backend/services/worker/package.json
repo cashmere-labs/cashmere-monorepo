@@ -22,7 +22,7 @@
         "@types/luxon": "^3.3.0",
         "@types/node": "^18.16.18",
         "aws-sdk-client-mock": "^2.2.0",
-        "sst": "2.11.8",
+        "sst": "2.19.0",
         "vitest": "^0.32.0"
     }
 }

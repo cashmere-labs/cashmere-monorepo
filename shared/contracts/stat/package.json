@@ -10,7 +10,7 @@
     "devDependencies": {
         "@types/node": "^18.16.14",
         "json-schema-to-ts": "^2.9.0",
-        "sst": "2.13.2",
+        "sst": "2.19.0",
         "vitest": "^0.31.1"
     },
     "dependencies": {
