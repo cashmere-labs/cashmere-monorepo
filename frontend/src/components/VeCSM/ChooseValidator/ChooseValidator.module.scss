@@ -1,0 +1,81 @@
+.wrapper {
+  max-width: 1217px;
+  width: 100%;
+  margin: 30px 0px;
+
+  .whichValidatorWrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 56px;
+    border-radius: 16px;
+    background-color: var(--veCSM-bg-2);
+
+    .buttons {
+      display: flex;
+      margin-left: 6px;
+    }
+
+    .BecomeValidator {
+      margin-right: 6px;
+      color: var(--veCSM-text-2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 18px;
+      height: 46px;
+      padding: 0px 19px;
+      border-radius: 10px;
+      cursor: pointer;
+
+      &:hover {
+        transform: scale(1.025);
+      }
+    }
+  }
+
+  .bodyWrapper {
+    height: 535px;
+    background-color: var(--pool-bg);
+    border-radius: 25px;
+  }
+}
+
+// @media (max-width: 850px) {
+//     .wrapper {
+//         .whichValidatorWrapper {
+//             margin: 25px 0px 0px 0px;
+//             border-radius: 0px;
+//         }
+//     }
+// }
+
+@media (max-width: 800px) {
+  .wrapper {
+    margin-top: -25px;
+    padding: 0px 8px;
+    .whichValidatorWrapper {
+      display: flex;
+      justify-content: center;
+
+      .BecomeValidator {
+        text-align: center;
+        height: 36px;
+        font-size: 14px;
+        width: 120px;
+      }
+    }
+  }
+}
+
+.poolButton {
+  color: var(--text) !important;
+}
+
+.poolButtonOn {
+  background-color: var(--pool-button-active) !important;
+}
+
+.poolButtonOff {
+  background-color: transparent !important;
+}

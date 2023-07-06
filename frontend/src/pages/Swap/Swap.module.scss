@@ -1,0 +1,29 @@
+.wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+}
+
+.estimator {
+  margin-left: auto;
+  margin-right: auto;
+  color: var(--subtext);
+  width: 668px;
+  margin-bottom: 2rem;
+  cursor: pointer;
+
+  & span:hover {
+    display: inline-block;
+    color: var(--text);
+    transform: scale(1.025);
+    transition: 0.1s linear;
+  }
+
+  @media (max-width: 768px) {
+    max-width: 95vh !important;
+    width: 95%;
+  }
+}

@@ -1,0 +1,330 @@
+.navbar {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  position: relative;
+  height: var(--navbar-height);
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  background-color: var(--navbar-bg);
+  box-shadow: 1px 2px 2px #96969612;
+  z-index: 1000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  & nav {
+    width: 100%;
+  }
+
+  &.transparent {
+    position: absolute;
+    background-color: transparent;
+  }
+}
+
+.container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+.logoWrapper {
+  flex-shrink: 0;
+  margin-right: auto;
+
+  & a {
+    display: flex;
+    align-items: center;
+
+    & span {
+      font-family: "Rajdhani", sans-serif !important;
+      font-weight: 600 !important;
+      font-size: 18px;
+    }
+  }
+
+  & img {
+    margin-right: 0.5rem;
+    width: 40px;
+  }
+}
+
+.links {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+  justify-content: center;
+}
+
+.linkWrapper {
+  align-self: flex-start;
+  margin-right: 2rem;
+  position: relative;
+  &:hover {
+    transform: scale(1.02);
+    transition: 0.1s linear;
+  }
+  & .soon {
+    font-weight: 500;
+    position: absolute;
+    right: 0px;
+    bottom: -12px;
+    background: linear-gradient(90deg, #ff4e9c 15.74%, #ff3c72 87.06%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+    font-size: 10px;
+  }
+}
+
+.link {
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--navbar-item);
+  font-weight: 400;
+  font-size: 16px;
+  transition: 0.1s linear;
+
+  &.active {
+    font-weight: 600 !important;
+    color: var(--navbar-active);
+  }
+}
+
+.drone {
+  position: absolute;
+  width: 80px;
+  left: -14px;
+}
+
+.button {
+  width: 130px;
+  height: 48px;
+}
+
+.buttons {
+  display: flex;
+  align-items: center;
+}
+
+.bar {
+  display: none;
+  align-items: center;
+  color: var(--text);
+  background-color: transparent;
+  outline: none;
+  justify-content: center;
+  flex-shrink: 0;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  transition: 0.1s linear;
+  margin-left: 12px;
+}
+
+.smallMenu {
+  top: 0;
+  left: 0;
+  position: fixed;
+  display: none;
+  background-color: var(--navbar-bg);
+  height: 100vh;
+  width: 85vw;
+  z-index: 10000;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0px 3px 6px #00000029;
+
+  @media (min-width: 768px) {
+    display: none !important;
+  }
+
+  &.transparent {
+    background-color: black;
+  }
+}
+.layer {
+  width: 15vw;
+  height: 100vh;
+  z-index: 10000;
+  position: fixed;
+  right: 0px;
+  top: 0px;
+  background-color: rgba(0, 0, 0, 0.2);
+  @media (min-width: 768px) {
+    display: none !important;
+  }
+}
+
+.hide {
+  pointer-events: none;
+  opacity: 0 !important;
+}
+
+.walletIcon {
+  display: flex;
+  margin-right: 8px;
+  font-size: 24px;
+}
+
+.themeChanger {
+  color: var(--icon-dark);
+  margin-left: 8px;
+}
+
+@media (max-width: 768px) {
+  .links {
+    display: none;
+  }
+  .logoWrapper {
+    width: 72px;
+  }
+  .drone {
+    width: 30px;
+    left: 12px;
+  }
+  .button {
+    width: 96px;
+    height: 32px;
+
+    & span {
+      font-size: 14px !important;
+    }
+  }
+  .themeChanger {
+    display: none !important;
+  }
+  .bar {
+    display: flex;
+  }
+  .smallMenu {
+    display: flex;
+  }
+  .themeChangerMobile {
+    color: var(--icon-dark);
+    margin-right: 8px;
+  }
+  .smallMenuHeader {
+    height: var(--navbar-height);
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+    padding: 12px;
+    box-shadow: 1px 2px 2px #96969612;
+  }
+  .linkWrapper {
+    &:first-child {
+      margin-top: auto;
+    }
+
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
+    width: 100%;
+    display: flex;
+    height: auto;
+    align-items: center;
+    justify-content: center !important;
+    margin-right: 0px;
+
+    & .soon {
+      left: 50%;
+      transform: translateX(-50%);
+      right: inherit;
+      bottom: -8px;
+    }
+  }
+  .link {
+    font-size: 18px;
+    font-weight: 200;
+  }
+  .smallLinks {
+    margin-top: auto;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 3rem;
+    z-index: 1000;
+  }
+  .connectWalletMobileWrapper {
+    margin-top: auto;
+    width: 90%;
+
+    & button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}
+
+.left {
+  display: flex;
+  align-items: center;
+}
+
+.modal {
+  background-color: var(--modal-bg);
+  color: var(--text);
+  width: 412px;
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--navbar-divider);
+  border-radius: 8px;
+  margin-top: 1.5rem;
+  padding: 1rem 1.5rem;
+}
+.row {
+  display: flex;
+  width: 100%;
+  align-items: center;
+}
+
+.address {
+  margin-top: 0.5rem;
+  font-size: 28px;
+  font-weight: 500;
+}
+
+.copy {
+  font-size: 12px;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+
+  & span {
+    margin-left: 0.5rem;
+  }
+}
+
+@media (max-width: 512px) {
+  .modal {
+    width: 90vw;
+  }
+}
+
+.accountButton {
+  img {
+    width: 20px;
+    margin-right: 5px;
+  }
+}
+
+.buttonIcon {
+  margin-left: 3px;
+
+  &:not(:last-child) {
+    margin-right: 10px;
+  }
+}

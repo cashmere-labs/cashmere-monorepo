@@ -1,5 +1,5 @@
 {
     "extends": "@tsconfig/node18/tsconfig.json",
-    "exclude": ["backend", "shared"],
+    "exclude": ["backend", "shared", "frontend"],
     "compilerOptions": {}
 }

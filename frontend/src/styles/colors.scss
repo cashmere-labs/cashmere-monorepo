@@ -1,0 +1,526 @@
+body {
+  --midnight: rgb(36, 36, 36);
+}
+
+body.light {
+  // Misc
+  --text: black;
+  --text-inverse: white;
+  --subtext: rgba(0, 0, 0, 0.478);
+  --main-bg: #f5f5f5;
+  --icon-dark: #999999;
+  --icon-light: rgb(185, 183, 183);
+  --neutral-button-bg: rgb(242, 246, 250);
+  --hoverable-icon-bg: rgb(240, 236, 236);
+  --alert-color: #e8717c;
+  --table-divider: #c6c6c6;
+  --divider: #d5d3d3;
+
+  // Navbar
+  --navbar-bg: #f5f5f5;
+  --navbar-item: #ababab;
+  --navbar-active: black;
+  --navbar-divider: #ededed;
+
+  // Footer
+  --footer-bg: #f0f0f0;
+  --footer-link: #9a9898;
+  --footer-link-hover: black;
+  --footer-icon: rgb(185, 183, 183);
+
+  // Swap
+  --swap-box-bg: white;
+  --swap-box-border: #efefef;
+  --swap-badge-bg: #f4f4f5;
+  --swap-badge-border: rgb(52, 52, 52);
+  --swap-divider: #ededed;
+  --swap-slippage-input-bg: #eaeaea;
+  --swap-settings-divider: inset 1px 1px 2px #ffffffc3, 1px 2px 2px #00000012;
+  --swap-settings-divider-bg: #f8f8f8 0% 0% no-repeat padding-box;
+  --swap-confirmation-bg: #f4f4f5;
+  --swap-confirmation-border: #ededed;
+
+  // Select
+  --select-border: #ededed;
+  --select-bg: #fafafa;
+  --select-bg-hover: #faf5f5;
+  --select-text: black;
+  --select-icon: black;
+  --select-options-bg: white;
+  --option-hover: #f2f2f2;
+  --option-active: #eeecec;
+
+  // Input
+  --input-border: #ededed;
+  --input-bg: #fafafa;
+  --input-text: black;
+
+  // Modal
+  --modal-bg: #f4f4f5;
+  --close-bg: #dbdbdb;
+  --close-icon: #9a9a9a;
+
+  // Pool
+  --pool-bg: rgb(255, 255, 255);
+  --pool-bg-2: #efefef;
+  --pool-bg-3: #f5f5f5;
+  --pool-bg-4: white;
+  --pool-bg-5: #f8f8f8;
+  --pool-text-1: rgba(31, 31, 31, 0.9);
+  --pool-text-2: #1f1f1f;
+  --pool-text-3: #0b0b0b;
+  --pool-text-4: #adadad;
+  --pool-text-5: #c3c3c3;
+  --pool-text-6: black;
+  --pool-text-7: white;
+  --pool-text-8: #f5f5f5;
+  --pool-text-9: #eaeaea;
+  --pool-table-hover: rgb(240, 240, 240);
+  --pool-button-active: white;
+
+  // Tooltip
+  --tooltip-bg: white;
+  --tooltip-color: black;
+
+  // Done
+  --submitted-bg: #f4f4f5;
+  --submitted-text-1: black;
+
+  // Waiting
+  --waiting-bg-1: #f4f4f5;
+  --waiting-bg-2: #fafafa;
+  --waiting-text-1: #1f1f1f;
+  --waiting-text-2: black;
+  --waiting-border-1: #ededed;
+
+  // veCSM
+  --veCSM-bg-1: #fff;
+  --veCSM-bg-2: #efefef;
+  --veCSM-text-1: #adadad;
+  --veCSM-text-2: #1f1f1f;
+  --veCSM-text-3: black;
+  --veCSM-text-4: #0b0b0b;
+  --veCSM-text-5: #f5f5f5;
+
+  // DAO
+  --DAO-bg-1: white;
+  --DAO-bg-2: #f7f7f7;
+  --DAO-bg-3: black;
+  --DAO-bg-4: #f7f7f7;
+  --DAO-text-1: #8c8c8c;
+  --DAO-text-2: #1f1f1f;
+  --DAO-text-3: #363636;
+  --DAO-text-4: black;
+  --DAO-text-5: #1f1f1f;
+
+  // DAO Proposal Modal
+  --DAOProposal-bg-1: #fafafa;
+  --DAOProposal-bg-2: #ededed;
+  --DAOProposal-bg-3: #e3e3e3;
+  --DAOProposal-text-1: black;
+
+  // Become Validator Modal
+  --BecomeValidator-bg-1: white;
+  --BecomeValidator-bg-2: #fafafa;
+  --BecomeValidator-bg-3: #ededed;
+  --BecomeValidator-text-1: black;
+  --BecomeValidator-text-2: #8f8f8f;
+  --BecomeValidator-text-3: white;
+
+  // Unlock Modal
+  --UnlockModal-bg-2: #fafafa;
+  --UnlockModal-bg-3: #ededed;
+  --UnlockModal-text-1: black;
+  --UnlockModal-text-2: #929292;
+
+  // Lock Modal
+  --LockModal-bg-1: #ededed;
+  --LockModal-text-1: black;
+  --LockModal-info-text: #325981;
+
+  // DAO UpperPageReplaced
+  --upper-page-bg-1: #fff;
+  --upper-page-text-1: #1f1f1f;
+  --upper-page-text-2: #a5a5a5;
+  --upper-page-text-3: black;
+  --upper-page-text-4: #616161;
+  --upper-page-text-5: #1f1f1f;
+
+  // Gauge Boost Calculator
+  --gauge-boost-bg-1: #fff;
+  --gauge-boost-bg-2: #f4f4f4;
+  --gauge-boost-bg-3: rgba(255, 255, 255, 0.1);
+  --gauge-boost-bg-4: #f4f4f4;
+  --gauge-boost-bg-5: white;
+  --gauge-boost-bg-6: #1f1f1f;
+  --gauge-boost-bg-7: #f4f4f4;
+  --gauge-boost-text-1: #1f1f1f;
+  --gauge-boost-text-2: #9b9b9b;
+
+  // Statistics
+  --statistics-bg-1: white;
+  --statistics-bg-2: #f7f7f7;
+  --statistics-bg-3: #fafafa;
+  --statistics-bg-4: #f2f2f2;
+  --statistics-text-1: #1f1f1f;
+  --statistics-text-2: #989898;
+
+  // Liquidity Stake Reward
+  --liquidity-stake-reward-bg-1: black;
+  --liquidity-stake-reward-bg-2: #fafafa;
+  --liquidity-stake-reward-bg-3: #ededed;
+  --liquidity-stake-reward-text-1: white;
+  --liquidity-stake-reward-text-2: #b5b5b5;
+
+  // Liquidity
+  --liquidity-bg-1: #e5e5e5;
+  --liquidity-bg-2: black;
+  --liquidity-bg-3: #efefef;
+  --liquidity-bg-4: black;
+  --liquidity-bg-5: #ededed;
+  --liquidity-bg-6: black;
+  --liquidity-bg-7: #ededed;
+  --liquidity-bg-8: #fafafa;
+  --liquidity-bg-9: #f8f8f8;
+  --liquidity-text-1: #1f1f1f;
+  --liquidity-text-2: white;
+  --liquidity-text-3: white;
+  --liquidity-text-4: #8b8b8b;
+  --liquidity-text-5: black;
+  --liquidity-text-6: rgba(31, 31, 31, 0.9);
+
+  // Manage
+  --manage-text-1: #1f1f1f;
+  --manage-text-2: #919191;
+  --manage-bg-1: #e2e2e2;
+
+  // UpperBox
+  --upper-box-bg-1: #fff;
+  --upper-box-bg-2: #fafafa;
+  --upper-box-bg-3: #ededed;
+  --upper-box-text-1: black;
+  --upper-box-text-2: #8c8c8c;
+
+  // Balance
+  --balance-bg-1: #e2e2e2;
+  --balance-bg-2: #c3c3c3;
+  --balance-bg-3: #e2e2e2;
+  --balance-text-1: #1f1f1f;
+  --balance-text-2: rgba(31, 31, 31, 0.5);
+
+  // Poll
+  --poll-bg: white;
+  --poll-bg-hover: rgb(248, 248, 248);
+  --poll-chartbox: #efeded;
+
+  // Unstake Warning
+  --unstake-warning-text-1: black;
+
+  // Select network
+  --select-network-bg: white;
+
+  // TxProgressModal
+  --tx-progress-done-bg: black;
+  --tx-progress-done-color: white;
+  --tx-progress-done-border: black;
+  --tx-progress-inprogress-bg: transparent;
+  --tx-progress-inprogress-color: white;
+  --tx-progress-inprogress-border: #ef9931;
+  --tx-progress-notstarted-bg: transparent;
+  --tx-progress-notstarted-color: none;
+  --tx-progress-notstarted-border: #ececec;
+  --tx-progress-done-dash: #181818;
+  --tx-progress-disabled-dash: #c3c3c3;
+
+  // Account modal
+  --account-modal-main-bg: white;
+  --account-modal-avatar-bg: #ededed;
+  --account-modal-tabs-bg: #ededed;
+
+  // Tab
+  --tab-text-1: black;
+  --tab-bg-1: white;
+
+  // Vote Gauge
+  --vote-gauge-text-1: #adadad;
+  --vote-gauge-text-2: #0b0b0b;
+  --vote-gauge-text-3: rgba(31, 31, 31, 0.9);
+  --vote-gauge-bg-1: white;
+  --vote-gauge-bg-2: #e5e5e5;
+
+  // Vote Gauge Modal
+  --vote-gauge-modal-text-1: #1f1f1f;
+  --vote-gauge-modal-bg-1: #ddd;
+  --vote-gauge-modal-bg-2: #f8f8f8;
+  --vote-gauge-modal-bg-3: #ededed;
+  --vote-gauge-modal-bg-4: #ededed;
+}
+
+body.dark {
+  // Misc
+  --text: white;
+  --text-inverse: black;
+  --subtext: rgba(205, 205, 205, 0.478);
+  --main-bg: #161616;
+  --icon-dark: #999999;
+  --icon-light: rgb(185, 183, 183);
+  --neutral-button-bg: rgb(242, 246, 250);
+  --hoverable-icon-bg: rgb(26, 26, 26);
+  --alert-color: #e8717c;
+  --table-divider: #131313;
+
+  // Navbar
+  --navbar-bg: #232323;
+  --navbar-item: #4a4a4a;
+  --navbar-active: white;
+  --navbar-divider: #4a4a4a;
+
+  //Footer
+  --footer-bg: #232323;
+  --footer-link: #9c9c9c;
+  --footer-link-hover: white;
+  --footer-icon: #7e7c7c;
+
+  // Swap
+  --swap-box-bg: #232323;
+  --swap-box-border: #383838;
+  --swap-divider: #383838;
+  --swap-badge-bg: #1a1a1a;
+  --swap-badge-border: #383838;
+  --swap-slippage-input-bg: #1a1a1a;
+  --swap-settings-divider: inset 1px 1px 2px #55555529, 0px 1px 2px #00000003;
+  --swap-settings-divider-bg: #343434;
+  --swap-confirmation-bg: #1a1a1a;
+  --swap-confirmation-border: #383838;
+
+  // Select
+  --select-border: #383838;
+  --select-bg: #1a1a1a;
+  --select-bg-hover: #131313;
+  --select-text: white;
+  --select-icon: white;
+  --select-options-bg: #313131;
+  --option-hover: #4a4a4a;
+  --option-active: #353434;
+
+  // Input
+  --input-border: #383838;
+  --input-bg: #1a1a1a;
+  --input-text: white;
+
+  // Modal
+  --modal-bg: #232323;
+  --close-bg: black;
+  --close-icon: #545454;
+
+  // Pool
+  --pool-bg: #232323;
+  --pool-bg-2: #232323;
+  --pool-bg-3: #2d2d2d;
+  --pool-bg-4: transparent;
+  --pool-bg-5: #333;
+  --pool-text-1: white;
+  --pool-text-2: white;
+  --pool-text-3: white;
+  --pool-text-4: #adadad;
+  --pool-text-5: #c3c3c3;
+  --pool-text-6: white;
+  --pool-text-7: black;
+  --pool-text-8: #2d2d2d;
+  --pool-text-9: #727272;
+  --pool-table-hover: rgb(30, 30, 30);
+  --pool-button-active: #343434;
+
+  // Tooltip
+  --tooltip-bg: black;
+  --tooltip-color: white;
+
+  // Done
+  --submitted-bg: #232323;
+  --submitted-text-1: white;
+
+  // Waiting
+  --waiting-bg-1: #232323;
+  --waiting-bg-2: #1a1a1a;
+  --waiting-text-1: white;
+  --waiting-text-2: white;
+  --waiting-border-1: #383838;
+
+  // veCSM
+  --veCSM-bg-1: #232323;
+  --veCSM-bg-2: #232323;
+  --veCSM-text-1: #adadad;
+  --veCSM-text-2: #ffffff;
+  --veCSM-text-3: white;
+  --veCSM-text-4: white;
+  --veCSM-text-5: #2d2d2d;
+
+  // DAO
+  --DAO-bg-1: #232323;
+  --DAO-bg-2: #2e2e2e;
+  --DAO-bg-3: #4b4b4b;
+  --DAO-bg-4: #1a1a1a;
+  --DAO-text-1: #868686;
+  --DAO-text-2: white;
+  --DAO-text-3: white;
+  --DAO-text-4: white;
+  --DAO-text-5: #868686;
+
+  // DAO Proposal Modal
+  --DAOProposal-bg-1: #1a1a1a;
+  --DAOProposal-bg-2: #343434;
+  --DAOProposal-bg-3: #383838;
+  --DAOProposal-text-1: white;
+
+  // Become Validator Modal
+  --BecomeValidator-bg-1: #232323;
+  --BecomeValidator-bg-2: #1a1a1a;
+  --BecomeValidator-bg-3: #383838;
+  --BecomeValidator-text-1: white;
+  --BecomeValidator-text-2: #8a8a8a;
+  --BecomeValidator-text-3: black;
+
+  // Unlock Modal
+  --UnlockModal-bg-2: #1a1a1a;
+  --UnlockModal-bg-3: #383838;
+  --UnlockModal-text-1: white;
+  --UnlockModal-text-2: #919191;
+
+  // Lock Modal
+  --LockModal-bg-1: #383838;
+  --LockModal-text-1: white;
+  --LockModal-info-text: #325981;
+
+  // DAO UpperPageReplaced
+  --upper-page-bg-1: #232323;
+  --upper-page-text-1: #fff;
+  --upper-page-text-2: #7b7b7b;
+  --upper-page-text-3: white;
+  --upper-page-text-4: #7b7b7b;
+  --upper-page-text-5: #656565;
+
+  // Gauge Boost Calculator
+  --gauge-boost-bg-1: #232323;
+  --gauge-boost-bg-2: #2d2d2d;
+  --gauge-boost-bg-3: #313131;
+  --gauge-boost-bg-4: #1a1a1a;
+  --gauge-boost-bg-5: #232323;
+  --gauge-boost-bg-6: #848484;
+  --gauge-boost-bg-7: #1a1a1a;
+  --gauge-boost-text-1: white;
+  --gauge-boost-text-2: #919191;
+
+  // Statistics
+  --statistics-bg-1: #232323;
+  --statistics-bg-2: black;
+  --statistics-bg-3: #393939;
+  --statistics-bg-4: #2e2e2e;
+  --statistics-text-1: white;
+  --statistics-text-2: #989898;
+
+  // Liquidity Stake Reward
+  --liquidity-stake-reward-bg-1: #212121;
+  --liquidity-stake-reward-bg-2: #1a1a1a;
+  --liquidity-stake-reward-bg-3: #383838;
+  --liquidity-stake-reward-text-1: white;
+  --liquidity-stake-reward-text-2: #676767;
+
+  // Liquidity
+  --liquidity-bg-1: #1a1a1a;
+  --liquidity-bg-2: #9f9f9f;
+  --liquidity-bg-3: #efefef;
+  --liquidity-bg-4: white;
+  --liquidity-bg-5: transparent;
+  --liquidity-bg-6: white;
+  --liquidity-bg-7: #343434;
+  --liquidity-bg-8: #1a1a1a;
+  --liquidity-bg-9: #2f2f2f;
+  --liquidity-text-1: #fff;
+  --liquidity-text-2: #b5b5b5;
+  --liquidity-text-3: black;
+  --liquidity-text-4: #919191;
+  --liquidity-text-5: white;
+  --liquidity-text-6: white;
+
+  // Manage
+  --manage-text-1: white;
+  --manage-text-2: #919191;
+  --manage-bg-1: #949494;
+
+  // UpperBox
+  --upper-box-bg-1: #232323;
+  --upper-box-bg-2: #1a1a1a;
+  --upper-box-bg-3: #383838;
+  --upper-box-text-1: white;
+  --upper-box-text-2: #919191;
+
+  // Balance
+  --balance-bg-1: black;
+  --balance-bg-2: #3e3e3e;
+  --balance-bg-3: #3e3e3e;
+  --balance-text-1: #fff;
+  --balance-text-2: #808080;
+
+  // Poll
+  --poll-bg: #232323;
+  --poll-bg-hover: #1c1c1c;
+  --poll-chartbox: #2f2f2f;
+
+  // Unstake Warning
+  --unstake-warning-text-1: white;
+
+  //Select network
+  --select-network-bg: #232323;
+
+  // TxProgressModal
+  --tx-progress-done-bg: black;
+  --tx-progress-done-color: white;
+  --tx-progress-done-border: black;
+  --tx-progress-inprogress-bg: transparent;
+  --tx-progress-inprogress-color: white;
+  --tx-progress-inprogress-border: #ef9931;
+  --tx-progress-notstarted-bg: transparent;
+  --tx-progress-notstarted-color: none;
+  --tx-progress-notstarted-border: #ececec;
+  --tx-progress-done-dash: #cccccc;
+  --tx-progress-disabled-dash: #403f3f;
+
+  // Account modal
+  --account-modal-main-bg: black;
+  --account-modal-avatar-bg: #272727;
+  --account-modal-tabs-bg: #272727;
+
+  // Tab
+  --tab-text-1: white;
+  --tab-bg-1: #212121;
+
+  // Vote Gauge
+  --vote-gauge-text-1: #adadad;
+  --vote-gauge-text-2: white;
+  --vote-gauge-text-3: white;
+  --vote-gauge-bg-1: #232323;
+  --vote-gauge-bg-2: #e5e5e5;
+
+  // Vote Gauge Modal
+  --vote-gauge-modal-text-1: #fff;
+  --vote-gauge-modal-bg-1: #707070;
+  --vote-gauge-modal-bg-2: #2e2e2e;
+  --vote-gauge-modal-bg-3: transparent;
+  --vote-gauge-modal-bg-4: #ededed;
+}
+
+body {
+  background-color: var(--main-bg);
+}
+
+.link {
+  text-decoration: none !important;
+  color: inherit;
+}
+
+.icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--text);
+}

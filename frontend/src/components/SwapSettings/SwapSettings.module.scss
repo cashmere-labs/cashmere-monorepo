@@ -1,0 +1,50 @@
+.divider {
+  width: 100%;
+  display: flex;
+  box-shadow: var(--swap-settings-divider);
+  border-radius: 24px;
+  height: 6px;
+  margin-bottom: 32px;
+  margin-top: 20px;
+}
+
+.label {
+  color: var(--subtext);
+  font-weight: 500;
+  font-size: 12;
+}
+
+.badge {
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--swap-badge-bg);
+}
+
+.modal {
+  padding: 40px;
+  width: 512px;
+
+  @media (max-width: 512px) {
+    padding: 24px 12px;
+  }
+}
+
+.radio {
+  margin-right: 20px;
+
+  @media (max-width: 512px) {
+    margin-right: 6px;
+  }
+}
+
+.input {
+  font-size: 14px;
+  max-width: 54px;
+  border-radius: 12px;
+  outline: none;
+  background-color: var(--swap-slippage-input-bg);
+  border: none;
+  padding: 0.25rem 1rem;
+  margin-right: 8px;
+  color: var(--text);
+}
