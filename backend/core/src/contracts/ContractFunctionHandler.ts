@@ -10,7 +10,7 @@ import { logger } from '../logger/logger';
 
 // Build an SST Api Gateway function handler
 export const ContractFunctionHandler = <
-    Contract extends GenericApiGatewayContract
+    Contract extends GenericApiGatewayContract,
 >(
     schema: Contract
 ): ((

@@ -150,13 +150,16 @@ const chainNameToIds = {
 };
 export const chainIdsToNames: { [chainId: number]: string } = Object.entries(
     chainNameToIds
-).reduce((acc, [name, id]) => {
-    if (acc[id]) {
-        throw new Error(
-            `Duplicate chain id ${id} for in ${acc[id]} and ${name}`
-        );
-    }
-    acc[id] = name;
+).reduce(
+    (acc, [name, id]) => {
+        if (acc[id]) {
+            throw new Error(
+                `Duplicate chain id ${id} for in ${acc[id]} and ${name}`
+            );
+        }
+        acc[id] = name;
 
-    return acc;
-}, {} as { [chainId: number]: string });
+        return acc;
+    },
+    {} as { [chainId: number]: string }
+);

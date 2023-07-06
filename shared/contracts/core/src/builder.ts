@@ -12,7 +12,7 @@ export const buildSstApiGatewayContract = <
     BodyInputProperties extends TSchema,
     HeadersSchemaProperties extends TSchema,
     RequestContextProperties extends TSchema,
-    ResponseSchema extends TSchema
+    ResponseSchema extends TSchema,
 >(props: {
     id: string;
     path: string;
