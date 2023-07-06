@@ -2,7 +2,7 @@ import { CoreStack } from '@cashmere-monorepo/backend-core/stacks/CoreStack';
 import { Template } from 'aws-cdk-lib/assertions';
 import { App, getStack } from 'sst/constructs';
 import { initProject } from 'sst/project';
-import { beforeEach, describe, it } from 'vitest';
+import { beforeAll, describe, it } from 'vitest';
 import { SwapParamsStack } from '../SwapParamsStack';
 
 /**
@@ -13,7 +13,7 @@ describe('[Stack] StackParams', () => {
     let app: App;
 
     // Before each test, init project and deploy core stack
-    beforeEach(async () => {
+    beforeAll(async () => {
         // Init project and deploy core stack
         await initProject({});
         app = new App({ mode: 'deploy' });

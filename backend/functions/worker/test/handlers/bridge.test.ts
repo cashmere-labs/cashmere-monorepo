@@ -1,3 +1,4 @@
+import { isRunningInProd } from '@cashmere-monorepo/backend-core/src';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { handler } from '../../src/handlers/bridge';
 
@@ -13,6 +14,7 @@ describe('[Functions][Worker] bridgeHandler', () => {
                 info: loggerInfo,
             },
             useLogger: vi.fn(),
+            isRunningInProd,
         }));
 
         vi.doMock('@cashmere-monorepo/backend-service-worker', () => ({

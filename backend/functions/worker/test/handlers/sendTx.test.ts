@@ -1,18 +1,30 @@
 import { getSendTxQueueTypeCompiler } from '@cashmere-monorepo/shared-contract-worker';
-import { SQSEvent } from 'aws-lambda';
+import { Context, SQSEvent } from 'aws-lambda';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { handler } from '../../src/handlers/send_tx';
 
 describe('[Functions][Worker] sendTx', () => {
     let handlerToTest: typeof handler;
 
-    const validateTypeOrThrowMock = vi.fn();
+    let validatedBody: any;
+    const typeCompilerMock = vi.fn(() => validatedBody);
+    const validateTypeOrThrowMock = vi.fn(() => validatedBody);
 
     const loggerInfoMock = vi.fn();
     const loggerWarnMock = vi.fn();
 
-    const buildBatchedTxServiceMock = vi.fn();
-    const getSendTxQueueTypeCompilerMock = vi.fn();
+    const batchedTxServiceMock = {
+        // throw an error when handling new tx
+        handleNewTx: vi.fn(),
+        sendBatchedTx: vi.fn(),
+    };
+    const buildBatchedTxServiceMock = vi.fn(() => batchedTxServiceMock);
+    const getSendTxQueueTypeCompilerMock = vi.fn(
+        () =>
+            typeCompilerMock as unknown as ReturnType<
+                typeof getSendTxQueueTypeCompiler
+            >
+    );
 
     beforeAll(async () => {
         vi.doMock('@cashmere-monorepo/backend-core', () => ({
@@ -52,28 +64,9 @@ describe('[Functions][Worker] sendTx', () => {
                     },
                 ],
             } as SQSEvent;
-            const validatedBody = { chainId: 1 };
+            validatedBody = { chainId: 1 };
 
-            const batchedTxServiceMock = {
-                handleNewTx: vi.fn(),
-                sendBatchedTx: vi.fn(),
-            };
-
-            const typeCompilerMock = vi.fn(() => validatedBody);
-
-            vi.mocked(getSendTxQueueTypeCompilerMock).mockReturnValue(
-                typeCompilerMock as unknown as ReturnType<
-                    typeof getSendTxQueueTypeCompiler
-                >
-            );
-
-            vi.mocked(validateTypeOrThrowMock).mockReturnValue(validatedBody);
-            vi.mocked(buildBatchedTxServiceMock).mockResolvedValue(
-                batchedTxServiceMock
-            );
-
-            // @ts-ignore
-            const result = await handlerToTest(event);
+            const result = await handlerToTest(event, {} as Context);
             expect(loggerInfoMock).toHaveBeenCalledWith('Send TX handler');
 
             expect(buildBatchedTxServiceMock).toHaveBeenCalled();
@@ -99,38 +92,15 @@ describe('[Functions][Worker] sendTx', () => {
                 ],
             } as SQSEvent;
 
-            const validatedBody = { chainId: 123 };
+            validatedBody = { chainId: 123 };
 
-            const batchedTxServiceMock = {
-                // throw an error when handling new tx
-                handleNewTx: vi.fn(() => {
-                    throw new Error('test-error');
-                }),
-                sendBatchedTx: vi.fn(),
-            };
-
-            const typeCompilerMock = vi.fn(() => validatedBody);
-
-            vi.mocked(validateTypeOrThrowMock).mockReturnValue(validatedBody);
-
-            vi.mocked(buildBatchedTxServiceMock).mockResolvedValue(
-                batchedTxServiceMock
-            );
-            vi.mocked(getSendTxQueueTypeCompilerMock).mockReturnValue(
-                typeCompilerMock as unknown as ReturnType<
-                    typeof getSendTxQueueTypeCompiler
-                >
+            batchedTxServiceMock.handleNewTx.mockRejectedValueOnce(
+                new Error('test-error')
             );
 
-            vi.mocked(buildBatchedTxServiceMock).mockResolvedValue(
-                batchedTxServiceMock
-            );
-
-            // @ts-ignore
-            const result = await handlerToTest(event);
+            await handlerToTest(event, {} as Context);
 
             expect(loggerInfoMock).toHaveBeenCalledWith('Send TX handler');
-
             expect(buildBatchedTxServiceMock).toHaveBeenCalled();
 
             // the error is handled and logged, so we are inside catch block
@@ -153,35 +123,13 @@ describe('[Functions][Worker] sendTx', () => {
                 ],
             } as SQSEvent;
 
-            const validatedBody = { chainId: 123 };
+            validatedBody = { chainId: 123 };
 
-            const batchedTxServiceMock = {
-                handleNewTx: vi.fn(),
-                // throw an error when sending batched tx
-                sendBatchedTx: vi.fn(() => {
-                    throw new Error('test-error');
-                }),
-            };
-
-            const typeCompilerMock = vi.fn(() => validatedBody);
-
-            vi.mocked(validateTypeOrThrowMock).mockReturnValue(validatedBody);
-
-            vi.mocked(buildBatchedTxServiceMock).mockResolvedValue(
-                batchedTxServiceMock
-            );
-            vi.mocked(getSendTxQueueTypeCompilerMock).mockReturnValue(
-                typeCompilerMock as unknown as ReturnType<
-                    typeof getSendTxQueueTypeCompiler
-                >
+            batchedTxServiceMock.sendBatchedTx.mockRejectedValueOnce(
+                new Error('test-error')
             );
 
-            vi.mocked(buildBatchedTxServiceMock).mockResolvedValue(
-                batchedTxServiceMock
-            );
-
-            // @ts-ignore
-            const result = await handlerToTest(event);
+            await handlerToTest(event, {} as Context);
 
             expect(loggerInfoMock).toHaveBeenCalledWith('Send TX handler');
 

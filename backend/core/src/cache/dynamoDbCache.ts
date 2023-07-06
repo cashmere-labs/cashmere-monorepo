@@ -52,7 +52,7 @@ export const setInCache = async (
     key: string,
     value: unknown,
     ttl: number = defaultTtl
-) => {
+): Promise<void> => {
     try {
         logger.debug({ key, value, ttl }, 'Setting a new value in the cache');
         const updateItemCommand = new UpdateItemCommand({
@@ -80,7 +80,10 @@ export const setInCache = async (
 /**
  * Update the TTL of the given value
  */
-export const updateCacheTtlInDb = async (key: string, ttl: number) => {
+export const updateCacheTtlInDb = async (
+    key: string,
+    ttl: number
+): Promise<void> => {
     try {
         logger.info({ key, ttl }, 'Updating a cached value TTL');
         const updateItemCommand = new UpdateItemCommand({
