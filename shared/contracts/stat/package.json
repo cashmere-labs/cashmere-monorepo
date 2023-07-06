@@ -1,0 +1,20 @@
+{
+    "name": "@cashmere-monorepo/shared-contract-stat",
+    "version": "0.0.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "typecheck": "tsc -noEmit",
+        "test": "vitest run"
+    },
+    "devDependencies": {
+        "@types/node": "^18.16.14",
+        "json-schema-to-ts": "^2.9.0",
+        "sst": "2.13.2",
+        "vitest": "^0.31.1"
+    },
+    "dependencies": {
+        "@cashmere-monorepo/shared-contract-core": "workspace:^",
+        "@sinclair/typebox": "^0.28.20"
+    }
+}

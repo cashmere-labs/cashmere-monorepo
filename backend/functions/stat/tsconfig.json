@@ -1,0 +1,25 @@
+{
+    "extends": "@tsconfig/node18/tsconfig.json",
+    "compilerOptions": {
+        "composite": true,
+        "incremental": true,
+        "module": "esnext",
+        "baseUrl": ".",
+        "rootDir": ".",
+        "lib": ["dom"], // Import dom lib to access fetch, https://github.com/DefinitelyTyped/DefinitelyTyped/issues/60924
+        "skipLibCheck": true /* Skip type checking all .d.ts files. */,
+        "paths": {
+            "@cashmere-monorepo/backend-core/*": ["../../core/src/*"],
+            "@cashmere-monorepo/shared-contract-stat/*": [
+                "../../../shared/contracts/stat/*"
+            ]
+        }
+    },
+    "exclude": ["node_modules"],
+    // "include": ["./src/**/*.ts"],
+    "references": [
+        { "path": "../../core/tsconfig.json" },
+        { "path": "../../../shared/contracts/stat/tsconfig.json" },
+        { "path": "../../../shared/contracts/core/tsconfig.json" }
+    ]
+}

@@ -7,6 +7,7 @@ export default defineWorkspace([
     'backend/database',
     'backend/functions/progress',
     'backend/functions/swap-params',
+    'backend/functions/stat',
     'backend/functions/worker',
     'backend/services/auth',
     'backend/services/progress',

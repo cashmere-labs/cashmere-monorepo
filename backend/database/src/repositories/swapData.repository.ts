@@ -5,7 +5,7 @@ import { SwapDataDbDto } from '../dto/swapData';
 import { SwapDataDocument, SwapDataSchema } from '../schema/swapData.schema';
 import { getMongooseConnection } from '../utils/connection';
 
-type NestedKeyOf<ObjectType extends object> = {
+export type NestedKeyOf<ObjectType extends object> = {
     [Key in keyof ObjectType &
         (string | number)]: ObjectType[Key] extends object
         ? `${Key}` | `${Key}.${NestedKeyOf<ObjectType[Key]>}`
@@ -165,6 +165,32 @@ const buildSwapDataRepository = (connection: Connection) => {
                     'status.swapContinueConfirmed': null,
                 })
                 .cursor();
+        },
+
+        /**
+         * Get all the total swap data
+         */
+        async getAll({
+            page = 0,
+            items = 10,
+        }: {
+            page?: number;
+            items?: number;
+        } = {}): Promise<{ count: number; items: SwapDataDbDto[] }> {
+            // Create the query
+            let query = model.find({}, { _id: 0, __v: 0 });
+            // Clone the query and save total documents count
+            const count = await query.clone().count();
+            // If pagination is requested, add it to the query
+            if (page !== undefined)
+                query = query.skip(items * page).limit(items);
+            // Execute the query and return the result
+            return {
+                count,
+                items: await query
+                    .sort({ 'status.swapInitiatedTimestamp': -1 })
+                    .exec(),
+            };
         },
     };
 };
