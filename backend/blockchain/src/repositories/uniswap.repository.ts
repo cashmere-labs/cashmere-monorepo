@@ -65,7 +65,7 @@ export const getUniswapRepository = (chainId: number): UniswapRepository => {
                     tokens: [params.fromToken, params.toToken],
                 },
             ];
-            const getAmountsOutMulticallResult = await client.multicall({
+            const getAmountsOutMulticallResult = (await client.multicall({
                 contracts: getAmountsOutMulticallParams.map((param) => ({
                     address: config.getContractAddress('uniswapV2Router02'),
                     abi: iUniswapV2Router02ABI,
@@ -73,7 +73,7 @@ export const getUniswapRepository = (chainId: number): UniswapRepository => {
                     args: [param.amount, param.tokens],
                 })),
                 allowFailure: false,
-            });
+            })) as any[][];
 
             // Extract our params
             const dstAmount = getAmountsOutMulticallResult[0]?.[1];

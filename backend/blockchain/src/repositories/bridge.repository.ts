@@ -63,3 +63,5 @@ export const getBridgeRepository = (chainId: number) => {
             }),
     };
 };
+
+export type BridgeRepository = ReturnType<typeof getBridgeRepository>;
