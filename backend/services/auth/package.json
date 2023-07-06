@@ -14,13 +14,13 @@
         "argon2": "^0.30.3",
         "fast-jwt": "^3.1.1",
         "pbkdf2-password-hash": "^3.1.0",
-        "viem": "^1.1.8"
+        "viem": "^1.2.9"
     },
     "devDependencies": {
-        "@types/node": "^18.16.18",
-        "@vitest/coverage-v8": "^0.32.2",
-        "@vitest/ui": "^0.32.2",
+        "@types/node": "^18.16.19",
+        "@vitest/coverage-v8": "^0.32.4",
+        "@vitest/ui": "^0.32.4",
         "clear-module": "^4.1.2",
-        "vitest": "^0.32.2"
+        "vitest": "^0.32.4"
     }
 }
