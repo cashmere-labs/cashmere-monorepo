@@ -6,6 +6,6 @@ import { listSwaps } from '../params/listSwaps';
 const contractHandler = ContractFunctionHandler(listSwapContract);
 
 // Export our handler
-export const handler: any = contractHandler(async (event) => {
+export const handler = contractHandler(async (event) => {
     return listSwaps(event.queryStringParameters);
 });
