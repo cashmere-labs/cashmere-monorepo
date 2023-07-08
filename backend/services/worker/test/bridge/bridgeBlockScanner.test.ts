@@ -9,10 +9,9 @@ describe('[Worker][Unit] Bridge - Bridge block scanner', () => {
         from: bigint;
         to: bigint;
     }) => Promise<{ lastBlockHandled: bigint }>;
-
-    /**
-     * Before all tests, mock all dependencies and extract our method's
-     */
+    // /**
+    //  * Before all tests, mock all dependencies and extract our method's
+    //  */
     beforeAll(async () => {
         // Mock the blockchain repository repository
         vi.doMock('@cashmere-monorepo/backend-blockchain', () => ({
@@ -28,7 +27,6 @@ describe('[Worker][Unit] Bridge - Bridge block scanner', () => {
                 getSwapMessageReceivedEvents: async () => [{}, {}],
             }),
         }));
-
         vi.doMock('../../src/bridge/eventHandler', () => ({
             buildEventHandler: () => ({
                 handleSwapInitiatedEvent: vi
@@ -39,7 +37,6 @@ describe('[Worker][Unit] Bridge - Bridge block scanner', () => {
                     .mockRejectedValueOnce(new Error('test error')),
             }),
         }));
-
         // Import the tested functions after mocking dependencies
         const { buildBridgeBlockScanner } = await import(
             '../../src/bridge/bridgeBlockScanner'
@@ -47,7 +44,6 @@ describe('[Worker][Unit] Bridge - Bridge block scanner', () => {
         const blockScanner = await buildBridgeBlockScanner(TEST_CHAIN_ID);
         handleNewBlock = blockScanner.handleNewBlock;
     });
-
     /**
      * After each test, restore all mocks
      */
@@ -55,7 +51,6 @@ describe('[Worker][Unit] Bridge - Bridge block scanner', () => {
         // Restore all mocks
         vi.restoreAllMocks();
     });
-
     /**
      * Handle new block tests
      */

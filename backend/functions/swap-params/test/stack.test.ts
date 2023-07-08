@@ -2,7 +2,7 @@ import { CoreStack } from '@cashmere-monorepo/backend-core/stacks/CoreStack';
 import { Template } from 'aws-cdk-lib/assertions';
 import { App, getStack } from 'sst/constructs';
 import { initProject } from 'sst/project';
-import { beforeAll, describe, it } from 'vitest';
+import { afterAll, beforeAll, describe, it, vi } from 'vitest';
 import { SwapParamsStack } from '../SwapParamsStack';
 
 /**
@@ -14,6 +14,8 @@ describe('[Stack] StackParams', () => {
 
     // Before each test, init project and deploy core stack
     beforeAll(async () => {
+        vi.useFakeTimers();
+
         // Init project and deploy core stack
         await initProject({});
         app = new App({ mode: 'deploy' });
@@ -21,6 +23,10 @@ describe('[Stack] StackParams', () => {
 
         // Deploy swap stack
         app.stack(SwapParamsStack);
+    });
+
+    afterAll(async () => {
+        vi.useRealTimers();
     });
 
     /**

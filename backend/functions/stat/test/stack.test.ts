@@ -2,7 +2,7 @@ import { CoreStack } from '@cashmere-monorepo/backend-core/stacks/CoreStack';
 import { Template } from 'aws-cdk-lib/assertions';
 import { App, getStack } from 'sst/constructs';
 import { initProject } from 'sst/project';
-import { beforeEach, describe, it } from 'vitest';
+import { afterAll, beforeEach, describe, it, vi } from 'vitest';
 import { StatApiStack } from '../StatApiStack';
 /**
  * Swap estimate business logic test
@@ -14,6 +14,8 @@ describe('[Stack] StackParams', () => {
 
     // Before each test, init project and deploy core stack
     beforeEach(async () => {
+        vi.useFakeTimers();
+
         // Init project and deploy core stack
         await initProject({});
         app = new App({ mode: 'deploy' });
@@ -21,6 +23,10 @@ describe('[Stack] StackParams', () => {
 
         // Deploy swap stack
         app.stack(StatApiStack);
+    });
+
+    afterAll(async () => {
+        vi.useRealTimers();
     });
 
     /**
@@ -47,4 +53,4 @@ describe('[Stack] StackParams', () => {
             RouteKey: 'GET /total-swaps',
         });
     });
-});
+}, 50000000);

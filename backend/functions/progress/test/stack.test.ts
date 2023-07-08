@@ -3,7 +3,7 @@ import { CoreStack } from '@cashmere-monorepo/backend-core/stacks/CoreStack';
 import { Template } from 'aws-cdk-lib/assertions';
 import { App, getStack, use } from 'sst/constructs';
 import { initProject } from 'sst/project';
-import { beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { ProgressStack } from '../ProgressStack';
 
 /**
@@ -15,6 +15,8 @@ describe('[Stack] Progress', () => {
 
     // Before each test, init project and deploy core stack
     beforeAll(async () => {
+        vi.useFakeTimers();
+
         // Init project and deploy core stack
         await initProject({});
         app = new App({ mode: 'deploy' });
@@ -23,6 +25,10 @@ describe('[Stack] Progress', () => {
 
         // Deploy swap stack
         app.stack(ProgressStack);
+    });
+
+    afterAll(async () => {
+        vi.useRealTimers();
     });
 
     /**

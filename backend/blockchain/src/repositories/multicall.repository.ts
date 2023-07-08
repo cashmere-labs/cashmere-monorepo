@@ -24,7 +24,12 @@ export const getMultiCallRepository = (chainId: number) => {
     const { config, client } = getNetworkConfigAndClient(chainId);
 
     // Get the write client
-    const account = privateKeyToAccount(Config.PRIVATE_KEY as Hex);
+    const privateKey =
+        process.env.NODE_ENV === 'test'
+            ? (process.env.PRIVATE_KEY as Hex)
+            : (Config.PRIVATE_KEY as Hex);
+
+    const account = privateKeyToAccount(privateKey);
 
     // And finally get the client
     const privateClient = createWalletClient({
