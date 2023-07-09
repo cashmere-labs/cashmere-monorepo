@@ -1,7 +1,7 @@
 import { CoreStack } from '@cashmere-monorepo/backend-core/stacks/CoreStack';
 import { App, use } from 'sst/constructs';
 import { initProject } from 'sst/project';
-import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { AuthStack } from '../AuthStack';
 
 /**
@@ -13,23 +13,17 @@ describe('[Stack] Auth', () => {
 
     // Before each test, init project and deploy core stack
     beforeEach(async () => {
-        vi.useFakeTimers();
-
         // Init project and deploy core stack
-        await initProject({});
+        await initProject({ stage: 'test' });
         app = new App({ mode: 'deploy' });
         app.stack(CoreStack);
         app.stack(AuthStack);
     });
 
-    afterAll(() => {
-        vi.useRealTimers();
-    });
-
     /**
      * Ensure all exports are good
      */
-    it('[Ok] All export are goods', () => {
+    it('[Ok] All export are goods', async () => {
         // Get the stack output
         const stackOutput = use(AuthStack);
         expect(stackOutput).toBeDefined();

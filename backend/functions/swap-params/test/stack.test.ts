@@ -2,7 +2,7 @@ import { CoreStack } from '@cashmere-monorepo/backend-core/stacks/CoreStack';
 import { Template } from 'aws-cdk-lib/assertions';
 import { App, getStack } from 'sst/constructs';
 import { initProject } from 'sst/project';
-import { afterAll, beforeAll, describe, it, vi } from 'vitest';
+import { beforeAll, describe, it } from 'vitest';
 import { SwapParamsStack } from '../SwapParamsStack';
 
 /**
@@ -14,10 +14,8 @@ describe('[Stack] StackParams', () => {
 
     // Before each test, init project and deploy core stack
     beforeAll(async () => {
-        vi.useFakeTimers();
-
         // Init project and deploy core stack
-        await initProject({});
+        await initProject({ stage: 'test' });
         app = new App({ mode: 'deploy' });
         app.stack(CoreStack);
 
@@ -25,14 +23,10 @@ describe('[Stack] StackParams', () => {
         app.stack(SwapParamsStack);
     });
 
-    afterAll(async () => {
-        vi.useRealTimers();
-    });
-
     /**
      * Ensure all the endpoints are deployed
      */
-    it("[Ok] All endpoint's deployed", () => {
+    it("[Ok] All endpoint's deployed", async () => {
         // Get the cloud formation template of the stack
         const stack = getStack(SwapParamsStack);
         const template = Template.fromStack(stack);

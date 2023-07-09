@@ -79,12 +79,12 @@ jobs:
               id: aws_deploy
               run: pnpm sst --stage test deploy
 
-            - name: '🧪 Run tests'
-              run: pnpm sst bind "vitest run --coverage --no-threads" --stage test
-
             - name: 'prepare coverage report'
               run: |
-                  rm ./coverage/coverage-summary.json
+                  rm -rf ./coverage
+
+            - name: '🧪 Run tests'
+              run: pnpm sst bind "vitest run --coverage --no-threads" --stage test
 
             - name: '📈 Report Coverage'
               if: always() # Also generate the report if tests are failing
