@@ -1,3 +1,5 @@
+'use client';
+
 import {
   ChoosePool,
   DepositDashboard,
@@ -77,4 +79,4 @@ const Pool = () => {
   );
 };
 
-export { Pool };
+export default Pool;

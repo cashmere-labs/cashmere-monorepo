@@ -15,7 +15,7 @@ import ThemeStore from './store/ThemeStore';
 import { activeChains } from './constants/chains';
 import { AuthStore } from './store/AuthStore';
 import { Api } from './utils/api';
-import { Chain } from '@wagmi/core';
+import { Chain, createClient as createCoreClient } from '@wagmi/core';
 import {
     argentWallet,
     braveWallet,
@@ -25,10 +25,11 @@ import {
     rainbowWallet,
     safeWallet, trustWallet, walletConnectWallet
 } from '@rainbow-me/rainbowkit/wallets';
+import '@rainbow-me/rainbowkit/styles.css';
 
 const getWallets = ({ appName, chains, projectId }: {
     appName: string;
-    projectId?: string;
+    projectId: string;
     chains: Chain[];
 }): {
     connectors: ReturnType<typeof connectorsForWallets>;
@@ -78,6 +79,12 @@ const { connectors } = getWallets({
 });
 
 const wagmiClient = createClient({
+    autoConnect: true,
+    connectors,
+    provider,
+});
+
+const wagmiCoreClient = createCoreClient({
     autoConnect: true,
     connectors,
     provider,

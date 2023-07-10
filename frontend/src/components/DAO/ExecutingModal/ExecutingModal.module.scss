@@ -31,7 +31,7 @@
     font-size: 20px;
     color: var(--DAO-text-1);
     margin-bottom: 31px;
-    font-weight: 500px;
+    font-weight: 500;
   }
 
   .title > :nth-child(2) {
@@ -268,7 +268,7 @@
       font-size: 14px;
       color: var(--DAO-text-1);
       margin-bottom: 6px;
-      font-weight: 500px;
+      font-weight: 500;
     }
 
     .title > :nth-child(2) {
@@ -442,7 +442,7 @@
 
       .tip {
         display: flex;
-        justify-content: end;
+        justify-content: flex-end;
       }
     }
 

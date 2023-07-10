@@ -8,7 +8,8 @@ export default class ThemeStore {
 
   constructor(private readonly rootStore: RootStore) {
     makeObservable(this);
-    this.save();
+    // @ts-ignore
+    if (typeof document !== 'undefined') this.save();
   }
 
   @action toggle() {

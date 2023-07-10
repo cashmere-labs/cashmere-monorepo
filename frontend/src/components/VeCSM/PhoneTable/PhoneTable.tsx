@@ -128,7 +128,7 @@ const VeCSMPhoneTable = observer(({ whichLocker, bodyCount, datas }: Table) => {
                         <div>${data.weeklyFees}</div>
                       </div>
                       <div className={styles.manageButton}>
-                        <Link to={`${PATHS.manage}/${data.id}`}>
+                        <a href={`${PATHS.manage}/${data.id}`}>
                           <Button
                             height="36px"
                             width="100%"
@@ -141,7 +141,7 @@ const VeCSMPhoneTable = observer(({ whichLocker, bodyCount, datas }: Table) => {
                           >
                             Manage
                           </Button>
-                        </Link>
+                        </a>
                       </div>
                     </div>
                   ) : (
@@ -160,7 +160,7 @@ const VeCSMPhoneTable = observer(({ whichLocker, bodyCount, datas }: Table) => {
                         <div>{data.myLockedCSM} CSM</div>
                       </div>
                       <div className={styles.manageButton}>
-                        <Link to={`${PATHS.manage}/${data.id}`}>
+                        <a href={`${PATHS.manage}/${data.id}`}>
                           <Button
                             height="36px"
                             width="100%"
@@ -173,7 +173,7 @@ const VeCSMPhoneTable = observer(({ whichLocker, bodyCount, datas }: Table) => {
                           >
                             Manage
                           </Button>
-                        </Link>
+                        </a>
                       </div>
                     </div>
                   )}

@@ -8,7 +8,7 @@ import {
 } from "../../../components";
 import { useModal } from "../../../hooks";
 import { usePoolStates } from "../../../hooks";
-import { FilterType, PoolTab } from "../../../pages/Pool/Pool";
+import { FilterType, PoolTab } from "../../../app/pool/page";
 import { useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import { Button, Modal } from "../../../ui";

@@ -19,13 +19,13 @@ const Logo = observer(({
 
   return (
     <div className={styles.logoWrapper}>
-      <Link
+      <a
         className={clsnm("link", disableLink && styles.disabled)}
-        to={disableLink ? "#" : "/"}
+        href={disableLink ? undefined : "/"}
       >
         <img alt="logo" src={themeStore.theme === "dark" ? WhiteLogo : BlackLogo} />
         {!hideLabel && <span>Cashmere</span>}
-      </Link>
+      </a>
     </div>
   );
 });

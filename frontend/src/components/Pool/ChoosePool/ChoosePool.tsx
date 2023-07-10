@@ -1,6 +1,6 @@
 import { Row } from "../../../components";
 import { usePoolStates } from "../../../hooks";
-import { FilterType, PoolTab } from "../../../pages/Pool/Pool";
+import { FilterType, PoolTab } from "../../../app/pool/page";
 import useDimensions from "react-cool-dimensions";
 import { useMediaQuery } from "react-responsive";
 import { Token } from "../../../types/token";

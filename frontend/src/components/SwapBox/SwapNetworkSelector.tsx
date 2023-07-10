@@ -8,6 +8,7 @@ import styles from "./SwapBox.module.scss";
 import { ethers } from "ethers";
 import { Chain } from '../../constants/chains';
 import { erc20ABI } from 'wagmi';
+import Image from 'next/image';
 
 type SwapNetworkSelectorProps = {
   modalController: ModalController;
@@ -148,7 +149,7 @@ const SwapNetworkSelector = ({
               }}
               className={styles.option}
             >
-              <img src={item.iconUrl} />
+              <Image src={item.iconUrl} width={36} height={36} alt={item.name} />
               <span>{item.name}</span>
             </div>
           ))}

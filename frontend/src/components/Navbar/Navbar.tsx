@@ -4,7 +4,7 @@ import { PATHS } from "../../constants/paths";
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { FaBars, FaTimes } from "react-icons/fa";
 import { IoMdMoon, IoMdSunny } from "react-icons/io";
-import { Link, useLocation } from "react-router-dom";
+import { usePathname } from "next/navigation";
 import { Button, Container, Icon } from "../../ui";
 import { clsnm } from "../../utils/clsnm";
 
@@ -19,9 +19,10 @@ import PendingTxStore from '../../store/PendingTxStore';
 import { reaction, runInAction } from 'mobx';
 import { useModal } from '../../hooks';
 import { QuestsModal } from '../Modals/QuestsModal/QuestsModal';
-import { MdCheckCircle, MdHourglassFull } from 'react-icons/all';
+import { MdCheckCircle, MdHourglassFull } from 'react-icons/md';
 import { AuthStore } from '../../store/AuthStore';
 import { rootStore } from '../../store/RootStore';
+import { usePageContext } from "../../hooks/usePageContext";
 
 const PendingTxsButton = observer(({ mobile }: { mobile: boolean }) => {
     const themeStore = useInjection(ThemeStore);
@@ -209,7 +210,7 @@ const ThemeChangerButton = observer(({ mobile }: { mobile: boolean }) => {
 });
 
 const Navbar = ({ transparent = false }: { transparent?: boolean }) => {
-    const { pathname } = useLocation();
+    const pathname = usePathname();
 
     const LINKS = useMemo(() => {
         return [
@@ -276,12 +277,12 @@ const Navbar = ({ transparent = false }: { transparent?: boolean }) => {
                     <div className={styles.links}>
                         {LINKS.map((item) => (
                             <div key={item.name} className={styles.linkWrapper}>
-                                <Link
+                                <a
                                     className={clsnm(styles.link, item.active && styles.active)}
-                                    to={item.soon ? "#" : item.url}
+                                    href={item.soon ? undefined : item.url}
                                 >
                                     {item.name}
-                                </Link>
+                                </a>
                                 {item.soon && <span className={styles.soon}>SOON</span>}
                             </div>
                         ))}
@@ -362,12 +363,12 @@ const Navbar = ({ transparent = false }: { transparent?: boolean }) => {
                 <div className={styles.smallLinks}>
                     {LINKS.map((item) => (
                         <div key={item.name} className={styles.linkWrapper}>
-                            <Link
+                            <a
                                 className={clsnm(styles.link, item.active && styles.active)}
-                                to={item.soon ? "#" : item.url}
+                                href={item.soon ? undefined : item.url}
                             >
                                 {item.name}
-                            </Link>
+                            </a>
                             {item.soon && <span className={styles.soon}>SOON</span>}
                         </div>
                     ))}

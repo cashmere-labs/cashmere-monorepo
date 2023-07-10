@@ -1,3 +1,5 @@
+'use client';
+
 import { Footer, Navbar } from "../../components";
 import { ChooseValidator, ClaimDashboard, Validators } from "../../components";
 import { useTitle } from "../../hooks/useTitle";
@@ -25,4 +27,4 @@ const VeCSM = () => {
   );
 };
 
-export { VeCSM };
+export default VeCSM;

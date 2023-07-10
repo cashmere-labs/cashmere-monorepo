@@ -1,3 +1,5 @@
+'use client';
+
 import {
   Footer,
   Navbar,
@@ -28,4 +30,4 @@ const DAO = () => {
   );
 };
 
-export { DAO };
+export default DAO;

@@ -4,6 +4,7 @@ import QUESTIONMARK from '../../assets/images/networks/question.png';
 
 import styles from "./NetworkBadge.module.scss";
 import { BadgeColors, Chain } from '../../constants/chains';
+import Image from "next/image";
 
 export interface NetworkBadgeProps extends ComponentPropsWithoutRef<"div"> {
   chain?: Pick<Chain, 'name' | 'badgeColors' | 'iconUrl'>;
@@ -57,7 +58,7 @@ const NetworkBadge = ({
         style={{ height: `${size}px`, width: `${size}px` }}
         className={styles.iconWrapper}
       >
-        <img className={styles.icon} src={icon} />
+        <Image className={styles.icon} src={icon} width={30} height={30} alt={chain?.name || ''} />
       </div>
       <span
         className={styles.text}

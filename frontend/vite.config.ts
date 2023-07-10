@@ -1,12 +1,14 @@
 import svgx from '@svgx/vite-plugin-react';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { ssr } from 'vite-plugin-ssr/plugin';
 
 export default defineConfig(async () => {
   return {
     plugins: [
       react(),
       svgx({ defaultImport: 'url' }),
+      ssr(),
       // chunkSplitPlugin({
       //     strategy: 'single-vendor',
       //     customChunk: args => {

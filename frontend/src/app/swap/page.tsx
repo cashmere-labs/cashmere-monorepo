@@ -1,3 +1,5 @@
+'use client';
+
 import { Footer, Navbar, SwapBox } from '../../components';
 import { GasEstimatorModal } from '../../components';
 import { getMockEstimations } from '../../constants/mockEstimateData';
@@ -22,7 +24,7 @@ export type SwapState = {
     fromAmount: string;
 };
 
-const Swap = () => {
+const Page = () => {
     useTitle('Swap');
     const { chain } = useNetwork();
 
@@ -74,4 +76,4 @@ const Swap = () => {
     );
 };
 
-export { Swap };
+export default Page;

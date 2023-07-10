@@ -1,3 +1,5 @@
+'use client';
+
 import { InfoIcon } from "../../assets/icons";
 import CALCULATER from "../../assets/icons/calculater.png";
 import { Footer, Gauge, Manage, Navbar } from "../../components";
@@ -39,4 +41,4 @@ const ManagePage = () => {
   );
 };
 
-export { ManagePage };
+export default ManagePage;

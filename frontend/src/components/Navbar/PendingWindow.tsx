@@ -8,7 +8,7 @@ import PendingTxStore from '../../store/PendingTxStore';
 import TimeCounter from '../TimeCounter/TimeCounter';
 import { useInViewport } from 'react-in-viewport';
 import { Spinner } from '../../ui';
-import { MdClear, MdDelete, MdLaunch } from 'react-icons/all';
+import { MdClear, MdDelete, MdLaunch } from 'react-icons/md';
 import { Api, SwapData } from '../../utils/api';
 
 interface IPendingWindowProps {

@@ -2,6 +2,7 @@ import { Row } from "../../components";
 import { Token } from "../../types/token";
 import { NetworkBadge } from "../../ui";
 import { Chain } from '../../constants/chains';
+import Image from "next/image";
 
 const TokenOrNetworkRenderer = ({
   tokenOrNetwork,
@@ -16,10 +17,12 @@ const TokenOrNetworkRenderer = ({
     <Row style={{ width: "max-content" }} alignItems="center">
       {tokenOrNetwork instanceof Token || type === "default" ? (
         <>
-          <img
+          <Image
             style={{ marginRight: "8px" }}
             width={imgSize}
             src={tokenOrNetwork.iconUrl}
+            height={imgSize}
+            alt={tokenOrNetwork.name}
           />
           <span style={{ color: "var(--text)" }}>{tokenOrNetwork.name}</span>
         </>

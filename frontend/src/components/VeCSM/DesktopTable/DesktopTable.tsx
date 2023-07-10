@@ -109,7 +109,7 @@ const Row = observer(({
           className={styles.manageButton}
           style={whichOne ? { paddingLeft: "30px" } : { paddingLeft: "40px" }}
         >
-          <Link to={`${PATHS.manage}/${data.id}`}>
+          <a href={`${PATHS.manage}/${data.id}`}>
             <Button
               height="40px"
               width="156px"
@@ -120,7 +120,7 @@ const Row = observer(({
             >
               Manage
             </Button>
-          </Link>
+          </a>
         </div>
       </div>
     </div>

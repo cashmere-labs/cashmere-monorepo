@@ -25,7 +25,7 @@ import { observer } from 'mobx-react-lite';
 import { Chain, lineaTestnet } from '../../constants/chains';
 import { erc20ABI, useAccount, useContract, useProvider, useSigner, useSignTypedData } from 'wagmi';
 import PendingTxStore from '../../store/PendingTxStore';
-import { ErrorCode } from '@ethersproject/logger/src.ts';
+import { ErrorCode } from '@ethersproject/logger';
 import { Api } from '../../utils/api';
 
 type SwapConfirmationModal = {
