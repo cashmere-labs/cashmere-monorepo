@@ -15,7 +15,7 @@ describe('[Stack] StackParams', () => {
     // Before each test, init project and deploy core stack
     beforeEach(async () => {
         // Init project and deploy core stack
-        await initProject({});
+        await initProject({ stage: 'test' });
         app = new App({ mode: 'deploy' });
         app.stack(CoreStack as any);
 

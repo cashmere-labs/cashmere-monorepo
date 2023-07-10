@@ -79,6 +79,10 @@ jobs:
               id: aws_deploy
               run: pnpm sst --stage test deploy
 
+            - name: 'prepare coverage report'
+              run: |
+                  rm -rf ./coverage
+
             - name: '🧪 Run tests'
               run: pnpm sst bind "vitest run --coverage --no-threads" --stage test
 

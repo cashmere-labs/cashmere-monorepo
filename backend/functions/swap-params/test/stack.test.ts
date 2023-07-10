@@ -15,7 +15,7 @@ describe('[Stack] StackParams', () => {
     // Before each test, init project and deploy core stack
     beforeAll(async () => {
         // Init project and deploy core stack
-        await initProject({});
+        await initProject({ stage: 'test' });
         app = new App({ mode: 'deploy' });
         app.stack(CoreStack);
 
@@ -26,7 +26,7 @@ describe('[Stack] StackParams', () => {
     /**
      * Ensure all the endpoints are deployed
      */
-    it("[Ok] All endpoint's deployed", () => {
+    it("[Ok] All endpoint's deployed", async () => {
         // Get the cloud formation template of the stack
         const stack = getStack(SwapParamsStack);
         const template = Template.fromStack(stack);

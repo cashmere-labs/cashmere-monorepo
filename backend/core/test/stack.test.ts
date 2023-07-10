@@ -13,7 +13,7 @@ describe('[Stack] Core', () => {
     // Before each test, init project and deploy core stack
     beforeEach(async () => {
         // Init project and deploy core stack
-        await initProject({});
+        await initProject({ stage: 'test' });
         app = new App({ mode: 'deploy' });
         app.stack(CoreStack);
     });
@@ -21,7 +21,7 @@ describe('[Stack] Core', () => {
     /**
      * Ensure all exports are good
      */
-    it('[Ok] All export are goods', () => {
+    it('[Ok] All export are goods', async () => {
         // Get the stack output
         const stackOutput = use(CoreStack);
         expect(stackOutput).toBeDefined();

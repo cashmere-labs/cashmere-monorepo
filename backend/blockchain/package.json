@@ -4,7 +4,10 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "typecheck": "tsc -noEmit"
+        "typecheck": "tsc -noEmit",
+        "test": "sst bind \"vitest run --coverage --no-threads\"",
+        "test:watch": "sst bind \"vitest watch --coverage --no-threads\"",
+        "test:ui": "sst bind \"vitest watch --ui --coverage --no-threads\""
     },
     "dependencies": {
         "@cashmere-monorepo/backend-core": "workspace:^",

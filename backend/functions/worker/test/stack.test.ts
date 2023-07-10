@@ -15,7 +15,7 @@ describe('[Stack] Worker', () => {
     // Before each test, init project and deploy core stack
     beforeAll(async () => {
         // Init project and deploy core stack
-        await initProject({});
+        await initProject({ stage: 'test' });
         app = new App({ mode: 'deploy' });
         app.stack(CoreStack);
 
@@ -26,7 +26,7 @@ describe('[Stack] Worker', () => {
     /**
      * Ensure all the service are deployed
      */
-    it('[Ok] All services are deployed', () => {
+    it('[Ok] All services are deployed', async () => {
         // Get the cloud formation template of the stack
         const stack = getStack(WorkerStack);
         const template = Template.fromStack(stack);
