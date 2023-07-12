@@ -1,7 +1,7 @@
 export { Navbar } from './Navbar/Navbar';
 export { Footer } from './Footer/Footer';
 export { Logo } from './Logo/Logo';
-export { SwapBox } from './SwapBox/SwapBox';
+export { SwapBox } from './SwapBox/SwapBox2';
 export { Row } from './Row/Row';
 export { TokenOrNetworkRenderer } from './TokenOrNetworkRenderer/TokenOrNetworkRenderer';
 export { Column } from './Column/Column';

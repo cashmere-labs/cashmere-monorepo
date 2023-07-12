@@ -1,32 +1,43 @@
 import { RotateIcon } from "../../assets/icons";
-import { Row } from "../../components";
+import { Row } from "../Row/Row";
 import { ModalController } from '../../hooks/useModal';
 import { ReactNode, useEffect, useState } from "react";
 import { FaChevronRight } from "react-icons/fa";
 import { SwapDetailsData } from "../../types/swap";
 import { Token } from "../../types/token";
 import { Button, Icon, Modal, Spinner } from '../../ui';
-import { TransactionRequest } from "@ethersproject/abstract-provider";
 
-// import { SwapBoxDetails } from "components/SwapBox/SwapBoxDetails";
-import { SwapSettings } from "../../components/SwapSettings/useSwapSettings";
-import { TokenOrNetworkRenderer } from "../../components/TokenOrNetworkRenderer/TokenOrNetworkRenderer";
+import { SwapSettings } from "../SwapSettings/useSwapSettings";
+import { TokenOrNetworkRenderer } from "../TokenOrNetworkRenderer/TokenOrNetworkRenderer";
 
 import styles from "./SwapConfirmation.module.scss";
 import Big from "big.js";
-import { BigNumber, constants, ethers } from "ethers";
-// import { ContractContext as CashmereRouter2L0Context } from "../../abi/CashmereRouter2L0";
-// import CashmereRouter2L0ABI from "../../abi/CashmereRouter2L0.abi.json";
-import { ContractContext as CashmereAggregatorUniswapContext } from "../../abi/CashmereAggregatorUniswap";
 import CashmereAggregatorUniswapABI from "../../abi/CashmereAggregatorUniswap.json";
 import { useInjection } from 'inversify-react';
 import ThemeStore from '../../store/ThemeStore';
 import { observer } from 'mobx-react-lite';
 import { Chain, lineaTestnet } from '../../constants/chains';
-import { erc20ABI, useAccount, useContract, useProvider, useSigner, useSignTypedData } from 'wagmi';
+import {
+  Address,
+  erc20ABI,
+  useAccount,
+  useContractRead,
+  usePublicClient,
+  useSignTypedData,
+  useWalletClient
+} from "wagmi";
 import PendingTxStore from '../../store/PendingTxStore';
-import { ErrorCode } from '@ethersproject/logger';
 import { Api } from '../../utils/api';
+import {
+  getPublicClient,
+  readContract,
+  sendTransaction,
+  writeContract
+} from "@wagmi/core";
+import { MAX_UINT256 } from "../../constants/utils";
+import { encodeFunctionData } from "viem";
+import { estimateGas, getGasPrice } from "viem/public";
+import toBig from "../../utils/toBig";
 
 type SwapConfirmationModal = {
   swapSettings: SwapSettings;
@@ -55,8 +66,8 @@ const SwapConfirmation = observer(({
   const pendingTxStore = useInjection(PendingTxStore);
   const api = useInjection(Api);
   const { address: accountAddress } = useAccount();
-  const provider = useProvider();
-  const { data: signer } = useSigner();
+  const provider = usePublicClient();
+  const { data: signer } = useWalletClient();
   const { signTypedDataAsync } = useSignTypedData({});
   const [ insufficientFunds, setInsufficientFunds ] = useState(false);
   const [ feeRequired, setFeeRequired ] = useState<Big>();
@@ -64,34 +75,31 @@ const SwapConfirmation = observer(({
 
   useEffect(() => setInsufficientFunds(false), [modalController.isOpen]);
 
-  const fromToken = useContract({
-    address: from.token.address,
-    abi: erc20ABI,
-    signerOrProvider: signer,
-  });
-
   const _handleSwap = async () => {
     try {
       setWaitingConfirmation(true);
-      console.log(`dev: ${import.meta.env.DEV}`);
-      console.log(data);
-      console.log(from);
 
-      // const signature = await signer?.signMessage(ethers.utils.defaultAbiCoder.encode(
-      //     ['address', 'address', 'address', 'address', 'uint256'],
-      //     [accountAddress, ]
-      // ));
+      const fromAmount = BigInt(new Big(from.amount).mul(new Big(10).pow(from.token.decimals)).toFixed(0));
 
-      const fromAmount = new Big(from.amount).mul(new Big(10).pow(from.token.decimals)).toFixed(0);
-
-      const resp = await api.getSwapParams(from.network.id, from.token.address, fromAmount, to.network.id, to.token.address, accountAddress!);
+      const resp = await api.getSwapParams(from.network.id, from.token.address, fromAmount.toString(), to.network.id, to.token.address, accountAddress!);
       console.log(resp);
 
       if (from.token.address !== '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE') {
-        // const fromToken = new ethers.Contract(from.token.address, erc20ABI, signer);
-        if ((await fromToken?.allowance(accountAddress!, resp.to))?.lt(fromAmount)) {
-          const tx = await fromToken?.approve(resp.to, constants.MaxUint256);
-          await tx?.wait();
+        const allowance = await readContract({
+            abi: erc20ABI,
+            address: from.token.address as Address,
+            functionName: 'allowance',
+            args: [accountAddress!, resp.to],
+            chainId: from.network.id,
+        });
+        if (allowance < fromAmount) {
+          const tx = await writeContract({
+            abi: erc20ABI,
+            address: from.token.address as Address,
+            functionName: 'approve',
+            args: [resp.to, MAX_UINT256],
+            chainId: from.network.id,
+          });
         }
       }
 
@@ -111,27 +119,17 @@ const SwapConfirmation = observer(({
             { name: 'minHgsAmount', type: 'uint256' },
           ]
         },
-        value: {
+        message: {
             receiver: accountAddress!,
             lwsPoolId: parseInt(resp.args.lwsPoolId),
             hgsPoolId: parseInt(resp.args.hgsPoolId),
             dstToken: resp.args.dstToken,
-            minHgsAmount: BigNumber.from(resp.args.minHgsAmount).mul("9").div("10")
-        }
+            minHgsAmount: BigInt(resp.args.minHgsAmount) * 9n / 10n,
+        },
+        primaryType: "Parameters",
       });
       console.log(signature);
 
-      // const signature = await signer?._signTypedData(ethers.utils.arrayify(ethers.utils.keccak256(ethers.utils.defaultAbiCoder.encode(
-      //     ["address", "address", "address", "address", "uint256"],
-      //     [
-      //       accountAddress,
-      //       resp.args.lwsToken,
-      //       resp.args.hgsToken,
-      //       resp.args.dstToken,
-      //       BigNumber.from(resp.args.hgsEstimate).mul("9").div("10"),
-      //     ]
-      // ))));
-      const aggRouter: CashmereAggregatorUniswapContext = new ethers.Contract(resp.to, CashmereAggregatorUniswapABI, signer!) as unknown as CashmereAggregatorUniswapContext;
       console.log({
         srcToken: resp.args.srcToken,
         srcAmount: resp.args.srcAmount,
@@ -140,46 +138,49 @@ const SwapConfirmation = observer(({
         dstToken: resp.args.dstToken,
         dstChain: resp.args.dstChain,
         dstAggregatorAddress: resp.args.dstAggregatorAddress,
-        minHgsAmount: BigNumber.from(resp.args.minHgsAmount).mul("9").div('10'),
+        minHgsAmount: BigInt(resp.args.minHgsAmount) * 9n / 10n,
         signature: signature!,
       });
-      const txData = aggRouter.interface.encodeFunctionData(
-          aggRouter.interface.functions["startSwap((address,uint256,uint16,uint16,address,uint16,address,uint256,bytes))"],
-          [{
-            srcToken: resp.args.srcToken,
-            srcAmount: resp.args.srcAmount,
-            lwsPoolId: resp.args.lwsPoolId,
-            hgsPoolId: resp.args.hgsPoolId,
-            dstToken: resp.args.dstToken,
-            dstChain: resp.args.dstChain,
-            dstAggregatorAddress: resp.args.dstAggregatorAddress,
-            minHgsAmount: BigNumber.from(resp.args.minHgsAmount).mul("9").div('10'),
-            signature: signature!,
-          }]
-      );
-      let gasPrice = Big((await provider!.getGasPrice()).toString());
+      const txData = encodeFunctionData({
+        abi: CashmereAggregatorUniswapABI,
+        functionName: "startSwap",
+        args: [{
+          srcToken: resp.args.srcToken,
+          srcAmount: resp.args.srcAmount,
+          lwsPoolId: resp.args.lwsPoolId,
+          hgsPoolId: resp.args.hgsPoolId,
+          dstToken: resp.args.dstToken,
+          dstChain: resp.args.dstChain,
+          dstAggregatorAddress: resp.args.dstAggregatorAddress,
+          minHgsAmount: BigInt(resp.args.minHgsAmount) * 9n / 10n,
+          signature: signature!,
+        }]
+      });
+
+      let gasPrice = await getGasPrice(getPublicClient());
       if (from.network.id !== lineaTestnet.id)
-        gasPrice = gasPrice.mul('4');
-      const tx: TransactionRequest = {
+        gasPrice *= 4n;
+      const tx = {
         data: txData,
-        from: accountAddress,
-        gasPrice: gasPrice.toFixed(0),
-        to: resp.to,
-        value: resp.value,
-        gasLimit: from.network.estimateGasLimitOverride ?? 8000000,
+        account: accountAddress!,
+        gasPrice,
+        to: resp.to as Address,
+        value: BigInt(resp.value),
+        gas: from.network.estimateGasLimitOverride ? BigInt(from.network.estimateGasLimitOverride) : 8000000n,
       };
 
       console.log("beforeEstimate", tx);
-      setFeeRequired(Big(resp.value).div(Big(10).pow(18)));
-      tx.gasLimit = (await provider!.estimateGas(tx)).mul(2);  // x2
-      setFeeRequired(Big(tx.gasLimit!.toString()).mul(tx.gasPrice!.toString()).div(Big(10).pow(18)));
+      setFeeRequired(toBig(resp.value).div('1e18'));
+      tx.gas = await estimateGas(getPublicClient(), tx) * 2n;
+      setFeeRequired(toBig(tx.gas! * tx.gasPrice!).div('1e18'));
       console.log("afterEstimate", tx);
-      const receipt = await signer!.sendTransaction(tx);
+      const txPromise = sendTransaction(tx);
       // setIsConfirmed(true);
-      receipt.wait().then(async (receipt) => api.submitSwapTx(from.network.id, receipt.transactionHash as `0x${string}`));
+      const txResult = await txPromise;
+      await api.submitSwapTx(from.network.id, txResult.hash);
 
       modalController.close();
-      resp.swapData.swapInitiatedTxid = receipt?.hash as `0x${string}`;
+      resp.swapData.swapInitiatedTxid = txResult.hash;
       pendingTxStore.addFakeTx(resp.swapData);
       pendingTxStore.setPendingWindowOpen(true);
       pendingTxStore.setSelectedTxId(resp.swapData.swapId);
@@ -194,10 +195,11 @@ const SwapConfirmation = observer(({
       //   }
       // }, 1000);
     } catch (e) {
-      console.error(JSON.parse(JSON.stringify(e)));
+      console.error(e);
       const codes = [(e as any).code, (e as any).error?.code, (e as any).error?.error?.code];
+      console.log(codes, JSON.parse(JSON.stringify(e)));
       for (const code of codes) {
-        if ([ErrorCode.INSUFFICIENT_FUNDS, -32603, -32000].includes(code)) {
+        if ([-32000].includes(code)) {
           setInsufficientFunds(true);
           break;
         }

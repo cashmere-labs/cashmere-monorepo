@@ -1,15 +1,15 @@
-import { BigNumberish, ethers } from 'ethers';
 import Big from 'big.js';
+import { formatUnits } from 'viem';
 
-export const formatBalance = (balance: BigNumberish | Big | undefined, decimals = 4, tokenDecimal = 18) => {
+export const formatBalance = (balance: bigint | string | Big | undefined, decimals = 4, tokenDecimal = 18) => {
   if (!balance) {
     return '0';
   }
 
-  balance = balance.toString();
+  balance = BigInt(balance.toString());
 
   try {
-    const _balance = ethers.utils.formatUnits(balance as BigNumberish, tokenDecimal).toString();
+    const _balance = formatUnits(balance, tokenDecimal).toString();
 
     const parts = _balance.split('.');
     if (parts[1]) parts[1] = parts[1].slice(0, decimals);

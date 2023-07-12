@@ -1,6 +1,5 @@
 import { Logo, TxProgressModal } from '../../components';
 import { PATHS } from "../../constants/paths";
-// import { useModal } from "../../hooks";
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { FaBars, FaTimes } from "react-icons/fa";
 import { IoMdMoon, IoMdSunny } from "react-icons/io";
@@ -21,8 +20,6 @@ import { useModal } from '../../hooks';
 import { QuestsModal } from '../Modals/QuestsModal/QuestsModal';
 import { MdCheckCircle, MdHourglassFull } from 'react-icons/md';
 import { AuthStore } from '../../store/AuthStore';
-import { rootStore } from '../../store/RootStore';
-import { usePageContext } from "../../hooks/usePageContext";
 
 const PendingTxsButton = observer(({ mobile }: { mobile: boolean }) => {
     const themeStore = useInjection(ThemeStore);

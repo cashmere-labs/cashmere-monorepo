@@ -2,10 +2,11 @@ import { action, computed, makeObservable, observable, runInAction } from 'mobx'
 import RootStore from './RootStore';
 import { IObservableArray } from 'mobx/src/internal';
 import store from 'store2';
-import { getProvider, Provider } from '@wagmi/core';
 import { SwapData } from '../utils/api';
 import { io, Socket } from 'socket.io-client';
 import { apiDomain } from '../constants/utils';
+import { getTransactionReceipt } from 'viem/public';
+import { getPublicClient } from '@wagmi/core';
 
 const buildFakeKey = (swapData: SwapData): `0x${string}` => `${swapData.swapInitiatedTxid}-${swapData.srcChainId}`;
 
@@ -19,7 +20,6 @@ export default class PendingTxStore {
   historyLock = false;
   @observable pendingWindowOpen = false;
   @observable selectedTxId?: string = undefined;
-  @observable provider?: Provider = undefined;
   historyPage = 0;
   @observable completeSwapsCount = 0;
   @observable moreHistory = true;
@@ -111,7 +111,9 @@ export default class PendingTxStore {
   @action private async checkFailedTxs() {
     let fakeTxs: SwapData[] = store.get('fakeTxs', []);
     for (const tx of fakeTxs) {
-      const receipt = await getProvider({ chainId: tx.srcChainId }).getTransactionReceipt(tx.swapInitiatedTxid);
+      const receipt = await getTransactionReceipt(getPublicClient({ chainId: tx.srcChainId }), {
+        hash: tx.swapInitiatedTxid,
+      });
       runInAction(() => {
         if (receipt && !receipt.status) {
           const entry = this.txsMap.get(tx.swapId);
@@ -154,10 +156,6 @@ export default class PendingTxStore {
 
   @action setSelectedTxId(value?: string) {
     this.selectedTxId = value;
-  }
-
-  @action setProvider(provider: Provider) {
-    this.provider = provider;
   }
 
   @computed get txList() {

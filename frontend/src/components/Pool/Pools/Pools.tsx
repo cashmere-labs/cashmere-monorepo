@@ -19,10 +19,6 @@ import { useInjection } from 'inversify-react';
 import ThemeStore from '../../../store/ThemeStore';
 import { observer } from 'mobx-react-lite';
 import PoolStore, { pools } from '../../../store/PoolStore';
-import { BigNumber } from 'ethers';
-import useAsyncEffect from 'use-async-effect';
-import { getAccount, getContract, getProvider } from '@wagmi/core';
-import AssetABI from '../../../abi/Asset.json';
 import Big from 'big.js';
 
 enum Page {

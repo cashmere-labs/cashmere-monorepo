@@ -1,7 +1,6 @@
 import LOGO from "../../../assets/images/cashmere.png";
 import TICK from "../../../assets/images/tick.png";
 import { Row } from "../../../components";
-import { ethers } from "ethers";
 import { useFormValidator } from "../../../hooks/useFormValidator";
 import { ModalController } from "../../../hooks/useModal";
 import { useState } from "react";
@@ -15,6 +14,7 @@ import ThemeStore from '../../../store/ThemeStore';
 import { observer } from 'mobx-react-lite';
 import { useNetwork } from 'wagmi';
 import { Chain } from '../../../constants/chains';
+import { isAddress } from "viem";
 
 const ProposalModal = observer(({
   modal,
@@ -57,7 +57,7 @@ const ProposalModal = observer(({
     if (title.trim() === "") {
       validator.setError("title", "Title is required");
     }
-    if (!ethers.utils.isAddress(tokenAddress)) {
+    if (!isAddress(tokenAddress)) {
       validator.setError("tokenAddress", "Invalid address");
     }
     if (tokenAddress.trim() === "") {
@@ -172,7 +172,6 @@ const ProposalModal = observer(({
                 isFullWidth
                 height="60px"
                 value={state.from}
-                setValue={() => undefined}
                 options={tokenOptions}
                 optionRenderer={(close) => (
                   <>

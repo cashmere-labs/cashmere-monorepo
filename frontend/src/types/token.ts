@@ -1,7 +1,9 @@
+import { Address } from 'wagmi';
+
 export class Token {
   asset: string;
   type: string;
-  address: string;
+  address: Address;
   name: string;
   symbol: string;
   decimals: number;

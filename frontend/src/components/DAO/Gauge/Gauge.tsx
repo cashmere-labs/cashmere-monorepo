@@ -30,7 +30,6 @@ const Gauge = observer(({ modal }: { modal: ModalController }) => {
             isFullWidth
             height={"71px"}
             value={state.from}
-            setValue={() => undefined}
             options={tokenOptions}
             optionRenderer={(close) => (
               <>
@@ -103,7 +102,6 @@ const Gauge = observer(({ modal }: { modal: ModalController }) => {
                 isFullWidth
                 height={"71px"}
                 value={state.duration}
-                setValue={() => undefined}
                 options={tokenOptions}
                 optionRenderer={(close) => (
                   <>

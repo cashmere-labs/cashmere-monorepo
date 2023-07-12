@@ -146,7 +146,6 @@ const ChoosePool = observer(({
             menuRenderer={() =>
               filter.network != null ? filter.network.name : "All chains"
             }
-            setValue={() => undefined}
             menuClassName={styles.option}
             options={networkOptions}
             optionRenderer={(close) => (

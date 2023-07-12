@@ -2,7 +2,7 @@ import { RotateIcon, SettingsIcon } from '../../assets/icons';
 import { Row } from '../Row/Row';
 import { SwapConfirmation, TokenOrNetworkRenderer } from '../../components';
 import { useDebounce, useModal } from '../../hooks';
-import { SwapState } from '../../pages/Swap/Swap';
+import { SwapState } from '../../app/swap/page';
 import { ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { FaChevronRight } from 'react-icons/fa';
 import { Token } from '../../types/token';
@@ -13,19 +13,21 @@ import { SwapSettings } from '../SwapSettings/SwapSettings';
 import { SwapSettings as SwapSettingType } from '../../components/SwapSettings/useSwapSettings';
 
 import styles from './SwapBox.module.scss';
-import { ethers } from 'ethers';
 import Big from 'big.js';
 import { SwapBoxDetails } from './SwapBoxDetails';
 import { formatValue } from '../../utils/formatValue';
 import { useInjection } from 'inversify-react';
 import ThemeStore from '../../store/ThemeStore';
 import { observer } from 'mobx-react-lite';
-import { erc20ABI, useAccount, useNetwork, useSwitchNetwork } from 'wagmi';
+import { Address, erc20ABI, useAccount, useNetwork, useSwitchNetwork } from "wagmi";
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { activeChains, Chain } from '../../constants/chains';
 import { QuestsModal } from '../Modals/QuestsModal/QuestsModal';
 import { Api } from '../../utils/api';
-import { MdInfoOutline } from 'react-icons/all';
+import { fetchBalance } from "@wagmi/core";
+import toBig from "../../utils/toBig";
+import { isAddressEqual } from "viem";
+import { PLACEHOLDER_ADDRESS } from "../../constants/utils";
 
 const SwapBox = observer(({
                               state,
@@ -64,20 +66,20 @@ const SwapBox = observer(({
             setToBalance(undefined);
             return;
         }
-        const fromProvider = new ethers.providers.JsonRpcProvider(state.fromChain.rpcUrls.default.http[0]);
-        const toProvider = new ethers.providers.JsonRpcProvider(state.toChain.rpcUrls.default.http[0]);
-        if (state.fromToken.address.toLowerCase() !== '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'.toLowerCase()) {
-            const fromContract = new ethers.Contract(state.fromToken.address, erc20ABI, fromProvider);
-            setFromBalance(new Big((await fromContract.balanceOf(account.address)).toString()).div(new Big(10).pow(state.fromToken.decimals)));
-        } else {
-            setFromBalance(new Big((await fromProvider.getBalance(account.address)).toString()).div(new Big(10).pow(state.fromToken.decimals)));
-        }
-        if (state.toToken.address.toLowerCase() !== '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'.toLowerCase()) {
-            const toContract = new ethers.Contract(state.toToken.address, erc20ABI, toProvider);
-            setToBalance(new Big((await toContract.balanceOf(account.address)).toString()).div(new Big(10).pow(state.toToken.decimals)));
-        } else {
-            setToBalance(new Big((await toProvider.getBalance(account.address)).toString()).div(new Big(10).pow(state.toToken.decimals)));
-        }
+
+        const fromBalance = await fetchBalance({
+            address: account.address,
+            chainId: state.fromChain.id,
+            token: isAddressEqual(state.fromToken.address, PLACEHOLDER_ADDRESS) ? undefined : state.fromToken.address,
+        });
+        setFromBalance(toBig(fromBalance.formatted));
+
+        const toBalance = await fetchBalance({
+            address: account.address,
+            chainId: state.toChain.id,
+            token: isAddressEqual(state.toToken.address, PLACEHOLDER_ADDRESS) ? undefined : state.toToken.address,
+        });
+        setToBalance(toBig(toBalance.formatted));
     })(), [account.address, state.fromChain, state.fromToken, state.toChain, state.toToken]);
 
     const onNetworkSelect = useRef<(item: Chain | Token) => void>(
@@ -305,7 +307,6 @@ const SwapBox = observer(({
                         <TokenOrNetworkRenderer tokenOrNetwork={state.fromChain}/>
                     )}
                     value={state.fromChain}
-                    setValue={() => undefined}
                     options={activeChains}
                     hideRightBorder
                 />
@@ -319,7 +320,6 @@ const SwapBox = observer(({
                         <TokenOrNetworkRenderer tokenOrNetwork={state.fromToken}/>
                     )}
                     value={state.fromToken}
-                    setValue={() => undefined}
                     options={state.fromChain.tokenList /*tokenOptions*/}
                     onClick={() => {
                         tokenList.current = state.fromChain.tokenList;

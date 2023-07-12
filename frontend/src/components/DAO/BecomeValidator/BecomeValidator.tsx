@@ -1,7 +1,6 @@
 import { InfoIcon } from "../../../assets/icons";
 import LOGOBLACK from "../../../assets/images/cashmere.png";
 import LOGOWHITE from "../../../assets/images/cashmereWhite.png";
-import { ethers } from "ethers";
 import { useFormValidator } from "../../../hooks/useFormValidator";
 import { ModalController } from "../../../hooks/useModal";
 import { useState } from "react";
@@ -13,6 +12,7 @@ import styles from "./BecomeValidator.module.scss";
 import { useInjection } from 'inversify-react';
 import ThemeStore from '../../../store/ThemeStore';
 import { observer } from 'mobx-react-lite';
+import { isAddress } from "viem";
 
 const BecomeValidator = observer(({
   modal,
@@ -47,7 +47,7 @@ const BecomeValidator = observer(({
   const [rightAmount, setRightAmount] = useState<string>("");
 
   const onSubmit = () => {
-    if (from.trim() === "" || !ethers.utils.isAddress(from)) {
+    if (from.trim() === "" || !isAddress(from)) {
       validator.setError("from", "Invalid address");
     }
     if (rate.trim() === "") {

@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useMemo } from 'react';
+import React, { PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { observer } from 'mobx-react-lite';
 import {
     connectorsForWallets,
@@ -8,14 +8,14 @@ import {
     RainbowKitAuthenticationProvider,
     RainbowKitProvider, WalletList,
 } from '@rainbow-me/rainbowkit';
-import { configureChains, createClient, WagmiConfig } from 'wagmi';
+import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { publicProvider } from 'wagmi/providers/public';
 import { useInjection } from 'inversify-react';
 import ThemeStore from './store/ThemeStore';
 import { activeChains } from './constants/chains';
 import { AuthStore } from './store/AuthStore';
 import { Api } from './utils/api';
-import { Chain, createClient as createCoreClient } from '@wagmi/core';
+import { Chain } from '@wagmi/core';
 import {
     argentWallet,
     braveWallet,
@@ -65,7 +65,7 @@ const getWallets = ({ appName, chains, projectId }: {
     };
 };
 
-const { chains, provider } = configureChains(
+const { chains, publicClient, webSocketPublicClient } = configureChains(
     activeChains,
     [
         publicProvider()
@@ -74,26 +74,25 @@ const { chains, provider } = configureChains(
 
 const { connectors } = getWallets({
     appName: 'Cashmere Swap',
-    projectId: 'cashmere.exchange',
+    projectId: '52a500abb8f616cf072faf7f2d57a718',
     chains,
 });
 
-const wagmiClient = createClient({
+const config = createConfig({
     autoConnect: true,
     connectors,
-    provider,
-});
-
-const wagmiCoreClient = createCoreClient({
-    autoConnect: true,
-    connectors,
-    provider,
+    publicClient,
+    webSocketPublicClient,
 });
 
 const RainbowKit = observer(({ children }: PropsWithChildren) => {
     const themeStore = useInjection(ThemeStore);
     const authStore = useInjection(AuthStore);
     const api = useInjection(Api);
+
+    const [ mounted, setMounted ] = useState(false);
+
+    useEffect(() => setMounted(true));
 
     const authenticationAdapter = useMemo(() => (
         createAuthenticationAdapter({
@@ -121,20 +120,18 @@ const RainbowKit = observer(({ children }: PropsWithChildren) => {
     ), [authStore, api]);
 
     return (
-        <WagmiConfig client={wagmiClient}>
-            <RainbowKitAuthenticationProvider
-                adapter={authenticationAdapter}
-                status={authStore.status}
+        <WagmiConfig config={config}>
+            <RainbowKitProvider
+                theme={themeStore.theme === 'dark' ? darkTheme() : lightTheme()}
+                chains={chains}
             >
-                <RainbowKitProvider
-                    theme={themeStore.theme === 'dark' ? darkTheme() : lightTheme()}
-                    chains={chains}
+                <RainbowKitAuthenticationProvider
+                    adapter={authenticationAdapter}
+                    status={authStore.status}
                 >
-                    <>
-                        {children}
-                    </>
-                </RainbowKitProvider>
-            </RainbowKitAuthenticationProvider>
+                    {mounted && children}
+                </RainbowKitAuthenticationProvider>
+            </RainbowKitProvider>
         </WagmiConfig>
     );
 });

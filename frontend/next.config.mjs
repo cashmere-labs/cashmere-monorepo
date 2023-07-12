@@ -12,6 +12,10 @@ export default {
             use: ['@svgr/webpack'],
         });
 
+        // fix hosted font loading
+        // https://github.com/webpack-contrib/mini-css-extract-plugin/issues/945#issuecomment-1253939973
+        config.module.generator.asset.publicPath = "/_next/";
+
         return config;
     },
     images: {

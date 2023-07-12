@@ -1,7 +1,7 @@
 import { IS_PROD } from '../constants/utils';
 import numeral from 'numeral';
 
-export const formatValue = (value: string | undefined, decimals = 6, comma = false) => {
+export const formatValue = (value: string | bigint | undefined, decimals = 6, comma = false) => {
   if (!value) {
     return '0';
   }
@@ -9,6 +9,8 @@ export const formatValue = (value: string | undefined, decimals = 6, comma = fal
   if (value === '...') {
     return value;
   }
+
+  value = value.toString();
 
   const format = (comma ? '0,0' : '0') + (decimals > 0 ? '.' + '0'.repeat(decimals) : '');
   return numeral(value).format(format);

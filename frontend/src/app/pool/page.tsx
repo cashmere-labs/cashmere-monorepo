@@ -14,13 +14,12 @@ import { Layout } from "../../ui";
 
 import styles from "./Pool.module.scss";
 import { activeChains, Chain } from '../../constants/chains';
-import { BigNumber } from 'ethers';
 import useAsyncEffect from 'use-async-effect';
 import { pools } from '../../store/PoolStore';
-import { getAccount, getContract, getProvider } from '@wagmi/core';
+import { getAccount, readContract } from "@wagmi/core";
 import AssetABI from '../../abi/Asset.json';
-import toBN from '../../utils/toBN';
 import Big from 'big.js';
+import toBig from "../../utils/toBig";
 
 export type FilterType = {
   network: null | Chain;
@@ -47,12 +46,14 @@ const Pool = () => {
   useAsyncEffect(async () => {
     const array = deposits.concat();
     await Promise.all(pools.map(async (pool, i) => {
-      const contract = getContract({
-        address: pool.assetAddress,
+      const balance = await readContract({
         abi: AssetABI,
-        signerOrProvider: getProvider({ chainId: pool.network }),
+        address: pool.assetAddress,
+        chainId: pool.network,
+        functionName: 'balanceOf',
+        args: [getAccount().address],
       });
-      array[i] = new Big(await contract.balanceOf(getAccount().address)).div('1e18');
+      array[i] = toBig(balance).div('1e18');
       setDeposits(array.concat());
     }));
   }, []);

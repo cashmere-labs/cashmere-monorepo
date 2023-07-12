@@ -7,23 +7,23 @@ import { useInjection } from 'inversify-react';
 import ThemeStore from '../../../store/ThemeStore';
 import { observer } from 'mobx-react-lite';
 import PoolStore, { pools } from '../../../store/PoolStore';
-import { constants } from 'ethers';
 import {
     Address,
     erc20ABI,
     useAccount,
-    useBalance, useContract,
+    useBalance,
     useNetwork,
-    useSigner,
     useSwitchNetwork,
     useToken
 } from 'wagmi';
 import { formatBalance } from '../../../utils/formatBalance';
-import toBN from '../../../utils/toBN';
 import Big from 'big.js';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import toBig from '../../../utils/toBig';
 import { AuthStore } from '../../../store/AuthStore';
+import { readContract, writeContract } from "@wagmi/core";
+import { MAX_UINT256 } from "../../../constants/utils";
+import { runInAction } from "mobx";
 
 const depositFunctionAbi = {
     "inputs": [
@@ -54,11 +54,9 @@ const Liquidity = observer(({ onSuccess }: { onSuccess: () => void }) => {
     const poolStore = useInjection(PoolStore);
     const authStore = useInjection(AuthStore);
 
-    const [isPlus, setIsPlus] = useState(true);
     const account = useAccount();
-    const { data: signer } = useSigner();
     const { chain } = useNetwork();
-    const connectModal = useConnectModal();
+    const { openConnectModal } = useConnectModal();
     const { switchNetworkAsync } = useSwitchNetwork();
     const [ waitingConfirmation, setWaitingConfirmation ] = useState(false);
     const [ value, setValue ] = useState('');
@@ -76,16 +74,6 @@ const Liquidity = observer(({ onSuccess }: { onSuccess: () => void }) => {
         chainId: pool?.network
     });
     const bigTokenDecimals = new Big(10).pow(token?.decimals || 0);
-    const routerContract = useContract({
-        address: pool?.crossRouterAddress,
-        abi: [depositFunctionAbi],
-        signerOrProvider: signer,
-    });
-    const tokenContract = useContract({
-        address: pool?.tokenAddress,
-        abi: erc20ABI,
-        signerOrProvider: signer,
-    });
 
     const isPhoneOrPC = useMediaQuery({
         query: '(max-width: 600px)',
@@ -108,8 +96,9 @@ const Liquidity = observer(({ onSuccess }: { onSuccess: () => void }) => {
     }, [insufficientFunds, authStore.status, rightNetwork]);
 
     const buttonAction = async () => {
-        if (authStore.status !== 'authenticated') {
-            connectModal?.openConnectModal?.();
+        const status = runInAction(() => authStore.status);
+        if (status !== 'authenticated') {
+            openConnectModal?.();
             return;
         }
         if (!rightNetwork) {
@@ -118,13 +107,28 @@ const Liquidity = observer(({ onSuccess }: { onSuccess: () => void }) => {
         }
         setWaitingConfirmation(true);
         try {
-            const amount = toBig(value).mul(bigTokenDecimals).toFixed(0);
-            if ((await tokenContract?.allowance(account!.address!, pool!.crossRouterAddress))?.lt(amount)) {
-                const tx = await tokenContract?.approve(pool!.crossRouterAddress, constants.MaxUint256);
-                await tx?.wait();
+            const amount = BigInt(toBig(value).mul(bigTokenDecimals).toFixed(0));
+            const allowance = await readContract({
+                abi: erc20ABI,
+                address: pool?.tokenAddress,
+                functionName: 'allowance',
+                args: [account!.address!, pool!.crossRouterAddress],
+            });
+            if (allowance < amount) {
+                await writeContract({
+                    abi: erc20ABI,
+                    address: pool?.tokenAddress,
+                    functionName: 'approve',
+                    args: [pool!.crossRouterAddress, MAX_UINT256],
+                });
             }
             console.log([account?.address as Address, 1, amount]);
-            const tx = await routerContract?.deposit(account?.address as Address, 1, amount as any);
+            await writeContract({
+                abi: [depositFunctionAbi],
+                address: pool?.crossRouterAddress,
+                functionName: 'deposit',
+                args: [account?.address as Address, 1, amount],
+            });
         } finally {
             setWaitingConfirmation(false);
         }

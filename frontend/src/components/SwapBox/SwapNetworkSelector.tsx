@@ -5,10 +5,11 @@ import { Token } from "../../types/token";
 import { Icon, Input } from "../../ui";
 
 import styles from "./SwapBox.module.scss";
-import { ethers } from "ethers";
 import { Chain } from '../../constants/chains';
 import { erc20ABI } from 'wagmi';
 import Image from 'next/image';
+import { getAddress, isAddress } from "viem";
+import { readContract } from "@wagmi/core";
 
 type SwapNetworkSelectorProps = {
   modalController: ModalController;
@@ -67,18 +68,25 @@ const SwapNetworkSelector = ({
   const [ dynamicTokenLoading, setDynamicTokenLoading ] = useState<boolean>(false);
   useEffect(() => {
     setDynamicToken(undefined);
-    if (options.type === "token" && ethers.utils.isAddress(text)) {
+    if (options.type === "token" && isAddress(text)) {
       setDynamicTokenLoading(true);
-      const address = ethers.utils.getAddress(text);
-      const tokenContract = new ethers.Contract(
-          address,
-          erc20ABI,
-          new ethers.providers.JsonRpcProvider(options.network.rpcUrls.default.http[0]),
-      );
+      const address = getAddress(text);
       Promise.all([
-          tokenContract.name(),
-          tokenContract.symbol(),
-          tokenContract.decimals(),
+          readContract({
+            abi: erc20ABI,
+            address,
+            functionName: "name",
+          }),
+          readContract({
+            abi: erc20ABI,
+            address,
+            functionName: "symbol",
+          }),
+          readContract({
+            abi: erc20ABI,
+            address,
+            functionName: "decimals",
+          }),
       ]).then(([ name, symbol, decimals ]) => {
         setDynamicToken(new Token({
           address,
